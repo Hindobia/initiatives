@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>المبادرة الشتائية للسلامة والوقاية | ابتدائية الهيشة للطفولة المبكرة</title>
+    <!-- خط Tajawal و Alexandria للأطفال والواجهات الحديثة -->
+    <link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@400;600;700;800&family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <!-- أيقونات Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --winter-blue: #1b4965;
+            --winter-light-blue: #62b6cb;
+            --winter-accent: #bee9e8;
+            --snow-white: #ffffff;
+            --gold-warm: #f4a261;
+            --text-dark: #2b2d42;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Tajawal', 'Alexandria', sans-serif;
+        }
+
+        /* خلفية شتائية متدرجة مع تساقط ثلجي تفاعلي */
+        body {
+            background: linear-gradient(135deg, #1d3557 0%, #457b9d 50%, #a8dadc 100%);
+            color: var(--text-dark);
+            min-height: 100vh;
+            padding: 25px 15px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* الثلج المتساقط خلفية */
+        .snowflake {
+            position: fixed;
+            top: -10px;
+            color: #fff;
+            font-size: 1em;
+            font-family: Arial, sans-serif;
+            text-shadow: 0 0 5px #fff;
+            user-select: none;
+            z-index: 1;
+            pointer-events: none;
+            animation: fall linear infinite;
+        }
+
+        @keyframes fall {
+            0% { transform: translateY(-10vh) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(105vh) rotate(360deg); opacity: 0.2; }
+        }
+
+        .container {
+            max-width: 1050px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.94);
+            backdrop-filter: blur(12px);
+            border-radius: 30px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25), 0 0 20px rgba(255, 255, 255, 0.4);
+            padding: 35px;
+            border: 3px solid rgba(255, 255, 255, 0.8);
+            position: relative;
+            z-index: 10;
+        }
+
+        /* شريط التفاعل والأزرار العلوية */
+        .action-bar {
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        .btn-3d {
+            color: white;
+            border: none;
+            padding: 12px 26px;
+            border-radius: 50px;
+            font-size: 1.05rem;
+            font-weight: 800;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 6px 0 shadowColor, 0 8px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-evidence {
+            background: linear-gradient(135deg, #e76f51, #f4a261);
+            box-shadow: 0 5px 0 #b84d35, 0 8px 15px rgba(231, 111, 81, 0.3);
+        }
+
+        .btn-print {
+            background: linear-gradient(135deg, #2a9d8f, #264653);
+            box-shadow: 0 5px 0 #1b333e, 0 8px 15px rgba(42, 157, 143, 0.3);
+        }
+
+        .btn-3d:hover {
+            transform: translateY(-3px);
+            filter: brightness(1.08);
+        }
+
+        .btn-3d:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 shadowColor;
+        }
+
+        /* الترويسة الهيدر الشتائي */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 3px dashed #a8dadc;
+            padding-bottom: 25px;
+            margin-bottom: 35px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .header-info h4 {
+            color: var(--winter-blue);
+            font-size: 1.05rem;
+            font-weight: 800;
+            margin-bottom: 3px;
+        }
+
+        .initiative-title-box {
+            text-align: center;
+            background: linear-gradient(135deg, #e0f4f7, #ffffff);
+            border: 3px solid var(--winter-light-blue);
+            border-radius: 25px;
+            padding: 18px 35px;
+            box-shadow: 0 10px 25px rgba(98, 182, 203, 0.2), inset 0 0 15px rgba(255, 255, 255, 0.8);
+            transform: perspective(500px) rotateX(2deg);
+        }
+
+        .initiative-title-box h1 {
+            color: var(--winter-blue);
+            font-size: 1.9rem;
+            font-weight: 900;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .initiative-title-box p {
+            color: #457b9d;
+            font-weight: 700;
+            font-size: 1rem;
+            margin-top: 4px;
+        }
+
+        .credits {
+            text-align: right;
+            background: linear-gradient(135deg, #edf6f9, #d8f3dc);
+            padding: 14px 22px;
+            border-radius: 20px;
+            border-right: 5px solid var(--winter-light-blue);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        .credits p {
+            font-size: 0.98rem;
+            font-weight: 800;
+            color: var(--winter-blue);
+            margin-bottom: 5px;
+        }
+
+        /* تصميم البطاقات ثلاثية الأبعاد (3D Flip Cards) */
+        .section-title {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.35rem;
+            font-weight: 900;
+            padding: 12px 28px;
+            border-radius: 50px;
+            margin-bottom: 25px;
+            color: white;
+            background: linear-gradient(135deg, var(--winter-blue), var(--winter-light-blue));
+            box-shadow: 0 6px 15px rgba(27, 73, 101, 0.25);
+        }
+
+        .grid-3d {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .card-3d-wrapper {
+            perspective: 1000px;
+            height: 240px;
+            cursor: pointer;
+        }
+
+        .card-3d-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform-style: preserve-3d;
+            border-radius: 24px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+        }
+
+        .card-3d-wrapper:hover .card-3d-inner,
+        .card-3d-wrapper.flipped .card-3d-inner {
+            transform: rotateY(180deg);
+        }
+
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            border-radius: 24px;
+            padding: 22px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #e0f4f7;
+        }
+
+        .card-front {
+            background: linear-gradient(145deg, #ffffff, #f0f9ff);
+        }
+
+        .card-front i.main-icon {
+            font-size: 3.5rem;
+            margin-bottom: 15px;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.15));
+        }
+
+        .card-front h3 {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: var(--winter-blue);
+        }
+
+        .card-front .hint {
+            font-size: 0.85rem;
+            color: #8d99ae;
+            margin-top: 8px;
+            font-weight: 600;
+        }
+
+        .card-back {
+            background: linear-gradient(135deg, var(--winter-blue), #2b2d42);
+            color: white;
+            transform: rotateY(180deg);
+            text-align: center;
+            justify-content: center;
+        }
+
+        .card-back p {
+            font-size: 1.05rem;
+            font-weight: 700;
+            line-height: 1.7;
+        }
+
+        /* شريط التنبيه الشتائي دافئ */
+        .warm-banner {
+            background: linear-gradient(135deg, #ffe5d9, #ffcad4);
+            border: 3px dashed #f4a261;
+            border-radius: 22px;
+            padding: 22px;
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            box-shadow: 0 8px 20px rgba(244, 162, 97, 0.15);
+        }
+
+        .warm-banner i {
+            font-size: 2.8rem;
+            color: #e76f51;
+            flex-shrink: 0;
+        }
+
+        .warm-banner p {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: #6b2d20;
+        }
+
+        /* زر الواتساب العائم */
+        .whatsapp-float {
+            position: fixed;
+            bottom: 25px;
+            left: 25px;
+            background: linear-gradient(135deg, #25d366, #128c7e);
+            color: white;
+            width: 65px;
+            height: 65px;
+            border-radius: 50%;
+            text-align: center;
+            font-size: 35px;
+            box-shadow: 0 6px 20px rgba(37, 211, 102, 0.4);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            animation: pulseSnow 2.5s infinite;
+        }
+
+        .whatsapp-float:hover {
+            transform: scale(1.12) rotate(8deg);
+        }
+
+        @keyframes pulseSnow {
+            0% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7); }
+            70% { box-shadow: 0 0 0 18px rgba(37, 211, 102, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); }
+        }
+
+        /* الفوتر الرسمي */
+        footer {
+            margin-top: 35px;
+            text-align: center;
+            border-top: 2px solid #d8f3dc;
+            padding-top: 20px;
+            color: #457b9d;
+            font-weight: 700;
+            font-size: 0.95rem;
+        }
+
+        /* الطباعة */
+        @media print {
+            body { background: white; padding: 0; }
+            .container { box-shadow: none; border: 1px solid #ccc; max-width: 100%; border-radius: 0; }
+            .action-bar, .whatsapp-float, .snowflake { display: none !important; }
+            .card-3d-inner { transform: none !important; }
+            .card-back { display: none; }
+        }
+
+        @media (max-width: 768px) {
+            header { flex-direction: column; text-align: center; }
+            .header-info, .credits { text-align: center; width: 100%; }
+            .action-bar { justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- تأثير الثلج المتساقط في الخلفية -->
+    <div id="snow-container"></div>
+
+    <!-- زر الواتساب العائم المباشر -->
+    <a href="https://wa.me/966565588869?text=السلام%20عليكم،%20أعجبتني%20المبادرة%20الشتائية%20التفاعلية" class="whatsapp-float" target="_blank" title="تواصل عبر الواتساب">
+        <i class="fa-brands fa-whatsapp"></i>
+    </a>
+
+    <div class="container">
+        <!-- شريط التحكم والأزرار -->
+        <div class="action-bar">
+            <!-- زر الشواهد المفعل -->
+            <a href="https://asrgirls-my.sharepoint.com/:f:/g/personal/t165922_asrg_moe_gov_sa/IgAxuiSx84MBQITRP1PoUiyUAc7yfauLdYLD7ZdBLLl6jmk?e=xqGRG2" target="_blank" class="btn-3d btn-evidence">
+                <i class="fa-solid fa-snowflake"></i> الشواهد والمبادرات
+            </a>
+            
+            <!-- زر الطباعة -->
+            <button class="btn-3d btn-print" onclick="window.print()">
+                <i class="fa-solid fa-print"></i> طباعة المبادرة
+            </button>
+        </div>
+
+        <!-- الترويسة الهيدر الرسمي -->
+        <header>
+            <div class="header-info">
+                <h4>المملكة العربية السعودية</h4>
+                <h4>وزارة التعليم</h4>
+                <h4>الإدارة العامة للتعليم بمنطقة عسير</h4>
+                <h4>ابتدائية الهيشة للطفولة المبكرة</h4>
+            </div>
+
+            <div class="initiative-title-box">
+                <h1><i class="fa-solid fa-icicles" style="color: #62b6cb;"></i> المبادرة الشتائية التفاعلية</h1>
+                <p>❄️ الوقاية والسلامة لأبطالنا الصغار في فصل الشتاء ❄️</p>
+            </div>
+
+            <div class="credits">
+                <p><i class="fa-solid fa-chalkboard-user"></i> تصميم وإعداد: أ. هند القرني</p>
+                <p><i class="fa-solid fa-user-tie"></i> مديرة المدرسة: أ. هناء المعاوي</p>
+            </div>
+        </header>
+
+        <!-- قسم بطاقات السلامة الشتائية (3D Flip) -->
+        <div class="section-box">
+            <div class="section-title">
+                <i class="fa-solid fa-shield-cat"></i> قواعد السلامة والدفء الشتائي (اضغط على البطاقة لتنقلب) 🔄
+            </div>
+            
+            <div class="grid-3d">
+                <!-- بطاقة 1 -->
+                <div class="card-3d-wrapper" onclick="this.classList.toggle('flipped')">
+                    <div class="card-3d-inner">
+                        <div class="card-front">
+                            <i class="fa-solid fa-temperature-arrow-up main-icon" style="color: #e76f51;"></i>
+                            <h3>وسائل التدفئة الآمنة</h3>
+                            <span class="hint">👆 انقر للتفاصيل 3D</span>
+                        </div>
+                        <div class="card-back">
+                            <p>🔥 لا تقترب من المدفأة الكهربائية أو الفحم المشتعل، واحرص على ترك مسافة آمنة دائماً!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- بطاقة 2 -->
+                <div class="card-3d-wrapper" onclick="this.classList.toggle('flipped')">
+                    <div class="card-3d-inner">
+                        <div class="card-front">
+                            <i class="fa-solid fa-mitten main-icon" style="color: #62b6cb;"></i>
+                            <h3>الملابس الشتائية الدافئة</h3>
+                            <span class="hint">👆 انقر للتفاصيل 3D</span>
+                        </div>
+                        <div class="card-back">
+                            <p>🧤 ارتداء الملابس الثقيلة، القفازات، والقبعة يقي أجسادنا الصغار من نزلات البرد والشتاء!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- بطاقة 3 -->
+                <div class="card-3d-wrapper" onclick="this.classList.toggle('flipped')">
+                    <div class="card-3d-inner">
+                        <div class="card-front">
+                            <i class="fa-solid fa-mug-hot main-icon" style="color: #f4a261;"></i>
+                            <h3>المشروبات الدافئة بحذر</h3>
+                            <span class="hint">👆 انقر للتفاصيل 3D</span>
+                        </div>
+                        <div class="card-back">
+                            <p>☕ استمتع بالمشروبات الدافئة بمساعدة وتواجد شخص بالغ لتجنب الانسكاب أو الحروق!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- شريط التنبيه الذهبي الشتائي -->
+            <div class="warm-banner">
+                <i class="fa-solid fa-fire-flame-curved"></i>
+                <p>
+                    <strong>تنبيه شتائي لأبطالنا الصغار:</strong> الشتاء فصل جميل ودافئ عندما نلتزم بقواعد السلامة! لا تلمس التوصيلات الكهربائية الخاصة بالمدافئ واسأل والديتك دائماً قبل تشغيل أي جهاز ☃️.
+                </p>
+            </div>
+        </div>
+
+        <!-- الفوتر -->
+        <footer>
+            <p>جميع الحقوق محفوظة © ابتدائية الهيشة للطفولة المبكرة — المبادرة الشتائية التفاعلية ❄️</p>
+        </footer>
+    </div>
+
+    <!-- كود جافاسكريبت لتوليد الثلج المتساقط -->
+    <script>
+        function createSnowflakes() {
+            const container = document.getElementById('snow-container');
+            const count = 30;
+            const flakes = ['❄', '❅', '❆'];
+            
+            for (let i = 0; i < count; i++) {
+                const flake = document.createElement('div');
+                flake.className = 'snowflake';
+                flake.innerHTML = flakes[Math.floor(Math.random() * flakes.length)];
+                flake.style.left = Math.random() * 100 + 'vw';
+                flake.style.animationDuration = (Math.random() * 3 + 4) + 's';
+                flake.style.opacity = Math.random();
+                flake.style.fontSize = (Math.random() * 10 + 15) + 'px';
+                container.appendChild(flake);
+            }
+        }
+        window.onload = createSnowflakes;
+    </script>
+</body>
+</html>
