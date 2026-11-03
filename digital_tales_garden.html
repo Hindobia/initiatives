@@ -223,7 +223,7 @@
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <label class="block text-xs font-semibold mb-1.5">تصنيف المبادرة / المهارة</label>
-                                <input type="text" id="projBadge" required placeholder="مثل: تلاوة القرآن - الحروف الهجائية - قصص التأسيس" class="w-full px-4 py-2 rounded-xl border text-xs bg-white">
+                                <input type="text" id="projBadge" required placeholder="مثل: تلاوة القرآن - الحروف الهجائية" class="w-full px-4 py-2 rounded-xl border text-xs bg-white">
                             </div>
                             <div>
                                 <label class="block text-xs font-semibold mb-1.5">عنوان الدرس / الحكاية الرقمية</label>
@@ -240,7 +240,7 @@
                         </div>
 
                         <div>
-                            <label class="block text-xs font-semibold mb-1.5">صورة الغلاف (رفع من الجهاز - ضغط تلقائي للحجم)</label>
+                            <label class="block text-xs font-semibold mb-1.5">صورة الغلاف (رفع من الجهاز - ضغط تلقائي)</label>
                             <div class="flex flex-col sm:flex-row items-center gap-3">
                                 <label class="w-full sm:w-auto cursor-pointer bg-white hover:bg-slate-50 text-slate-700 px-4 py-2 rounded-xl text-xs font-semibold transition text-center border flex items-center justify-center gap-2">
                                     <i class="fa-solid fa-image text-amber-600"></i>
@@ -256,7 +256,7 @@
 
                         <div>
                             <label class="block text-xs font-semibold mb-1.5">الوصف القصصي والأهداف التربوية</label>
-                            <textarea id="projDesc" rows="3" maxlength="300" required placeholder="اكتب وصفاً للقصة والمفاهيم والتلاوة التي يتعلمها الطفل..." class="w-full px-4 py-2 rounded-xl border text-xs bg-white resize-none" oninput="updateCharCount(this)"></textarea>
+                            <textarea id="projDesc" rows="3" maxlength="300" required placeholder="اكتب وصفاً للقصة والمفاهيم والتلاوة..." class="w-full px-4 py-2 rounded-xl border text-xs bg-white resize-none" oninput="updateCharCount(this)"></textarea>
                             <div class="flex justify-between items-center mt-1">
                                 <span class="text-[10px] opacity-60">الحد الأقصى 300 حرف</span>
                                 <span id="charCount" class="text-[10px] font-bold">0 / 300</span>
@@ -329,42 +329,19 @@
         import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // Firebase Configuration
-const firebaseConfig = {
-    apiKey: "AIzaSyCiAHWHlkPDx3l2yVpqxH3jTVU-d6n1zfo",
-    authDomain: "hind-initiatives.firebaseapp.com",
-    databaseURL: "https://hind-initiatives-default-rtdb.europe-west1.firebasedatabase.app",
-    projectId: "hind-initiatives",
-    storageBucket: "hind-initiatives.firebasestorage.app",
-    messagingSenderId: "480807246183",
-    appId: "1:480807246183:web:2c3c108863c37f064af7c2"
-};
+        const firebaseConfig = {
+            apiKey: "AIzaSyCiAHWHlkPDx3l2yVpqxH3jTVU-d6n1zfo",
+            authDomain: "hind-initiatives.firebaseapp.com",
+            databaseURL: "https://hind-initiatives-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "hind-initiatives",
+            storageBucket: "hind-initiatives.firebasestorage.app",
+            messagingSenderId: "480807246183",
+            appId: "1:480807246183:web:2c3c108863c37f064af7c2"
+        };
 
         let app, db, auth;
         window.initiativesList = [];
         let uploadedBase64Image = "https://placehold.co/600x400/51465A/ffffff?text=حديقة+الحكايات+الرقمية";
-
-        // Initial default initiatives for Digital Tales Garden
-        const initialTales = [
-            {
-                id: "tale_1",
-                badge: "تلاوة وقراءة مبكرة",
-                title: "حكاية رحلة الحروف المضيئة وترتيل آيات السور القيرة",
-                date: "١٤ شعبان ١٤٤٧ هـ - ٣ فبراير ٢٠٢٦ م",
-                desc: "قصة تفاعلية مشوقة تساعد أطفال الطفولة المبكرة على الربط بين نطق الحروف الصحيح وتلاوة السور القيرة بأسلوب قصصي ممتع ومصممة بألوان محفزة.",
-                link: "https://onedrive.live.com/",
-                image: "https://placehold.co/600x400/51465A/ffffff?text=حكاية+الحروف+والتلاوة"
-            },
-            {
-                id: "tale_2",
-                badge: "أوراق عمل قصصية",
-                title: "حقيبة أوراق العمل التفاعلية لبستان القراءة والتلاوة",
-                date: "١٤ شعبان ١٤٤٧ هـ - ٣ فبراير ٢٠٢٦ م",
-                desc: "ملفات متكاملة تتضمن تمارين تلوين الحروف والكلمات القرأنية، وتتبع الأثر، والربط بين المشاهد والقصص مصممة ومحفوظة عبر OneDrive.",
-                link: "https://onedrive.live.com/",
-                image: "https://placehold.co/600x400/006C35/ffffff?text=أوراق+عمل+OneDrive"
-            }
-        ];
 
         window.switchTheme = function(themeName) {
             const body = document.getElementById('mainBody');
@@ -396,7 +373,6 @@ const firebaseConfig = {
                 setupRealtimeListener();
             } catch (error) {
                 console.error("Firebase init error:", error);
-                window.initiativesList = initialTales;
                 renderCards();
                 renderAdminList();
             }
@@ -411,15 +387,10 @@ const firebaseConfig = {
                     window.initiativesList.push({ id: docSnap.id, ...docSnap.data() });
                 });
 
-                if (window.initiativesList.length === 0) {
-                    window.initiativesList = initialTales;
-                }
-
                 renderCards();
                 renderAdminList();
             }, (error) => {
                 console.error("Snapshot error:", error);
-                window.initiativesList = initialTales;
                 renderCards();
                 renderAdminList();
             });
@@ -444,7 +415,6 @@ const firebaseConfig = {
                 cardEl.className = `perspective-1000 min-h-[420px] h-auto w-full cursor-pointer group`;
                 cardEl.innerHTML = `
                     <div class="relative w-full h-full transform-style-3d shadow-sm hover:shadow-xl rounded-3xl transition-all duration-500 theme-card border" id="card-${index}" onclick="flipCard(${index})">
-                        <!-- Front Face -->
                         <div class="absolute inset-0 backface-hidden rounded-3xl overflow-hidden flex flex-col justify-between">
                             <div>
                                 <div class="relative h-48 overflow-hidden bg-black/5">
@@ -468,7 +438,6 @@ const firebaseConfig = {
                             </div>
                         </div>
 
-                        <!-- Back Face (3D Flip) -->
                         <div class="absolute inset-0 backface-hidden rotate-y-180 bg-gradient-to-br from-slate-900 to-slate-800 text-white rounded-3xl p-6 flex flex-col justify-between shadow-inner">
                             <div class="flex-grow flex flex-col justify-start">
                                 <div class="flex justify-between items-center mb-3 border-b border-white/10 pb-2">
@@ -482,7 +451,7 @@ const firebaseConfig = {
                             </div>
                             <div class="pt-4 border-t border-white/10 flex items-center gap-2 mt-2">
                                 <a href="${item.link}" target="_blank" onclick="event.stopPropagation()" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 px-3 rounded-xl text-xs font-bold transition text-center truncate flex items-center justify-center gap-1.5 shadow">
-                                    <i class="fa-cloud text-[10px]"></i>
+                                    <i class="fa-solid fa-cloud text-[10px]"></i>
                                     <span>أوراق العمل والدرس (OneDrive)</span>
                                     <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
                                 </a>
@@ -533,7 +502,6 @@ const firebaseConfig = {
             cardInner.classList.toggle('rotate-y-180');
         };
 
-        // Automatic Image Compression before saving to Firestore
         window.handleImageUpload = function(e) {
             const file = e.target.files[0];
             if (file) {
@@ -687,7 +655,7 @@ const firebaseConfig = {
 
             try {
                 const collectionRef = collection(db, 'digital_tales');
-                if (editingId && !editingId.startsWith('tale_')) {
+                if (editingId) {
                     const docRef = doc(db, 'digital_tales', editingId);
                     await updateDoc(docRef, updatedData);
                     showToast('تم تعديل الدرس القصصي بنجاح!');
@@ -724,15 +692,9 @@ const firebaseConfig = {
             newOkBtn.addEventListener('click', async () => {
                 confirmModal.classList.add('hidden');
                 try {
-                    if (!id.startsWith('tale_')) {
-                        const docRef = doc(db, 'digital_tales', id);
-                        await deleteDoc(docRef);
-                    } else {
-                        window.initiativesList = window.initiativesList.filter(i => i.id !== id);
-                        renderCards();
-                        renderAdminList();
-                    }
-                    showToast('تم الحذف بنجاح!');
+                    const docRef = doc(db, 'digital_tales', id);
+                    await deleteDoc(docRef);
+                    showToast('تم الحذف بنجاح من السيرفر!');
                     resetForm();
                 } catch (error) {
                     console.error("Error deleting initiative:", error);
