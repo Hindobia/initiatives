@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <title>تقرير مبادرة وطنية - تفعيل المادة 34 | نغرس القيمة.. لنحمي الوطن</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Three.js Library for 3D Graphics -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts Exclusively: Tajawal, Cairo, Almarai -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Almarai:wght@300;400;700;800&family=Cairo:wght@300;400;600;700;800;900&family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        saudi: {
+                            dark: '#02180C',
+                            deep: '#004D25',
+                            emerald: '#09381C',
+                            light: '#11522A',
+                            accent: '#186E38'
+                        },
+                        gold: {
+                            light: '#F8ECBA',
+                            DEFAULT: '#D4AF37',
+                            bright: '#FFD700',
+                            dark: '#A37710'
+                        }
+                    },
+                    fontFamily: {
+                        tajawal: ['Tajawal', 'sans-serif'],
+                        cairo: ['Cairo', 'sans-serif'],
+                        almarai: ['Almarai', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Modern Fluid Typography & Base Rules */
+        :root {
+            --font-main: 'Cairo', sans-serif;
+            --font-heading: 'Tajawal', sans-serif;
+            --font-sub: 'Almarai', sans-serif;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background-color: #02180C;
+            color: #f8fafc;
+            overflow-x: hidden;
+            touch-action: manipulation;
+        }
+
+        h1, h2, h3, .font-heading {
+            font-family: var(--font-heading);
+        }
+
+        .font-sub {
+            font-family: var(--font-sub);
+        }
+
+        /* Fluid sizing using clamp() */
+        .title-clamp {
+            font-size: clamp(1.35rem, 3.5vw + 0.5rem, 2.75rem);
+        }
+        
+        .quote-clamp {
+            font-size: clamp(1rem, 2vw + 0.4rem, 1.5rem);
+        }
+
+        /* Gold Gradient Text & Elements */
+        .gold-gradient-text {
+            background: linear-gradient(135deg, #FFF7D1 0%, #FFD700 35%, #D4AF37 70%, #996515 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .gold-box-glow {
+            box-shadow: 0 10px 30px -10px rgba(212, 175, 55, 0.35),
+                        0 0 20px rgba(212, 175, 55, 0.15);
+        }
+
+        /* Glassmorphism Cards */
+        .glass-card {
+            background: rgba(9, 56, 28, 0.65);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid rgba(212, 175, 55, 0.28);
+            border-radius: 1.25rem;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .glass-card:hover {
+            border-color: rgba(255, 215, 0, 0.65);
+            box-shadow: 0 16px 40px rgba(0, 77, 37, 0.45), 0 0 25px rgba(212, 175, 55, 0.3);
+        }
+
+        /* Canvas Background */
+        #bg-3d-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* 3D Tilt Utilities */
+        .tilt-card {
+            transform-style: preserve-3d;
+            transition: transform 0.25s ease-out, box-shadow 0.25s ease-out;
+            will-change: transform;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #02180C;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #D4AF37;
+            border-radius: 4px;
+        }
+
+        /* Ultra Premium Single-Page PDF Print Overrides */
+        @media print {
+            @page {
+                size: A4 portrait;
+                margin: 8mm;
+            }
+            body {
+                background: #ffffff !important;
+                color: #111827 !important;
+                font-size: 11pt !important;
+            }
+            #bg-3d-canvas, .no-print, .interactive-controls {
+                display: none !important;
+            }
+            .page-container {
+                padding: 0 !important;
+                margin: 0 !important;
+                max-width: 100% !important;
+            }
+            .glass-card {
+                background: #ffffff !important;
+                color: #0f172a !important;
+                border: 1.5px solid #D4AF37 !important;
+                box-shadow: none !important;
+                backdrop-filter: none !important;
+                border-radius: 0.75rem !important;
+                padding: 1rem !important;
+                margin-bottom: 0.75rem !important;
+                break-inside: avoid;
+            }
+            .gold-gradient-text {
+                background: none !important;
+                -webkit-text-fill-color: #996515 !important;
+                color: #996515 !important;
+            }
+            .print-badge {
+                background-color: #004D25 !important;
+                color: #ffffff !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            .print-border-gold {
+                border-color: #D4AF37 !important;
+            }
+            .print-text-dark {
+                color: #1e293b !important;
+            }
+            a.print-link-visible {
+                color: #004D25 !important;
+                text-decoration: underline !important;
+                font-weight: bold !important;
+            }
+        }
+    </style>
+</head>
+<body class="relative min-h-screen text-slate-100 selection:bg-gold selection:text-saudi-dark antialiased">
+
+    <!-- Three.js 3D Interactive WebGL Canvas -->
+    <canvas id="bg-3d-canvas"></canvas>
+
+    <!-- Top Sticky Header Navigation Controls (Hidden in Print) -->
+    <header class="no-print sticky top-0 z-50 backdrop-blur-lg bg-saudi-dark/85 border-b border-gold/20 px-4 py-3 shadow-xl">
+        <div class="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-3">
+            <div class="flex items-center space-x-3 space-x-reverse">
+                <div class="w-3 h-3 rounded-full bg-gold animate-ping"></div>
+                <span class="font-tajawal font-bold text-gold text-base md:text-lg tracking-wide flex items-center gap-2">
+                    <i class="fa-solid fa-flag text-gold"></i>
+                    تقرير المبادرة الوطنية - تفعيل المادة 34
+                </span>
+            </div>
+            <div class="flex items-center gap-3 sm:gap-4">
+                <!-- زر الهوم المتوهج -->
+                <a href="https://hindobia.github.io/Hindobia/" class="flex flex-col items-center group text-center" title="الصفحة الرئيسية">
+                    <div class="w-10 h-10 rounded-full bg-saudi-emerald border-2 border-gold flex items-center justify-center text-gold shadow-[0_0_15px_rgba(212,175,55,0.7)] group-hover:scale-110 transition duration-300">
+                        <i class="fa-solid fa-house text-sm"></i>
+                    </div>
+                    <span class="text-[10px] font-tajawal font-bold text-gold mt-0.5 tracking-wider">Hindobia</span>
+                </a>
+                
+                <button onclick="window.print()" class="px-4 py-2 rounded-xl bg-gradient-to-r from-gold-dark via-gold to-gold-bright text-saudi-dark font-tajawal font-black text-xs sm:text-sm hover:brightness-110 transition flex items-center gap-2 shadow-md hover:scale-105 active:scale-95">
+                    <i class="fa-solid fa-file-pdf text-sm"></i>
+                    <span>طباعة / حفظ PDF</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container Responsive Wrapper -->
+    <main class="relative z-10 max-w-6xl mx-auto px-3 sm:px-6 py-6 sm:py-10 page-container">
+        
+        <!-- Header Hero Card Section -->
+        <section class="glass-card gold-box-glow p-5 sm:p-8 md:p-10 mb-6 sm:mb-8 text-center relative overflow-hidden border-2 border-gold/40">
+            <!-- Decorative Saudi Crest Background -->
+            <div class="absolute -top-12 -right-12 opacity-10 pointer-events-none">
+                <svg width="280" height="280" viewBox="0 0 100 100" fill="#D4AF37">
+                    <path d="M50 10 L60 35 L85 35 L65 50 L75 75 L50 60 L25 75 L35 50 L15 35 L40 35 Z"/>
+                </svg>
+            </div>
+
+            <!-- Emblem Badge -->
+            <div class="inline-flex justify-center items-center w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-saudi-emerald border-2 border-gold mb-4 gold-box-glow relative">
+                <i class="fa-solid fa-shield-halved text-2xl sm:text-3xl text-gold"></i>
+            </div>
+
+            <!-- Title & Subtitle -->
+            <div class="inline-block px-4 py-1.5 rounded-full bg-gold/10 border border-gold/30 text-gold text-xs sm:text-sm font-tajawal font-bold mb-3 print-badge">
+                تفعيل المادة (34) من النظام الأساسي للحكم
+            </div>
+            <h1 class="title-clamp font-black font-tajawal gold-gradient-text mb-3 leading-tight">
+                مبادرة: "نغرس القيمة.. لنحمي الوطن"
+            </h1>
+            <p class="text-slate-200 font-sub max-w-3xl mx-auto text-xs sm:text-base leading-relaxed font-normal">
+                <span class="text-gold font-bold">المادة 34:</span> "الدفاع عن العقيدة الإسلامية، والمجتمع، والوطن واجب على كل مواطن."
+            </p>
+        </section>
+
+        <!-- Royal Quote Card (King Salman Quote) -->
+        <section class="glass-card p-5 sm:p-8 mb-6 sm:mb-8 relative border-r-4 border-r-gold tilt-card">
+            <div class="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6">
+                <div class="flex-shrink-0">
+                    <div class="w-12 h-12 sm:w-16 sm:h-16 rounded-full border-2 border-gold p-1 bg-saudi-dark/70 flex items-center justify-center shadow-lg">
+                        <i class="fa-solid fa-quote-right text-xl sm:text-2xl text-gold"></i>
+                    </div>
+                </div>
+                <div class="flex-1 text-center sm:text-right">
+                    <blockquote class="quote-clamp font-almarai font-bold text-gold-light leading-relaxed mb-2">
+                        "إن أمن الوطن ومواجهة كل ما يمس عقيدتنا واستقرارنا هو مسؤوليتنا جميعا"
+                    </blockquote>
+                    <p class="text-xs sm:text-sm font-tajawal text-gold font-bold tracking-wide">
+                        — خادم الحرمين الشريفين الملك سلمان بن عبد العزيز آل سعود (حفظه الله)
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Educator Profile & Initiative Foundations -->
+        <section class="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-6 sm:mb-8">
+            <!-- Profile Card -->
+            <div class="glass-card p-6 lg:col-span-4 flex flex-col justify-center items-center text-center border-t-4 border-t-gold">
+                <!-- Profile Avatar linked to Hindobia Home -->
+                <a href="https://hindobia.github.io/Hindobia/" class="block w-24 h-24 sm:w-28 sm:h-28 rounded-full border-2 border-gold p-1 mb-4 relative group shadow-xl hover:scale-105 transition duration-300" title="الانتقال إلى موقع Hindobia">
+                    <img id="teacher-avatar" src="icon.png" alt="صورة المعلمة أ. هند القرني" class="w-full h-full object-cover rounded-full">
+                </a>
+                
+                <h2 class="font-tajawal font-extrabold text-lg sm:text-xl text-gold" id="teacher-name">أ. هند القرني</h2>
+                <p class="text-xs sm:text-sm text-slate-300 font-sub mt-1">معلمة طفولة مبكرة | أم واعية</p>
+                
+                <div class="mt-4 pt-4 border-t border-gold/20 w-full text-xs text-slate-300 font-sub space-y-2 text-right sm:text-center">
+                    <p class="flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-school text-gold"></i>
+                        <span>المدرسة: <strong id="school-name" class="text-gold font-bold">الهيشة للطفولة المبكرة</strong></span>
+                    </p>
+                    <p class="flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-user-tie text-gold"></i>
+                        <span>مديرة المدرسة: <strong class="text-gold font-bold">أ. هناء المعاوي</strong></span>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Vision & Mission Card -->
+            <div class="glass-card p-6 lg:col-span-8 flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center gap-2 mb-3">
+                        <i class="fa-solid fa-seedling text-gold text-xl"></i>
+                        <h2 class="font-tajawal font-extrabold text-lg sm:text-xl text-gold">منطلقات المبادرة والغرس الإيماني</h2>
+                    </div>
+                    <p class="text-xs sm:text-sm text-slate-200 leading-relaxed font-sub mb-4 text-justify print-text-dark">
+                        انطلاقاً من القول الحق: <span class="font-almarai text-gold-light font-bold text-sm sm:text-base">﴿وَإِنَّ هٰذِهِ أُمَّتُكُم أُمَّةً واحِدَةً وَأَنَا رَبُّكُم فَاتَّقُونِ﴾</span>، ومن واقع تخصصي الشرعي في علوم القرآن الكريم، أؤمن أن **الدفاع عن الوطن لا يبدأ فقط في ميادين الشرف، بل يبدأ من مهد الطفولة** بغرس العقيدة الصحيحة والولاء الصادق في نفوس النشء.
+                    </p>
+                    <p class="text-xs sm:text-sm text-slate-200 leading-relaxed font-sub text-justify print-text-dark">
+                        بصفتي **أمّاً** تصنع الجيل، و**معلمةً** تُربي على القرآن، جاءت هذه المبادرة لتجسيد المادة (34) عملياً؛ بربط مفهوم "حماية الوطن" بمرتكزه الأصيل: <span class="text-gold font-bold">الاعتزاز بالعقيدة الإسلامية، وطاعة ولاة الأمر، والحفاظ على أمن المجتمع واستقراره</span>.
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-3 gap-2 sm:gap-4 mt-5 pt-4 border-t border-gold/20 text-center">
+                    <div class="p-2 sm:p-3 rounded-xl bg-saudi-dark/60 border border-gold/20">
+                        <span class="block text-gold font-tajawal font-black text-base sm:text-lg">100%</span>
+                        <span class="text-slate-300 font-sub text-3xs sm:text-xs">تفاعل الطلاب</span>
+                    </div>
+                    <div class="p-2 sm:p-3 rounded-xl bg-saudi-dark/60 border border-gold/20">
+                        <span class="block text-gold font-tajawal font-black text-base sm:text-lg">إذاعة</span>
+                        <span class="text-slate-300 font-sub text-3xs sm:text-xs">برنامج إيماني</span>
+                    </div>
+                    <div class="p-2 sm:p-3 rounded-xl bg-saudi-dark/60 border border-gold/20">
+                        <span class="block text-gold font-tajawal font-black text-base sm:text-lg">فيديو</span>
+                        <span class="text-slate-300 font-sub text-3xs sm:text-xs">صوت أبطال المستقبل</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Core Pillars Section -->
+        <section class="mb-6 sm:mb-8">
+            <div class="text-center mb-6">
+                <h2 class="font-tajawal text-xl sm:text-2xl font-black gold-gradient-text inline-block">محاور التنفيذ والشواهد التفاعلية</h2>
+                <div class="w-20 h-1 bg-gold mx-auto mt-2 rounded-full"></div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Pillar 1: Morning Broadcast -->
+                <div class="glass-card p-6 flex flex-col justify-between tilt-card border-b-4 border-b-gold">
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="w-10 h-10 rounded-xl bg-saudi-light border border-gold/40 flex items-center justify-center text-gold font-tajawal font-bold text-lg">1</span>
+                            <span class="px-3 py-1 rounded-full bg-gold/10 text-gold text-xs font-sub border border-gold/30">الميدان التربوي</span>
+                        </div>
+                        <h3 class="font-tajawal font-bold text-base sm:text-lg text-gold mb-2 flex items-center gap-2">
+                            <i class="fa-solid fa-microphone-lines"></i>
+                            <span>الإذاعة الصباحية الإيمانية الوطنية</span>
+                        </h3>
+                        <p class="text-xs sm:text-sm text-slate-300 font-sub leading-relaxed mb-4 text-justify print-text-dark">
+                            تقديم برنامج إذاعي متكامل يُرسخ قيمة الولاء لله ثم للمليك والوطن، مع ربط مفهوم الدفاع عن الوطن بطاعة ولاة الأمر والحفاظ على أمن البلاد واستقرارها.
+                        </p>
+                    </div>
+
+                    <div class="pt-4 border-t border-gold/20 flex flex-col gap-2">
+                        <button onclick="openImageModal()" class="w-full py-3 px-4 rounded-xl bg-saudi-emerald hover:bg-saudi-light border border-gold/40 text-gold text-xs sm:text-sm font-tajawal font-bold transition duration-200 flex items-center justify-center gap-2 shadow-lg hover:scale-[1.02] active:scale-95">
+                            <i class="fa-solid fa-image text-base text-gold"></i>
+                            <span>عرض توثيق الميدان التربوي (الصورة)</span>
+                        </button>
+                        <!-- رابط مباشر مخصص للطباعة يظهر كمرجع نشط -->
+                        <a href="image.png" target="_blank" class="print-link-visible hidden print:block text-center text-xs text-saudi-deep underline">
+                            رابط الصورة: image.png
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Pillar 2: Child Video -->
+                <div class="glass-card p-6 flex flex-col justify-between tilt-card border-b-4 border-b-gold">
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="w-10 h-10 rounded-xl bg-saudi-light border border-gold/40 flex items-center justify-center text-gold font-tajawal font-bold text-lg">2</span>
+                            <span class="px-3 py-1 rounded-full bg-gold/10 text-gold text-xs font-sub border border-gold/30">القدوة والأُسرة</span>
+                        </div>
+                        <h3 class="font-tajawal font-bold text-base sm:text-lg text-gold mb-2 flex items-center gap-2">
+                            <i class="fa-solid fa-child-reaching"></i>
+                            <span>صوت المستقبل: فيديو طفلي البطل</span>
+                        </h3>
+                        <p class="text-xs sm:text-sm text-slate-300 font-sub leading-relaxed mb-4 text-justify print-text-dark">
+                            إعداد ومشاركة مرئية لولدي (بطل المستقبل)، يتحدث فيها بلسان الطفولة الصادقة عن حبه لوطنه وكيف يدافع عنه بالتعلم، والاعتزاز بالعقيدة، والتمسك بالقيم.
+                        </p>
+                    </div>
+
+                    <div class="pt-4 border-t border-gold/20 flex flex-col gap-2">
+                        <button onclick="openMediaModal()" class="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-gold-dark via-gold to-gold-bright text-saudi-dark font-tajawal font-black text-xs sm:text-sm transition duration-200 flex items-center justify-center gap-2 hover:brightness-110 shadow-lg hover:scale-[1.02] active:scale-95">
+                            <i class="fa-solid fa-play text-base"></i>
+                            <span>مشاهدة فيديو الطفل (بطل المستقبل)</span>
+                        </button>
+                        <!-- رابط مباشر مخصص للطباعة يظهر كمرجع نشط -->
+                        <a href="https://youtube.com/shorts/ew-gJXYMXTg?feature=share" target="_blank" class="print-link-visible hidden print:block text-center text-xs text-saudi-deep underline">
+                            رابط الفيديو: https://youtube.com/shorts/ew-gJXYMXTg?feature=share
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Impact & Conclusion -->
+        <section class="glass-card p-6 sm:p-8 mb-6 text-center border-2 border-gold/30">
+            <i class="fa-solid fa-award text-3xl text-gold mb-3"></i>
+            <h2 class="font-tajawal font-extrabold text-lg sm:text-xl text-gold mb-3">أثر المبادرة وختامها الشامخ</h2>
+            <p class="text-xs sm:text-sm text-slate-200 font-sub leading-relaxed max-w-3xl mx-auto text-justify sm:text-center print-text-dark">
+                إن غرس العقيدة الإسلامية والدفاع عن الثوابت الوطنية في مرحلة الطفولة المبكرة هو <strong>الحصن المنيع ودرع الأمة الأقوى</strong>. أسأل الله العلي القدير أن يحفظ بلادنا وولاة أمرنا، وأن يجعل أبناءنا هداة مهتدين، وحماةً مخلصين للدين ثم المليك والوطن.
+            </p>
+            
+            <div class="mt-6 flex flex-wrap justify-center items-center gap-6 sm:gap-8 text-xs font-tajawal text-gold">
+                <div>
+                    <p class="font-bold text-slate-300 print-text-dark">إعداد وتنفيذ المعلمة</p>
+                    <p class="text-gold font-black text-sm mt-1">أ. هند القرني</p>
+                </div>
+                <div class="h-8 w-px bg-gold/30 hidden sm:block"></div>
+                <div>
+                    <p class="font-bold text-slate-300 print-text-dark">مديرة المدرسة</p>
+                    <p class="text-gold font-black text-sm mt-1">أ. هناء المعاوي</p>
+                </div>
+                <div class="h-8 w-px bg-gold/30 hidden sm:block"></div>
+                <div>
+                    <p class="font-bold text-slate-300 print-text-dark">التاريخ</p>
+                    <p class="text-gold font-black text-sm mt-1">October 21, 2026</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Modal for Image Viewing (Image Modal) -->
+    <div id="image-modal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden flex items-center justify-center p-4 no-print">
+        <div class="glass-card max-w-3xl w-full p-5 sm:p-6 relative border-2 border-gold gold-box-glow">
+            <button onclick="closeImageModal()" class="absolute top-4 left-4 text-slate-400 hover:text-gold text-2xl transition z-10">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <h3 class="font-tajawal font-bold text-base sm:text-lg text-gold mb-4 flex items-center gap-2">
+                <i class="fa-solid fa-image text-gold"></i>
+                <span>توثيق الميدان التربوي</span>
+            </h3>
+            
+            <div class="relative rounded-xl overflow-hidden bg-black/50 border border-gold/30 mb-4 flex items-center justify-center max-h-[75vh]">
+                <img src="image.png" alt="توثيق الميدان التربوي" class="max-h-[70vh] w-auto object-contain rounded-lg">
+            </div>
+
+            <div class="flex justify-between items-center text-xs text-slate-300 border-t border-gold/20 pt-3">
+                <span class="font-sub">صورة توثيقية من الميدان التربوي لتفعيل المادة 34</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Media Viewing (Video Modal) -->
+    <div id="media-modal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden flex items-center justify-center p-4 no-print">
+        <div class="glass-card max-w-2xl w-full p-5 sm:p-6 relative border-2 border-gold gold-box-glow">
+            <button onclick="closeMediaModal()" class="absolute top-4 left-4 text-slate-400 hover:text-gold text-2xl transition">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <h3 class="font-tajawal font-bold text-base sm:text-lg text-gold mb-4 flex items-center gap-2">
+                <i class="fa-solid fa-video text-gold"></i>
+                <span>فيديو الطفل: الدفاع عن الوطن</span>
+            </h3>
+            
+            <div class="relative aspect-video rounded-xl overflow-hidden bg-black border border-gold/30 mb-4 flex items-center justify-center" id="media-container">
+                <!-- سيتم تحميل الفيديو ديناميكياً عند الضغط على زر المشاهدة لمنع التشغيل التلقائي المسبق -->
+            </div>
+
+            <div class="flex justify-between items-center text-xs text-slate-300 border-t border-gold/20 pt-3">
+                <span class="font-sub">مرئية بطولية بلسان الطفولة الصادقة لتفعيل المادة 34</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Three.js 3D Interactive Background Script -->
+    <script>
+        let scene, camera, renderer, particles;
+        let mouseX = 0, mouseY = 0;
+
+        function init3D() {
+            const canvas = document.getElementById('bg-3d-canvas');
+            scene = new THREE.Scene();
+            
+            scene.fog = new THREE.FogExp2(0x02180C, 0.0012);
+
+            camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 1000);
+            camera.position.z = 380;
+
+            renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+            const particleCount = window.innerWidth < 768 ? 100 : 220;
+            const geometry = new THREE.BufferGeometry();
+            const positions = new Float32Array(particleCount * 3);
+            const colors = new Float32Array(particleCount * 3);
+
+            const goldColor = new THREE.Color(0xD4AF37);
+            const emeraldColor = new THREE.Color(0x11522A);
+
+            for (let i = 0; i < particleCount * 3; i += 3) {
+                positions[i] = (Math.random() - 0.5) * 900;
+                positions[i + 1] = (Math.random() - 0.5) * 900;
+                positions[i + 2] = (Math.random() - 0.5) * 700;
+
+                const mixedColor = Math.random() > 0.35 ? goldColor : emeraldColor;
+                colors[i] = mixedColor.r;
+                colors[i + 1] = mixedColor.g;
+                colors[i + 2] = mixedColor.b;
+            }
+
+            geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+            const material = new THREE.PointsMaterial({
+                size: window.innerWidth < 768 ? 2.8 : 3.8,
+                vertexColors: true,
+                transparent: true,
+                opacity: 0.75,
+                blending: THREE.AdditiveBlending
+            });
+
+            particles = new THREE.Points(geometry, material);
+            scene.add(particles);
+
+            const geoRing = new THREE.TorusGeometry(120, 1.2, 16, 100);
+            const matRing = new THREE.MeshBasicMaterial({
+                color: 0xD4AF37,
+                wireframe: true,
+                transparent: true,
+                opacity: 0.07
+            });
+            const ring = new THREE.Mesh(geoRing, matRing);
+            ring.name = "bgRing";
+            scene.add(ring);
+
+            window.addEventListener('resize', onWindowResize);
+            document.addEventListener('mousemove', onMouseMove);
+            document.addEventListener('touchmove', onTouchMove, { passive: true });
+        }
+
+        function onMouseMove(event) {
+            mouseX = (event.clientX - window.innerWidth / 2) * 0.04;
+            mouseY = (event.clientY - window.innerHeight / 2) * 0.04;
+        }
+
+        function onTouchMove(event) {
+            if (event.touches.length > 0) {
+                mouseX = (event.touches[0].clientX - window.innerWidth / 2) * 0.04;
+                mouseY = (event.touches[0].clientY - window.innerHeight / 2) * 0.04;
+            }
+        }
+
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        function animate3D() {
+            requestAnimationFrame(animate3D);
+
+            if (particles) {
+                particles.rotation.y += 0.0006;
+                particles.rotation.x += 0.0002;
+            }
+
+            const ring = scene.getObjectByName("bgRing");
+            if (ring) {
+                ring.rotation.x += 0.001;
+                ring.rotation.y += 0.0015;
+            }
+
+            camera.position.x += (mouseX - camera.position.x) * 0.03;
+            camera.position.y += (-mouseY - camera.position.y) * 0.03;
+            camera.lookAt(scene.position);
+
+            renderer.render(scene, camera);
+        }
+
+        function initTiltEffect() {
+            if (window.innerWidth < 768) return;
+
+            const cards = document.querySelectorAll('.tilt-card');
+            cards.forEach(card => {
+                card.addEventListener('mousemove', (e) => {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    const centerX = rect.width / 2;
+                    const centerY = rect.height / 2;
+                    const rotateX = (y - centerY) / 25;
+                    const rotateY = (centerX - x) / 25;
+
+                    card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.01, 1.01, 1.01)`;
+                });
+
+                card.addEventListener('mouseleave', () => {
+                    card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)';
+                });
+            });
+        }
+
+        function openImageModal() {
+            document.getElementById('image-modal').classList.remove('hidden');
+        }
+
+        function closeImageModal() {
+            document.getElementById('image-modal').classList.add('hidden');
+        }
+
+        function openMediaModal() {
+            const container = document.getElementById('media-container');
+            container.innerHTML = '<iframe class="w-full h-full" src="https://www.youtube.com/embed/ew-gJXYMXTg?autoplay=1&enablejsapi=1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
+            document.getElementById('media-modal').classList.remove('hidden');
+        }
+
+        function closeMediaModal() {
+            document.getElementById('media-modal').classList.add('hidden');
+            const container = document.getElementById('media-container');
+            container.innerHTML = '';
+        }
+
+        window.onload = function() {
+            init3D();
+            animate3D();
+            initTiltEffect();
+        };
+    </script>
+</body>
+</html>
