@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مبادرة مسابقة أجمل خط | ابتدائية الهيشة للطفولة المبكرة</title>
+    <!-- خطوط عربية حديثة -->
+    <link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@400;600;700;800;900&family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <!-- أيقونات Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary-pink: #d81b60;
+            --secondary-purple: #8e24aa;
+            --accent-yellow: #ffb300;
+            --bg-gradient: linear-gradient(135deg, #fce4ec 0%, #f3e5f5 50%, #fffde7 100%);
+            --card-glass: rgba(255, 255, 255, 0.95);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Tajawal', 'Alexandria', sans-serif;
+        }
+
+        body {
+            background: var(--bg-gradient);
+            color: #4a1525;
+            min-height: 100vh;
+            padding: 35px 15px;
+            position: relative;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            background: var(--card-glass);
+            backdrop-filter: blur(20px);
+            border-radius: 35px;
+            box-shadow: 0 25px 60px rgba(216, 27, 96, 0.15);
+            padding: 40px;
+            border: 3px solid #f8bbd0;
+        }
+
+        /* شريط الأزرار العلوي */
+        .action-bar {
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        .btn-custom {
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-size: 1rem;
+            font-weight: 800;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+        }
+
+        .btn-evidence {
+            background: linear-gradient(135deg, #ffb300, #fb8c00);
+            box-shadow: 0 5px 0 #e65100, 0 8px 15px rgba(255, 179, 0, 0.3);
+        }
+
+        .btn-print {
+            background: linear-gradient(135deg, #d81b60, #ad1457);
+            box-shadow: 0 5px 0 #880e4f, 0 8px 15px rgba(216, 27, 96, 0.3);
+        }
+
+        .btn-custom:hover {
+            transform: translateY(-3px);
+            filter: brightness(1.1);
+        }
+
+        .btn-custom:active {
+            transform: translateY(2px);
+        }
+
+        /* الهيدر */
+        header {
+            text-align: center;
+            border-bottom: 3px dashed var(--primary-pink);
+            padding-bottom: 25px;
+            margin-bottom: 30px;
+        }
+
+        .school-tag {
+            font-size: 0.95rem;
+            font-weight: 800;
+            color: var(--secondary-purple);
+            margin-bottom: 5px;
+        }
+
+        header h1 {
+            color: var(--primary-pink);
+            font-size: 2.3rem;
+            font-weight: 900;
+            margin: 10px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        header p {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--secondary-purple);
+        }
+
+        /* كرت ترحيب المعلمة والمنسقة */
+        .teacher-welcome {
+            background: linear-gradient(135deg, #fce4ec, #ffffff);
+            border-right: 6px solid var(--primary-pink);
+            padding: 22px 28px;
+            border-radius: 20px;
+            margin-bottom: 35px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.04);
+        }
+
+        .teacher-welcome h3 {
+            color: var(--primary-pink);
+            font-size: 1.25rem;
+            font-weight: 900;
+            margin-bottom: 8px;
+        }
+
+        .teacher-welcome p {
+            font-size: 1.1rem;
+            font-weight: 700;
+            line-height: 1.8;
+            color: #2c3e50;
+        }
+
+        /* شبكة الأهداف والمعايير (3D Cards) */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .info-card {
+            background: white;
+            border-radius: 25px;
+            padding: 30px 25px;
+            border: 2px solid #f8bbd0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .info-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(216, 27, 96, 0.15);
+            border-color: var(--primary-pink);
+        }
+
+        .info-card h3 {
+            font-size: 1.35rem;
+            font-weight: 900;
+            color: var(--secondary-purple);
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .info-card ul {
+            list-style-type: none;
+            padding-right: 0;
+        }
+
+        .info-card ul li {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #4a5568;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .info-card ul li i {
+            color: var(--accent-yellow);
+            font-size: 1rem;
+        }
+
+        /* قسم التقييم الذاتي والتغذية الراجعة التفاعلية */
+        .assessment-section {
+            background: #fff;
+            border-radius: 25px;
+            padding: 35px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.06);
+            border: 2px dashed var(--accent-yellow);
+            margin-bottom: 30px;
+        }
+
+        .assessment-section h3 {
+            color: var(--primary-pink);
+            font-size: 1.4rem;
+            font-weight: 900;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .question-box {
+            margin-bottom: 30px;
+            padding-bottom: 25px;
+            border-bottom: 1px solid #f1f3f5;
+        }
+
+        .question-box:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .question-title {
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: var(--primary-pink);
+            margin-bottom: 15px;
+        }
+
+        .options-group {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .option-btn {
+            background: #fdf2f8;
+            border: 2px solid #f8bbd0;
+            color: #4a1525;
+            padding: 10px 22px;
+            border-radius: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+
+        .option-btn:hover {
+            border-color: var(--primary-pink);
+            background: #fce4ec;
+            transform: translateY(-2px);
+        }
+
+        .feedback-display {
+            margin-top: 15px;
+            font-size: 1rem;
+            font-weight: 800;
+            padding: 12px 18px;
+            border-radius: 12px;
+            display: none;
+        }
+
+        /* زر الواتساب العائم */
+        .whatsapp-float {
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            background: linear-gradient(135deg, #25d366, #128c7e);
+            color: white;
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            text-align: center;
+            font-size: 38px;
+            box-shadow: 0 8px 25px rgba(37, 211, 102, 0.4);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.3s ease;
+            text-decoration: none;
+        }
+
+        .whatsapp-float:hover {
+            transform: scale(1.12);
+        }
+
+        footer {
+            text-align: center;
+            border-top: 2px solid #f8bbd0;
+            padding-top: 25px;
+            color: #718096;
+            font-weight: 700;
+            font-size: 0.95rem;
+        }
+
+        @media print {
+            .action-bar, .whatsapp-float { display: none !important; }
+            .container { box-shadow: none; border: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- زر الواتساب العائم -->
+    <a href="https://wa.me/966565588869?text=السلام%20عليكم،%20أعجبتني%20مبادرة%20مسابقة%20أجمل%20خط" class="whatsapp-float" target="_blank" title="تواصل عبر الواتساب">
+        <i class="fa-brands fa-whatsapp"></i>
+    </a>
+
+    <div class="container">
+        <!-- شريط التحكم والأزرار -->
+        <div class="action-bar">
+            <!-- زر الشواهد بالرابط الجديد -->
+            <a href="https://asrgirls-my.sharepoint.com/:f:/g/personal/t165922_asrg_moe_gov_sa/IgCl3xYnb2DARYjqvazLEMRHAcNkwpPLG_0XmZ3veNJxvbk?e=vtZ7Pb" target="_blank" class="btn-custom btn-evidence">
+                <i class="fa-solid fa-folder-open"></i> الشواهد والمرفقات
+            </a>
+            <button class="btn-custom btn-print" onclick="window.print()">
+                <i class="fa-solid fa-print"></i> طباعة المبادرة
+            </button>
+        </div>
+
+        <!-- الترويسة -->
+        <header>
+            <div class="school-tag">المملكة العربية السعودية | وزارة التعليم | الإدارة العامة للتعليم بمنطقة عسير</div>
+            <p>مدرسة الهيشة للطفولة المبكرة | مديرة المدرسة : أ. هناء المعاوي</p>
+
+            <p>💖</p>
+
+
+            <h1><i class="fa-solid fa-pen-fancy"></i> مسابقة أجمل خط ✨</h1>
+            <p>💖 تنمية مهارات الكتابة اليدوية وتعزيز الارتباط باللغة العربية للصفوف الأولية 💖</p>
+        </header>
+
+        <!-- ترحيب المنسقة والمعلمة -->
+        <div class="teacher-welcome">
+            <h3><i class="fa-solid fa-award"></i> كلمة إشرافية (منسقة المسابقة: أ. هند القرني):</h3>
+            <p>
+                أبطال وبطلات الصفوف الأولية في <strong>ابتدائية الهيشة للطفولة المبكرة</strong> 🌟، الخط الجميل هو زينة الكتاب وعنوان التميز! نظمنا هذه المسابقة لنكتشف مواهبكم الواعدة ونشجعكم على تنظيم الحروف وجمال الترتيب.
+            </p>
+        </div>
+
+        <!-- معلومات وأهداف المسابقة -->
+        <div class="info-grid">
+            <div class="info-card">
+                <h3><i class="fa-solid fa-bullseye"></i> أهداف المسابقة 🎯</h3>
+                <ul>
+                    <li><i class="fa-solid fa-heart"></i> تنمية مهارة الكتابة اليدوية لدى الطلاب.</li>
+                    <li><i class="fa-solid fa-heart"></i> تعزيز حب اللغة العربية والاعتزاز بها.</li>
+                    <li><i class="fa-solid fa-heart"></i> تحسين مستوى الخط وتنسيق المسافات.</li>
+                    <li><i class="fa-solid fa-heart"></i> نشر روح التنافس الإيجابي المبدع.</li>
+                </ul>
+            </div>
+
+            <div class="info-card">
+                <h3><i class="fa-solid fa-list-check"></i> معايير التحكيم ودقة الخط 📝</h3>
+                <ul>
+                    <li><i class="fa-solid fa-star"></i> وضوح الحروف ورسمها بدقة.</li>
+                    <li><i class="fa-solid fa-star"></i> تناسق الحروف على السطر.</li>
+                    <li><i class="fa-solid fa-star"></i> تنظيم المسافات بين الكلمات.</li>
+                    <li><i class="fa-solid fa-star"></i> النظافة والترتيب وخلوها من الأخطاء.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- قسم التقييم الذاتي والتغذية الراجعة -->
+        <div class="assessment-section">
+            <h3><i class="fa-solid fa-puzzle-piece"></i> تحدي الخطّاط الصغير (سؤال تفاعلي) 🎨</h3>
+            
+            <div class="question-box">
+                <div class="question-title">١. ما هي القاعدة الأساسية لكتابة بخط جميل وواضح؟</div>
+                <div class="options-group">
+                    <button class="option-btn" onclick="checkAnswer(1, false)">الكتابة بسرعة دون تنظيم</button>
+                    <button class="option-btn" onclick="checkAnswer(1, true)">مراعاة تناسق الحروف والجلوس بشكل صحيح وتنسيق المسافات ✨</button>
+                    <button class="option-btn" onclick="checkAnswer(1, false)">ترك الورقة متسخة وغير مرتبة</button>
+                </div>
+                <div id="feedback-1" class="feedback-display"></div>
+            </div>
+
+            <div class="question-box">
+                <div class="question-title">٢. لماذا نحرص على الاعتزاز بالخط العربي واللغة العربية؟</div>
+                <div class="options-group">
+                    <button class="option-btn" onclick="checkAnswer(2, false)">لأنها لغة غير مهمة</button>
+                    <button class="option-btn" onclick="checkAnswer(2, true)">لأنها لغة القرآن الكريم وهويتنا الفخورة 🌟</button>
+                    <button class="option-btn" onclick="checkAnswer(2, false)">لنترك الكتابة نهائياً</button>
+                </div>
+                <div id="feedback-2" class="feedback-display"></div>
+            </div>
+        </div>
+
+        <!-- الفوتر -->
+        <footer>
+            <p>جميع الحقوق محفوظة ©</p>
+
+            <p>أ. هند القرني | ابتدائية الهيشة للطفولة المبكرة | مبادرة مسابقة أجمل خط ✍️</p>
+        </footer>
+    </div>
+
+    <!-- كود جافاسكريبت للتغذية الراجعة -->
+    <script>
+        function checkAnswer(questionNum, isCorrect) {
+            const feedbackEl = document.getElementById('feedback-' + questionNum);
+            if(feedbackEl) {
+                feedbackEl.style.display = "block";
+                if (isCorrect) {
+                    feedbackEl.style.background = "#d4edda";
+                    feedbackEl.style.color = "#155724";
+                    feedbackEl.innerHTML = "🎉 أحسنت يا خطاط المستقبل المبدع! إجابة رائعة تدل على وعيك بجمال الخط العربي 🌟";
+                } else {
+                    feedbackEl.style.background = "#fff3cd";
+                    feedbackEl.style.color = "#856404";
+                    feedbackEl.innerHTML = "💡 حاول مرة أخرى يا بطل، الخط الجميل عنوان النظافة والتميز! ✨";
+                }
+            }
+        }
+    </script>
+</body>
+</html>
