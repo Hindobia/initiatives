@@ -1,0 +1,2094 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>منصة حصص الانتظار التفاعلية | أ. هند القرني</title>
+    <!-- خطوط عربية من Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&family=Amiri:wght@400;700&family=Cairo:wght@400;600;700;800;900&family=Cinzel+Decorative:wght@700;900&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        cairo: ['Cairo', 'sans-serif'],
+                        tajawal: ['Tajawal', 'sans-serif'],
+                        almarai: ['Almarai', 'sans-serif'],
+                        amiri: ['Amiri', 'serif'],
+                        cinzel: ['Cinzel Decorative', 'serif'],
+                    },
+                    colors: {
+                        skyPrimary: '#0EA5E9',
+                        goldWarm: '#F59E0B',
+                        emeraldRich: '#10B981',
+                        coralSoft: '#F43F5E',
+                        indigoDeep: '#4F46E5',
+                    },
+                    boxShadow: {
+                        '3d': '0 10px 25px -5px rgba(14, 165, 233, 0.15), 0 8px 10px -6px rgba(14, 165, 233, 0.1)',
+                        'card-hover': '0 20px 30px -10px rgba(0, 0, 0, 0.12)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Cairo', 'Tajawal', sans-serif;
+            background: linear-gradient(135deg, #f0f9ff 0%, #fefce8 50%, #ecfdf5 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* تأثيرات ثلاثية الأبعاد للبطاقات */
+        .card-3d {
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            transform-style: preserve-3d;
+        }
+        .card-3d:hover {
+            transform: translateY(-6px) scale(1.01);
+            box-shadow: 0 20px 35px -10px rgba(14, 165, 233, 0.22);
+        }
+
+        .btn-bounce {
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+        .btn-bounce:active {
+            transform: scale(0.95);
+        }
+
+        /* بطاقات لعبة الذاكرة */
+        .memory-card {
+            perspective: 1000px;
+            cursor: pointer;
+        }
+        .memory-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+        .memory-card.flipped .memory-card-inner {
+            transform: rotateY(180deg);
+        }
+        .memory-front, .memory-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .memory-back {
+            transform: rotateY(180deg);
+        }
+
+        /* خطوط كراسة النسخ التفاعلية */
+        .naskh-lines {
+            background-image: 
+                linear-gradient(to bottom, transparent 24%, #93c5fd 25%, transparent 26%),
+                linear-gradient(to bottom, transparent 49%, #fca5a5 50%, transparent 51%),
+                linear-gradient(to bottom, transparent 74%, #ef4444 75%, transparent 77%),
+                linear-gradient(to bottom, transparent 94%, #93c5fd 95%, transparent 96%);
+            background-size: 100% 100%;
+        }
+
+        /* حركة الدوران لعجلة الحظ */
+        #wheelCanvas {
+            transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99);
+        }
+
+        /* أنيميشن ظهور الشاشات */
+        .fade-slide-in {
+            animation: fadeSlideIn 0.45s ease-out forwards;
+        }
+        @keyframes fadeSlideIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* تنسيقات الطباعة الرسمية A4 */
+        @media print {
+            @page {
+                size: A4 portrait;
+                margin: 8mm;
+            }
+            body {
+                background: #ffffff !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            #app-shell, #toast-container, #confetti-canvas, #whatsapp-float-btn {
+                display: none !important;
+            }
+            #print-modal {
+                position: static !important;
+                inset: auto !important;
+                background: transparent !important;
+                padding: 0 !important;
+                display: block !important;
+                overflow: visible !important;
+            }
+            #print-modal-controls {
+                display: none !important;
+            }
+            #print-sheet-wrapper {
+                box-shadow: none !important;
+                border: none !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                max-width: 100% !important;
+                width: 100% !important;
+            }
+            #official-report-a4 {
+                border: 2px solid #1e3a8a !important;
+                padding: 14px 18px !important;
+                box-shadow: none !important;
+                width: 100% !important;
+                min-height: auto !important;
+                font-size: 12.5px !important;
+            }
+            textarea.report-editable {
+                border: none !important;
+                resize: none !important;
+                padding: 0 !important;
+                background: transparent !important;
+                overflow: visible !important;
+                height: auto !important;
+            }
+        }
+    </style>
+</head>
+<body class="text-slate-800 antialiased selection:bg-sky-200 selection:text-sky-900">
+
+    <!-- كانفاس الاحتفالات (Confetti) -->
+    <canvas id="confetti-canvas" class="fixed inset-0 pointer-events-none z-50"></canvas>
+
+    <!-- حاوية الإشعارات اللطيفة (بديل alert) -->
+    <div id="toast-container" class="fixed bottom-5 left-5 z-50 flex flex-col gap-2 max-w-sm"></div>
+
+    <!-- واجهة التطبيق الرئيسية -->
+    <div id="app-shell" class="min-h-screen flex flex-col">
+
+        <!-- الشريط العلوي الدائم -->
+        <header class="bg-white/90 backdrop-blur-md border-b border-sky-100 sticky top-0 z-30 shadow-sm">
+            <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+                <!-- الشعار والهوية -->
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-sky-500 to-emerald-500 flex items-center justify-center text-white text-2xl shadow-md">
+                        🌟
+                    </div>
+                    <div>
+                        <h1 class="text-lg sm:text-xl font-black bg-gradient-to-l from-sky-600 via-indigo-600 to-emerald-600 bg-clip-text text-transparent">
+                            منصة إبداع الانتظار التفاعلية
+                        </h1>
+                        <p class="text-xs text-slate-500 font-semibold">
+                            مدرسة الهيشة للطفولة المبكرة - بيشة | أ. هند القرني
+                        </p>
+                    </div>
+                </div>
+
+                <!-- أدوات التحكم السريعة (الصوت + شريط التقدم) -->
+                <div class="flex items-center gap-2 sm:gap-4">
+                    <!-- مؤشر المراحل -->
+                    <div class="hidden md:flex items-center gap-2 bg-slate-100 px-3 py-1.5 rounded-full text-xs font-bold">
+                        <span id="step-badge-1" class="px-2.5 py-1 rounded-full bg-sky-500 text-white transition-all">1. البيانات</span>
+                        <span class="text-slate-400">◀</span>
+                        <span id="step-badge-2" class="px-2.5 py-1 rounded-full text-slate-500 transition-all">2. الأهداف</span>
+                        <span class="text-slate-400">◀</span>
+                        <span id="step-badge-3" class="px-2.5 py-1 rounded-full text-slate-500 transition-all">3. التفعيل</span>
+                    </div>
+
+                    <!-- زر الصوت -->
+                    <button id="sound-toggle-btn" onclick="toggleSound()" class="p-2.5 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-600 border border-amber-200 transition flex items-center gap-1.5 text-sm font-bold" title="تشغيل / كتم المؤثرات الصوتية">
+                        <span id="sound-icon">🔊</span>
+                        <span class="hidden sm:inline" id="sound-label">الصوت مفعل</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- المحتوى الرئيسي للشاشات الثلاث -->
+        <main class="flex-1 max-w-7xl w-full mx-auto px-4 py-6">
+
+            <!-- ========================================================= -->
+            <!-- الشاشة الأولى: إعداد بيانات حصة الانتظار (Setup Screen)   -->
+            <!-- ========================================================= -->
+            <section id="screen-1" class="fade-slide-in max-w-4xl mx-auto">
+                <div class="bg-white rounded-3xl shadow-3d border border-sky-100 overflow-hidden">
+                    <!-- ترويسة البطاقة -->
+                    <div class="bg-gradient-to-l from-sky-500 via-sky-600 to-indigo-600 p-6 sm:p-8 text-white relative overflow-hidden">
+                        <div class="relative z-10">
+                            <span class="inline-block px-3 py-1 bg-white/20 backdrop-blur-sm rounded-full text-xs font-bold mb-2">
+                                الخطوة (1) من (3)
+                            </span>
+                            <h2 class="text-2xl sm:text-3xl font-black mb-1">إعداد بيانات حصة الانتظار</h2>
+                            <p class="text-sky-100 text-sm sm:text-base">
+                                حددي بيانات الحصة والصف لتخصيص الأنشطة وصيغة الخطاب والتقرير الرسمي تلقائياً
+                            </p>
+                        </div>
+                        <div class="absolute -left-6 -bottom-6 text-8xl opacity-15 select-none">🏫</div>
+                    </div>
+
+                    <!-- نموذج البيانات -->
+                    <div class="p-6 sm:p-8 space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- المعلمة البديلة -->
+                            <div>
+                                <label class="block text-sm font-extrabold text-slate-700 mb-2">
+                                    👩‍🏫 اسم المعلمة البديلة (منفذة الحصة)
+                                </label>
+                                <input type="text" id="input-sub-teacher" placeholder="مثال: أ. هند القرني" value="أ. هند القرني"
+                                    class="w-full px-4 py-3 rounded-2xl border-2 border-slate-200 focus:border-sky-500 focus:ring-4 focus:ring-sky-100 outline-none font-bold text-slate-800 transition">
+                            </div>
+
+                            <!-- المعلمة الغائبة -->
+                            <div>
+                                <label class="block text-sm font-extrabold text-slate-700 mb-2">
+                                    📋 اسم المعلمة الغائبة <span class="text-rose-500">*</span>
+                                </label>
+                                <input type="text" id="input-absent-teacher" placeholder="مثال: أ. هيا حسن" value=""
+                                    class="w-full px-4 py-3 rounded-2xl border-2 border-slate-200 focus:border-sky-500 focus:ring-4 focus:ring-sky-100 outline-none font-bold text-slate-800 transition">
+                            </div>
+                        </div>
+
+                        <!-- اختيار الصف الدراسي -->
+                        <div>
+                            <label class="block text-sm font-extrabold text-slate-700 mb-3">
+                                🎒 الصف الدراسي (يضبط مستوى صعوبة الأنشطة والمسابقات تلقائياً)
+                            </label>
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3" id="grade-selector">
+                                <button type="button" onclick="selectGrade(1)" data-grade="1"
+                                    class="grade-btn p-4 rounded-2xl border-2 border-slate-200 bg-slate-50 hover:border-sky-400 text-right transition flex items-center gap-3">
+                                    <span class="w-10 h-10 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center font-black text-lg">١</span>
+                                    <div>
+                                        <div class="font-black text-slate-800">الصف الأول الابتدائي</div>
+                                        <div class="text-xs text-slate-500">تأسيس بصري ومفاهيم مبسطة</div>
+                                    </div>
+                                </button>
+                                <button type="button" onclick="selectGrade(2)" data-grade="2"
+                                    class="grade-btn p-4 rounded-2xl border-2 border-sky-500 bg-sky-50 text-right transition flex items-center gap-3 shadow-sm">
+                                    <span class="w-10 h-10 rounded-xl bg-sky-500 text-white flex items-center justify-center font-black text-lg">٢</span>
+                                    <div>
+                                        <div class="font-black text-sky-900">الصف الثاني الابتدائي</div>
+                                        <div class="text-xs text-sky-700">انطلاق قرائي ومهارات متوسطة</div>
+                                    </div>
+                                </button>
+                                <button type="button" onclick="selectGrade(3)" data-grade="3"
+                                    class="grade-btn p-4 rounded-2xl border-2 border-slate-200 bg-slate-50 hover:border-sky-400 text-right transition flex items-center gap-3">
+                                    <span class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center font-black text-lg">٣</span>
+                                    <div>
+                                        <div class="font-black text-slate-800">الصف الثالث الابتدائي</div>
+                                        <div class="text-xs text-slate-500">تحديات أعمق وتفكير ناقد</div>
+                                    </div>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- اختيار الجنس (بنين / بنات) -->
+                        <div>
+                            <label class="block text-sm font-extrabold text-slate-700 mb-3">
+                                👦👧 فئة الطلاب (يخصص صيغة الخطاب في الألعاب والتقرير بين المذكر والمؤنث)
+                            </label>
+                            <div class="grid grid-cols-2 gap-4">
+                                <button type="button" onclick="selectGender('girls')" id="btn-gender-girls"
+                                    class="p-4 rounded-2xl border-2 border-rose-500 bg-rose-50 text-rose-900 font-black flex items-center justify-center gap-3 text-lg shadow-sm transition">
+                                    <span class="text-3xl">👧</span>
+                                    <span>بنات (الطالبات)</span>
+                                </button>
+                                <button type="button" onclick="selectGender('boys')" id="btn-gender-boys"
+                                    class="p-4 rounded-2xl border-2 border-slate-200 bg-slate-50 text-slate-700 hover:border-sky-400 font-black flex items-center justify-center gap-3 text-lg transition">
+                                    <span class="text-3xl">👦</span>
+                                    <span>بنين (الطلاب)</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                            <!-- الحصة الدراسية -->
+                            <div>
+                                <label class="block text-sm font-extrabold text-slate-700 mb-2">⏰ الحصة الدراسية</label>
+                                <select id="input-period" class="w-full px-4 py-3 rounded-2xl border-2 border-slate-200 focus:border-sky-500 outline-none font-bold bg-white">
+                                    <option value="الأولى">الحصة الأولى</option>
+                                    <option value="الثانية">الحصة الثانية</option>
+                                    <option value="الثالثة" selected>الحصة الثالثة</option>
+                                    <option value="الرابعة">الحصة الرابعة</option>
+                                    <option value="الخامسة">الحصة الخامسة</option>
+                                    <option value="السادسة">الحصة السادسة</option>
+                                    <option value="السابعة">الحصة السابعة</option>
+                                </select>
+                            </div>
+
+                            <!-- مدة الحصة بالدقائق -->
+                            <div>
+                                <label class="block text-sm font-extrabold text-slate-700 mb-2">⏳ مدة المؤقت (بالدقائق)</label>
+                                <input type="number" id="input-duration" value="45" min="5" max="90"
+                                    class="w-full px-4 py-3 rounded-2xl border-2 border-slate-200 focus:border-sky-500 outline-none font-bold text-center">
+                            </div>
+
+                            <!-- منتقي التاريخ (التقويم) -->
+                            <div>
+                                <label class="block text-sm font-extrabold text-slate-700 mb-2">🗓️ اختر اليوم من التقويم</label>
+                                <input type="date" id="input-calendar-picker" onchange="updateFormattedDatesFromCalendar(this.value)"
+                                    class="w-full px-4 py-3 rounded-2xl border-2 border-slate-200 focus:border-sky-500 outline-none font-bold bg-white text-slate-700">
+                            </div>
+                        </div>
+
+                        <!-- اختيار المقررات الدراسية (متعدد) -->
+                        <div>
+                            <label class="block text-sm font-extrabold text-slate-700 mb-2">📚 المقررات الدراسية (يمكن اختيار مقرر واحد أو أكثر)</label>
+                            <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5" id="subjects-checkbox-grid">
+                                <label class="subj-label flex items-center gap-2.5 p-3 rounded-xl border-2 border-sky-500 bg-sky-50 cursor-pointer font-bold text-xs sm:text-sm text-slate-800 transition">
+                                    <input type="checkbox" value="القرآن الكريم" checked class="subj-cb w-4 h-4 accent-sky-600">
+                                    <span>القرآن الكريم</span>
+                                </label>
+                                <label class="subj-label flex items-center gap-2.5 p-3 rounded-xl border-2 border-slate-200 bg-slate-50 hover:border-sky-400 cursor-pointer font-bold text-xs sm:text-sm text-slate-800 transition">
+                                    <input type="checkbox" value="الدراسات الإسلامية" class="subj-cb w-4 h-4 accent-sky-600">
+                                    <span>الدراسات الإسلامية</span>
+                                </label>
+                                <label class="subj-label flex items-center gap-2.5 p-3 rounded-xl border-2 border-sky-500 bg-sky-50 cursor-pointer font-bold text-xs sm:text-sm text-slate-800 transition">
+                                    <input type="checkbox" value="لغتي" checked class="subj-cb w-4 h-4 accent-sky-600">
+                                    <span>لغتي</span>
+                                </label>
+                                <label class="subj-label flex items-center gap-2.5 p-3 rounded-xl border-2 border-slate-200 bg-slate-50 hover:border-sky-400 cursor-pointer font-bold text-xs sm:text-sm text-slate-800 transition">
+                                    <input type="checkbox" value="الرياضيات" class="subj-cb w-4 h-4 accent-sky-600">
+                                    <span>الرياضيات</span>
+                                </label>
+                                <label class="subj-label flex items-center gap-2.5 p-3 rounded-xl border-2 border-slate-200 bg-slate-50 hover:border-sky-400 cursor-pointer font-bold text-xs sm:text-sm text-slate-800 transition">
+                                    <input type="checkbox" value="العلوم" class="subj-cb w-4 h-4 accent-sky-600">
+                                    <span>العلوم</span>
+                                </label>
+                                <label class="subj-label flex items-center gap-2.5 p-3 rounded-xl border-2 border-slate-200 bg-slate-50 hover:border-sky-400 cursor-pointer font-bold text-xs sm:text-sm text-slate-800 transition">
+                                    <input type="checkbox" value="اللغة الإنجليزية" class="subj-cb w-4 h-4 accent-sky-600">
+                                    <span>اللغة الإنجليزية</span>
+                                </label>
+                                <label class="subj-label flex items-center gap-2.5 p-3 rounded-xl border-2 border-slate-200 bg-slate-50 hover:border-sky-400 cursor-pointer font-bold text-xs sm:text-sm text-slate-800 transition">
+                                    <input type="checkbox" value="المهارات الحياتية" class="subj-cb w-4 h-4 accent-sky-600">
+                                    <span>المهارات الحياتية</span>
+                                </label>
+                                <label class="subj-label flex items-center gap-2.5 p-3 rounded-xl border-2 border-slate-200 bg-slate-50 hover:border-sky-400 cursor-pointer font-bold text-xs sm:text-sm text-slate-800 transition">
+                                    <input type="checkbox" value="التربية الفنية" class="subj-cb w-4 h-4 accent-sky-600">
+                                    <span>التربية الفنية</span>
+                                </label>
+                                <label class="subj-label flex items-center gap-2.5 p-3 rounded-xl border-2 border-slate-200 bg-slate-50 hover:border-sky-400 cursor-pointer font-bold text-xs sm:text-sm text-slate-800 transition">
+                                    <input type="checkbox" value="التربية البدنية" class="subj-cb w-4 h-4 accent-sky-600">
+                                    <span>التربية البدنية</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- اليوم والتاريخ المنسق (الهجري والميلادي) -->
+                        <div>
+                            <label class="block text-sm font-extrabold text-slate-700 mb-2">📅 اليوم والتاريخ (الهجري والميلادي - يُحدّث تلقائياً من التقويم)</label>
+                            <input type="text" id="input-date" value=""
+                                class="w-full px-4 py-3 rounded-2xl border-2 border-slate-200 focus:border-sky-500 outline-none font-bold text-slate-700 bg-slate-50">
+                        </div>
+
+                        <!-- زر الانتقال -->
+                        <div class="pt-4 flex justify-end">
+                            <button type="button" onclick="goToScreen(2)"
+                                class="btn-bounce w-full sm:w-auto px-10 py-4 rounded-2xl bg-gradient-to-l from-sky-500 to-indigo-600 hover:from-sky-600 hover:to-indigo-700 text-white font-black text-lg shadow-lg flex items-center justify-center gap-2">
+                                <span>التالي</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ========================================================= -->
+            <!-- الشاشة الثانية: تحديد الأهداف والمهارات المنفذة         -->
+            <!-- ========================================================= -->
+            <section id="screen-2" class="hidden fade-slide-in max-w-5xl mx-auto">
+                <div class="bg-white rounded-3xl shadow-3d border border-emerald-100 overflow-hidden">
+                    <div class="bg-gradient-to-l from-emerald-500 via-teal-600 to-sky-600 p-6 sm:p-8 text-white relative">
+                        <span class="inline-block px-3 py-1 bg-white/20 rounded-full text-xs font-bold mb-2">
+                            الخطوة (2) من (3)
+                        </span>
+                        <h2 class="text-2xl sm:text-3xl font-black mb-1">تحديد الأهداف والمهارات المنفذة</h2>
+                        <p class="text-emerald-50 text-sm sm:text-base">
+                            ضعي علامة (✔) على الإجراءات والمهارات التي ستفعلينها، وستُدرج تلقائياً في ملخص التقرير الرسمي
+                        </p>
+                    </div>
+
+                    <div class="p-6 sm:p-8 space-y-8">
+                        <!-- أولاً: نوع النشاط / الإجراء المنفذ -->
+                        <div>
+                            <h3 class="text-lg font-black text-slate-800 mb-4 flex items-center gap-2">
+                                <span class="w-8 h-8 rounded-lg bg-sky-100 text-sky-600 flex items-center justify-center">١</span>
+                                <span>أولاً: نوع النشاط / الإجراء المنفذ (يطابق بنود التقرير الرسمي)</span>
+                            </h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-3" id="procedures-list">
+                                <label class="proc-item flex items-start gap-3 p-4 rounded-2xl border-2 border-slate-200 hover:border-sky-400 cursor-pointer transition bg-slate-50/60">
+                                    <input type="checkbox" value="review" class="proc-checkbox mt-1 w-5 h-5 accent-sky-600 rounded">
+                                    <div>
+                                        <div class="font-black text-slate-800">مراجعة وتطبيقات</div>
+                                        <div class="text-xs text-slate-500">مراجعة الدروس السابقة وحل تمارين وتدريبات.</div>
+                                    </div>
+                                </label>
+                                <label class="proc-item flex items-start gap-3 p-4 rounded-2xl border-2 border-sky-500 bg-sky-50/70 cursor-pointer transition">
+                                    <input type="checkbox" value="enrichment" checked class="proc-checkbox mt-1 w-5 h-5 accent-sky-600 rounded">
+                                    <div>
+                                        <div class="font-black text-sky-900">نشاط إثراء وتعزيز</div>
+                                        <div class="text-xs text-sky-700">تنفيذ أنشطة رقمية ورقية تفاعلية تعزز نواتج التعلم.</div>
+                                    </div>
+                                </label>
+                                <label class="proc-item flex items-start gap-3 p-4 rounded-2xl border-2 border-slate-200 hover:border-sky-400 cursor-pointer transition bg-slate-50/60">
+                                    <input type="checkbox" value="curriculum" class="proc-checkbox mt-1 w-5 h-5 accent-sky-600 rounded">
+                                    <div>
+                                        <div class="font-black text-slate-800">استكمال المنهج</div>
+                                        <div class="text-xs text-slate-500">شرح درس جديد بناءً على خطة المادة بالتنسيق مع المعلمة.</div>
+                                    </div>
+                                </label>
+                                <label class="proc-item flex items-start gap-3 p-4 rounded-2xl border-2 border-slate-200 hover:border-sky-400 cursor-pointer transition bg-slate-50/60">
+                                    <input type="checkbox" value="guidance" class="proc-checkbox mt-1 w-5 h-5 accent-sky-600 rounded">
+                                    <div>
+                                        <div class="font-black text-slate-800">توجيه وإرشاد</div>
+                                        <div class="text-xs text-slate-500">تقديم نصائح توعوية وتربوية وتعزيز السلوك الإيجابي.</div>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- ثانياً: المهارات والأنشطة المراد تنميتها -->
+                        <div>
+                            <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
+                                <h3 class="text-lg font-black text-slate-800 flex items-center gap-2">
+                                    <span class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center">٢</span>
+                                    <span>ثانياً: المهارات والأنشطة المراد تنميتها في الحصة</span>
+                                </h3>
+                                <button type="button" onclick="toggleAllSkills()" class="text-xs font-bold text-sky-600 hover:underline">
+                                    تحديد / إلغاء تحديد الكل
+                                </button>
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3" id="skills-list">
+                                <label class="skill-card p-4 rounded-2xl border-2 border-emerald-500 bg-emerald-50/60 cursor-pointer transition flex flex-col gap-2">
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-2xl">🏆</span>
+                                        <input type="checkbox" value="competitions" checked class="skill-checkbox w-5 h-5 accent-emerald-600">
+                                    </div>
+                                    <div class="font-black text-sm text-slate-800">مسابقات معرفية وثقافية</div>
+                                    <div class="text-xs text-slate-500">لغتي، إسلاميات، علوم، رياضيات</div>
+                                </label>
+
+                                <label class="skill-card p-4 rounded-2xl border-2 border-emerald-500 bg-emerald-50/60 cursor-pointer transition flex flex-col gap-2">
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-2xl">📖</span>
+                                        <input type="checkbox" value="reading" checked class="skill-checkbox w-5 h-5 accent-emerald-600">
+                                    </div>
+                                    <div class="font-black text-sm text-slate-800">القراءة والانطلاق اللغوي</div>
+                                    <div class="text-xs text-slate-500">نطق الحروف والحركات وتلاوة القرآن</div>
+                                </label>
+
+                                <label class="skill-card p-4 rounded-2xl border-2 border-emerald-500 bg-emerald-50/60 cursor-pointer transition flex flex-col gap-2">
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-2xl">✍️</span>
+                                        <input type="checkbox" value="writing" checked class="skill-checkbox w-5 h-5 accent-emerald-600">
+                                    </div>
+                                    <div class="font-black text-sm text-slate-800">الكتابة وتحسين الخط</div>
+                                    <div class="text-xs text-slate-500">خط النسخ والكتابة الإبداعية</div>
+                                </label>
+
+                                <label class="skill-card p-4 rounded-2xl border-2 border-emerald-500 bg-emerald-50/60 cursor-pointer transition flex flex-col gap-2">
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-2xl">🎙️</span>
+                                        <input type="checkbox" value="speaking" checked class="skill-checkbox w-5 h-5 accent-emerald-600">
+                                    </div>
+                                    <div class="font-black text-sm text-slate-800">الإلقاء والتعبير الشفهي</div>
+                                    <div class="text-xs text-slate-500">ميكروفون المبدعين والثقة بالنفس</div>
+                                </label>
+
+                                <label class="skill-card p-4 rounded-2xl border-2 border-emerald-500 bg-emerald-50/60 cursor-pointer transition flex flex-col gap-2">
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-2xl">🧠</span>
+                                        <input type="checkbox" value="critical" checked class="skill-checkbox w-5 h-5 accent-emerald-600">
+                                    </div>
+                                    <div class="font-black text-sm text-slate-800">التفكير الناقد وحل المشكلات</div>
+                                    <div class="text-xs text-slate-500">اكتشف الخطأ ومواقف ماذا لو؟</div>
+                                </label>
+
+                                <label class="skill-card p-4 rounded-2xl border-2 border-emerald-500 bg-emerald-50/60 cursor-pointer transition flex flex-col gap-2">
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-2xl">🧩</span>
+                                        <input type="checkbox" value="memory" checked class="skill-checkbox w-5 h-5 accent-emerald-600">
+                                    </div>
+                                    <div class="font-black text-sm text-slate-800">ألعاب الذكاء والتركيز</div>
+                                    <div class="text-xs text-slate-500">تنمية الذاكرة البصرية والانتباه</div>
+                                </label>
+
+                                <label class="skill-card p-4 rounded-2xl border-2 border-emerald-500 bg-emerald-50/60 cursor-pointer transition flex flex-col gap-2">
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-2xl">🤸</span>
+                                        <input type="checkbox" value="pe" checked class="skill-checkbox w-5 h-5 accent-emerald-600">
+                                    </div>
+                                    <div class="font-black text-sm text-slate-800">التنشيط البدني والحركي</div>
+                                    <div class="text-xs text-slate-500">تمارين حركية آمنة داخل الفصل</div>
+                                </label>
+
+                                <label class="skill-card p-4 rounded-2xl border-2 border-emerald-500 bg-emerald-50/60 cursor-pointer transition flex flex-col gap-2">
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-2xl">🕌</span>
+                                        <input type="checkbox" value="values" checked class="skill-checkbox w-5 h-5 accent-emerald-600">
+                                    </div>
+                                    <div class="font-black text-sm text-slate-800">القيم والآداب الإسلامية</div>
+                                    <div class="text-xs text-slate-500">تعزيز السلوك الحسن والأذكار</div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- أزرار التنقل -->
+                        <div class="pt-4 flex flex-wrap items-center justify-between gap-4 border-t border-slate-100">
+                            <button type="button" onclick="goToScreen(1)"
+                                class="px-8 py-3.5 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold transition flex items-center gap-2">
+                                <span>السابق</span>
+                            </button>
+
+                            <button type="button" onclick="startClassroomSession()"
+                                class="btn-bounce px-8 py-4 rounded-2xl bg-gradient-to-l from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-black text-lg shadow-lg flex items-center gap-2">
+                                <span>ابدأ على بركة الله</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ========================================================= -->
+            <!-- الشاشة الثالثة: لوحة تفعيل الحصة التفاعلية (Classroom Hub) -->
+            <!-- ========================================================= -->
+            <section id="screen-3" class="hidden fade-slide-in space-y-6">
+
+                <!-- شريط معلومات الحصة والمؤقت ولوحة النجوم -->
+                <div class="bg-white rounded-3xl p-4 sm:p-5 shadow-3d border border-sky-100 flex flex-wrap items-center justify-between gap-4">
+                    <!-- بطاقة بيانات الفصل -->
+                    <div class="flex items-center gap-3">
+                        <button onclick="goToScreen(2)" class="p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 text-sm font-bold" title="تعديل البيانات أو الأهداف">
+                            ⚙️
+                        </button>
+                        <div>
+                            <div class="flex flex-wrap items-center gap-2">
+                                <span class="px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-800 font-bold text-xs">
+                                    الخطوة (3) من (3)
+                                </span>
+                                <span id="hub-grade-badge" class="px-3 py-1 rounded-full bg-sky-100 text-sky-800 font-black text-xs sm:text-sm">
+                                    الثاني الابتدائي - بنات
+                                </span>
+                                <span id="hub-period-badge" class="px-3 py-1 rounded-full bg-amber-100 text-amber-800 font-bold text-xs">
+                                    الحصة الثالثة
+                                </span>
+                            </div>
+                            <p class="text-xs text-slate-500 mt-1 font-semibold">
+                                المعلمة الغائبة: <span id="hub-absent-name" class="text-slate-800 font-bold">أ. هيا حسن</span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- عداد النجوم التحفيزي للفصل -->
+                    <div class="flex items-center gap-3 bg-gradient-to-l from-amber-50 to-yellow-100 px-4 py-2 rounded-2xl border border-amber-200">
+                        <span class="text-2xl animate-pulse">⭐</span>
+                        <div>
+                            <div class="text-[11px] font-bold text-amber-700" id="stars-title">نجوم الطالبات</div>
+                            <div class="text-xl font-black text-amber-900" id="class-stars-count">0</div>
+                        </div>
+                        <div class="flex gap-1 mr-2">
+                            <button onclick="addClassStars(1)" class="w-8 h-8 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-black shadow-sm">+</button>
+                            <button onclick="addClassStars(-1)" class="w-8 h-8 rounded-xl bg-white hover:bg-amber-200 text-amber-800 font-black border border-amber-300">-</button>
+                        </div>
+                    </div>
+
+                    <!-- مؤقت الحصة التنازلي -->
+                    <div class="flex items-center gap-2 bg-slate-900 text-white px-4 py-2 rounded-2xl shadow-md">
+                        <span class="text-lg">⏱️</span>
+                        <span id="timer-display" class="font-mono text-xl font-black tracking-wider text-emerald-400">45:00</span>
+                        <button onclick="toggleTimer()" id="timer-toggle-btn" class="px-2.5 py-1 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-xs font-bold text-white transition">
+                            ابدأ
+                        </button>
+                        <button onclick="resetTimer()" class="px-2 py-1 rounded-lg bg-slate-700 hover:bg-slate-600 text-xs font-bold text-slate-200">
+                            إعادة
+                        </button>
+                    </div>
+
+                    <!-- زر معاينة وطباعة التقرير الرسمي -->
+                    <button onclick="openReportModal()"
+                        class="btn-bounce px-5 py-3 rounded-2xl bg-gradient-to-l from-rose-500 to-pink-600 hover:from-rose-600 hover:to-pink-700 text-white font-black text-sm sm:text-base shadow-lg flex items-center gap-2">
+                        <span>🖨️</span>
+                        <span>معاينة وطباعة تقرير الحصة</span>
+                    </button>
+                </div>
+
+                <!-- التبويبات الرئيسية الثلاثة للأنشطة -->
+                <div class="grid grid-cols-3 gap-2 sm:gap-4 bg-white/80 p-2 rounded-3xl border border-slate-200 shadow-sm">
+                    <button onclick="switchHubTab('competitions')" id="tab-btn-competitions"
+                        class="hub-tab-btn py-3.5 px-3 rounded-2xl font-black text-sm sm:text-base flex items-center justify-center gap-2 bg-gradient-to-l from-sky-500 to-indigo-600 text-white shadow-md transition">
+                        <span class="text-xl">🎡</span>
+                        <span>المسابقات وعجلة الحظ</span>
+                    </button>
+                    <button onclick="switchHubTab('games')" id="tab-btn-games"
+                        class="hub-tab-btn py-3.5 px-3 rounded-2xl font-black text-sm sm:text-base flex items-center justify-center gap-2 text-slate-600 hover:bg-slate-100 transition">
+                        <span class="text-xl">🎮</span>
+                        <span>الألعاب الذهنية والحركية</span>
+                    </button>
+                    <button onclick="switchHubTab('skills')" id="tab-btn-skills"
+                        class="hub-tab-btn py-3.5 px-3 rounded-2xl font-black text-sm sm:text-base flex items-center justify-center gap-2 text-slate-600 hover:bg-slate-100 transition">
+                        <span class="text-xl">🎨</span>
+                        <span>ركن تنمية المهارات</span>
+                    </button>
+                </div>
+
+                <!-- ================================================= -->
+                <!-- القسم 1: المسابقات التفاعلية الشاملة وعجلة الحظ   -->
+                <!-- ================================================= -->
+                <div id="hub-panel-competitions" class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                    <!-- عجلة الحظ لاختيار المجال -->
+                    <div class="lg:col-span-5 bg-white rounded-3xl p-6 shadow-3d border border-sky-100 flex flex-col items-center justify-between">
+                        <div class="text-center mb-3">
+                            <h3 class="text-xl font-black text-slate-800">🎡 عجلة التحدي المعرفي</h3>
+                            <p class="text-xs text-slate-500 font-semibold" id="wheel-subtitle">أديري العجلة لاختيار مجال السؤال للطالبات</p>
+                        </div>
+
+                        <div class="relative w-64 h-64 sm:w-72 sm:h-72 my-2 flex items-center justify-center">
+                            <!-- مؤشر العجلة العلوي -->
+                            <div class="absolute -top-3 z-20 text-3xl drop-shadow-md">🔻</div>
+                            <canvas id="wheelCanvas" width="280" height="280" class="rounded-full shadow-xl border-4 border-white"></canvas>
+                            <button onclick="spinWheel()" id="spin-btn"
+                                class="absolute z-10 w-16 h-16 rounded-full bg-white text-slate-900 font-black text-sm shadow-lg border-4 border-amber-400 hover:scale-105 active:scale-95 transition">
+                                أدر!
+                            </button>
+                        </div>
+
+                        <!-- أزرار اختيار مباشر للمادة -->
+                        <div class="w-full mt-4">
+                            <p class="text-xs text-center text-slate-400 font-bold mb-2">أو اختاري المجال مباشرة:</p>
+                            <div class="grid grid-cols-2 gap-2">
+                                <button onclick="loadCategoryQuestion('لغتي')" class="py-2 px-3 rounded-xl bg-sky-50 hover:bg-sky-100 text-sky-800 font-bold text-xs border border-sky-200">📖 لغتي الجميلة</button>
+                                <button onclick="loadCategoryQuestion('إسلاميات')" class="py-2 px-3 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-bold text-xs border border-emerald-200">🕌 القرآن والإسلاميات</button>
+                                <button onclick="loadCategoryQuestion('علوم ورياضيات')" class="py-2 px-3 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-800 font-bold text-xs border border-amber-200">🔢 علوم ورياضيات</button>
+                                <button onclick="loadCategoryQuestion('وطن وثقافة')" class="py-2 px-3 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-800 font-bold text-xs border border-rose-200">🇸🇦 ثقافة ووطن</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- بطاقة عرض السؤال والخيارات -->
+                    <div class="lg:col-span-7 bg-white rounded-3xl p-6 sm:p-8 shadow-3d border border-indigo-100 flex flex-col justify-between">
+                        <div>
+                            <div class="flex flex-wrap items-center justify-between gap-2 mb-6">
+                                <span id="q-category-badge" class="px-4 py-1.5 rounded-full bg-indigo-100 text-indigo-800 font-black text-sm">
+                                    📖 لغتي الجميلة
+                                </span>
+                                <span id="q-level-badge" class="px-3 py-1 rounded-full bg-slate-100 text-slate-600 font-bold text-xs">
+                                    مستوى: الثاني الابتدائي
+                                </span>
+                            </div>
+
+                            <!-- نص السؤال -->
+                            <div class="bg-gradient-to-br from-slate-50 to-sky-50/60 p-6 rounded-2xl border border-slate-200 mb-6 min-h-[120px] flex items-center justify-center text-center">
+                                <h4 id="q-text" class="text-xl sm:text-2xl font-black text-slate-800 leading-relaxed">
+                                    اضغطي على زر "أدر!" في عجلة الحظ أو اختاري مجالاً لعرض السؤال التفاعلي
+                                </h4>
+                            </div>
+
+                            <!-- الخيارات -->
+                            <div id="q-options" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <!-- تُملأ ديناميكياً -->
+                            </div>
+                        </div>
+
+                        <!-- التغذية الراجعة وزر السؤال التالي -->
+                        <div class="mt-6 pt-4 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3">
+                            <div id="q-feedback" class="font-black text-base text-slate-600">
+                                🌟 كل إجابة صحيحة تمنح الفصل نجمة!
+                            </div>
+                            <button onclick="nextRandomQuestion()" class="btn-bounce px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm shadow">
+                                سؤال جديد 🎲
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ================================================= -->
+                <!-- القسم 2: الألعاب الذهنية والحركية (Games Arena)    -->
+                <!-- ================================================= -->
+                <div id="hub-panel-games" class="hidden space-y-6">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <!-- اللعبة 1: لغز الحروف والكلمات -->
+                        <div class="bg-white rounded-3xl p-6 shadow-3d border border-amber-100">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-xl font-black text-slate-800 flex items-center gap-2">
+                                    <span>🔤</span>
+                                    <span>لعبة الحرف المفقود</span>
+                                </h3>
+                                <button onclick="initWordPuzzle()" class="text-xs font-bold px-3 py-1.5 rounded-xl bg-amber-100 text-amber-800 hover:bg-amber-200">
+                                    كلمة أخرى 🔄
+                                </button>
+                            </div>
+                            <p id="word-hint" class="text-sm text-slate-600 font-bold mb-4 bg-amber-50 p-3 rounded-xl border border-amber-200">
+                                تلميح: حيوان ذكي يلقب بسفينة الصحراء
+                            </p>
+                            <!-- مربعات الحروف -->
+                            <div id="word-slots" class="flex justify-center gap-2 sm:gap-3 my-6" dir="rtl"></div>
+                            <!-- خيارات الحروف -->
+                            <div id="letter-choices" class="flex flex-wrap justify-center gap-2 sm:gap-3"></div>
+                            <div id="word-feedback" class="text-center font-black mt-4 text-sm text-emerald-600 h-6"></div>
+                        </div>
+
+                        <!-- اللعبة 2: الذاكرة البصرية والتركيز -->
+                        <div class="bg-white rounded-3xl p-6 shadow-3d border border-emerald-100">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-xl font-black text-slate-800 flex items-center gap-2">
+                                    <span>🧩</span>
+                                    <span>تحدي الذاكرة البصرية</span>
+                                </h3>
+                                <button onclick="initMemoryGame()" class="text-xs font-bold px-3 py-1.5 rounded-xl bg-emerald-100 text-emerald-800 hover:bg-emerald-200">
+                                    إعادة خلط البطاقات 🔄
+                                </button>
+                            </div>
+                            <p class="text-xs text-slate-500 font-semibold mb-3">
+                                ابحثي عن الأزواج المتطابقة لتنشيط الذاكرة والتركيز البصري!
+                            </p>
+                            <div id="memory-grid" class="grid grid-cols-4 gap-2 sm:gap-3 h-64"></div>
+                        </div>
+                    </div>
+
+                    <!-- اللعبة 3: بطاقات التحدي الحركي السريع (تربية بدنية) -->
+                    <div class="bg-gradient-to-l from-rose-500 via-orange-500 to-amber-500 rounded-3xl p-6 sm:p-8 text-white shadow-lg">
+                        <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+                            <div>
+                                <span class="px-3 py-1 bg-white/20 rounded-full text-xs font-bold">التربية البدنية والدفاع عن النفس</span>
+                                <h3 class="text-2xl font-black mt-1">🤸 استراحة النشاط الحركي داخل الصف</h3>
+                            </div>
+                            <button onclick="nextFitnessChallenge()" class="btn-bounce px-5 py-3 rounded-2xl bg-white text-rose-600 font-black shadow-md">
+                                تحدٍ حركي جديد ⚡
+                            </button>
+                        </div>
+                        <div class="bg-white/15 backdrop-blur-md rounded-2xl p-6 border border-white/25 flex flex-col sm:flex-row items-center gap-6">
+                            <div id="fitness-emoji" class="text-6xl sm:text-7xl bg-white/20 p-5 rounded-3xl">🧘</div>
+                            <div class="flex-1 text-center sm:text-right">
+                                <h4 id="fitness-title" class="text-xl sm:text-2xl font-black mb-2">تمرين التوازن كطائر اللقلق</h4>
+                                <p id="fitness-desc" class="text-white/95 text-base leading-relaxed font-semibold">
+                                    قفي باستقامة بجانب مقعدك، ارفعي قدماً واحدة عن الأرض مع فرد الذراعين جانباً لمدة ١٠ ثوانٍ مع التنفس العميق!
+                                </p>
+                            </div>
+                            <button onclick="completeFitnessChallenge()" class="btn-bounce px-6 py-3 rounded-2xl bg-emerald-500 hover:bg-emerald-600 text-white font-black shadow-lg whitespace-nowrap">
+                                أتممنا التحدي! +٢ ⭐
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ================================================= -->
+                <!-- القسم 3: ركن تنمية المهارات (Skills Studio)       -->
+                <!-- ================================================= -->
+                <div id="hub-panel-skills" class="hidden space-y-6">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <!-- 1. ميكروفون المبدعين (الإلقاء والتعبير) -->
+                        <div class="bg-white rounded-3xl p-6 shadow-3d border border-rose-100 flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center justify-between mb-4">
+                                    <h3 class="text-xl font-black text-slate-800 flex items-center gap-2">
+                                        <span>🎙️</span>
+                                        <span>ميكروفون المبدعين (تحدي الدقيقة)</span>
+                                    </h3>
+                                    <button onclick="nextSpeakingTopic()" class="text-xs font-bold px-3 py-1.5 rounded-xl bg-rose-100 text-rose-700 hover:bg-rose-200">
+                                        موضوع آخر 🔄
+                                    </button>
+                                </div>
+                                <div class="bg-rose-50/70 border-2 border-dashed border-rose-200 rounded-2xl p-5 text-center my-3">
+                                    <span class="text-xs font-bold text-rose-500 block mb-1">موضوع التحدث والإلقاء:</span>
+                                    <p id="speaking-topic" class="text-lg sm:text-xl font-black text-slate-800 leading-relaxed">
+                                        لو أصبحتِ مديرة للمدرسة ليوم واحد، ما أجمل فكرة ستنفذينها لإسعاد زميلاتك؟
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- مؤقت الدقيقة والتصفيق -->
+                            <div class="flex items-center justify-between bg-slate-50 p-3 rounded-2xl border border-slate-200 mt-4">
+                                <div class="flex items-center gap-2">
+                                    <span class="font-mono text-2xl font-black text-rose-600" id="mic-timer">01:00</span>
+                                    <button onclick="startMicTimer()" class="px-3 py-1.5 rounded-xl bg-rose-500 text-white text-xs font-bold">ابدأ الدقيقة</button>
+                                </div>
+                                <button onclick="celebrateSpeaker()" class="btn-bounce px-4 py-2 rounded-xl bg-amber-400 hover:bg-amber-500 text-amber-950 font-black text-sm shadow-sm">
+                                    👏 تصفيق وتشجيع +٢ ⭐
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- 2. مختبر التفكير الناقد وحل المشكلات -->
+                        <div class="bg-white rounded-3xl p-6 shadow-3d border border-indigo-100 flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center justify-between mb-4">
+                                    <h3 class="text-xl font-black text-slate-800 flex items-center gap-2">
+                                        <span>🧠</span>
+                                        <span>مختبر التفكير الناقد (فكّر وحلّل)</span>
+                                    </h3>
+                                    <button onclick="nextCriticalPrompt()" class="text-xs font-bold px-3 py-1.5 rounded-xl bg-indigo-100 text-indigo-700 hover:bg-indigo-200">
+                                        موقف آخر 🔄
+                                    </button>
+                                </div>
+                                <div class="bg-indigo-50/70 border border-indigo-200 rounded-2xl p-5 my-3">
+                                    <span id="critical-type" class="inline-block px-2.5 py-0.5 rounded-md bg-indigo-600 text-white text-xs font-bold mb-2">
+                                        موقف: ماذا تفعلين لو...؟
+                                    </span>
+                                    <p id="critical-question" class="text-lg font-black text-slate-800 leading-relaxed">
+                                        وجدتِ قلماً جميلاً ملقى على أرض الساحة المدرسية ولا تعرفين صاحبته، كيف تتصرفين ولماذا؟
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="mt-3">
+                                <button onclick="toggleCriticalHint()" class="text-xs font-bold text-indigo-600 hover:underline mb-2 block">
+                                    💡 إظهار مفتاح النقاش التربوي للمعلمة
+                                </button>
+                                <div id="critical-hint" class="hidden p-3 rounded-xl bg-emerald-50 text-emerald-900 text-xs font-bold border border-emerald-200">
+                                    الهدف التربوي: تعزيز قيمة الأمانة، وتسليم المفقودات لإدارة المدرسة أو المعلمة المناوبة.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 3. سبورة الخط العربي (خط النسخ) والكتابة الإبداعية -->
+                    <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-3d border border-sky-100">
+                        <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
+                            <div>
+                                <h3 class="text-xl font-black text-slate-800 flex items-center gap-2">
+                                    <span>✍️</span>
+                                    <span>سبورة الخط العربي والكتابة الإبداعية</span>
+                                </h3>
+                                <p class="text-xs text-slate-500 font-semibold">نموذج محاكاة بخط النسخ على الأسطر الإرشادية ليحاكيها الطلاب في دفاترهم</p>
+                            </div>
+                            <div class="flex gap-2">
+                                <button onclick="nextCalligraphyModel()" class="px-4 py-2 rounded-xl bg-sky-100 hover:bg-sky-200 text-sky-800 font-bold text-sm">
+                                    جملة جديدة ✒️
+                                </button>
+                                <button onclick="addClassStars(2)" class="px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-sm">
+                                    تكريم أجمل خط +٢ ⭐
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- لوحة التسطير -->
+                        <div class="naskh-lines rounded-2xl border-2 border-sky-200 bg-sky-50/30 p-6 sm:p-10 text-center my-4">
+                            <p id="calligraphy-text" class="font-amiri text-3xl sm:text-5xl font-bold text-slate-900 tracking-wide leading-loose">
+                                القِرَاءَةُ مِفْتَاحُ العُلُومِ وَالمَعْرِفَةِ
+                            </p>
+                        </div>
+
+                        <!-- بطاقة أكمل القصة -->
+                        <div class="bg-amber-50 rounded-2xl p-4 border border-amber-200 flex flex-wrap items-center justify-between gap-3">
+                            <div>
+                                <span class="text-xs font-black text-amber-700 block">📖 تحدي الكتابة الإبداعية (أكمل القصة في ٣ أسطر):</span>
+                                <p id="story-starter" class="text-sm sm:text-base font-bold text-slate-800 mt-1">
+                                    "في صباح يوم مشمس، فتحت نافذة غرفتي فوجدت عصفوراً صغيراً يحمل في منقاره رسالة ملونة مكتوب عليها..."
+                                </p>
+                            </div>
+                            <button onclick="nextStoryStarter()" class="px-3 py-2 rounded-xl bg-white text-amber-800 border border-amber-300 text-xs font-bold hover:bg-amber-100">
+                                بداية قصة أخرى ✨
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </section>
+        </main>
+
+        <!-- ========================================================================= -->
+        <!-- التذييل الرسمي (Footer)                                                   -->
+        <!-- ========================================================================= -->
+        <footer class="bg-white/95 backdrop-blur-md border-t border-sky-100 mt-10 py-6 px-4 shadow-inner">
+            <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 items-center gap-4 text-center">
+                <!-- يمين الصفحة -->
+                <div class="md:text-right flex justify-center md:justify-start">
+                    <a href="https://hindobia.github.io/Hindobia/" target="_blank" rel="noopener noreferrer"
+                       class="font-cinzel text-2xl sm:text-3xl font-black tracking-wider bg-gradient-to-l from-sky-600 via-indigo-600 to-emerald-600 bg-clip-text text-transparent hover:scale-105 transition-transform inline-block">
+                        Hindobia
+                    </a>
+                </div>
+
+                <!-- منتصف الصفحة -->
+                <div class="text-xs sm:text-sm font-bold text-slate-600 space-y-1 leading-relaxed">
+                    <div dir="ltr" class="font-extrabold text-slate-800">All Rights Reserved 2026©</div>
+                    <div class="text-sky-800 font-black">هند القرني | <span class="font-cinzel">Hindobia</span></div>
+                    <div class="text-slate-500 text-xs">بيشة - المملكة العربية السعودية</div>
+                </div>
+
+                <!-- يسار الصفحة (مساحة متوازنة) -->
+                <div class="hidden md:block"></div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- أيقونة واتساب العائمة يسار الصفحة -->
+    <a id="whatsapp-float-btn" href="https://wa.me/966565588869" target="_blank" rel="noopener noreferrer"
+       title="تواصل عبر واتساب: +966565588869"
+       class="fixed bottom-5 left-5 z-40 w-14 h-14 rounded-full bg-[#25D366] hover:bg-[#1ebe5d] text-white shadow-xl hover:scale-110 active:scale-95 transition-all flex items-center justify-center border-2 border-white">
+        <svg class="w-8 h-8 fill-current" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86s.274.072.376-.043c.101-.116.433-.506.549-.68.116-.173.231-.145.39-.087s1.011.477 1.184.564.289.13.332.202c.045.072.045.419-.1.824zm-3.423-14.416c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm.029 18.88c-1.161 0-2.305-.292-3.318-.844l-3.677.964.984-3.595c-.607-1.052-.927-2.246-.926-3.468.001-3.825 3.113-6.937 6.937-6.937 1.856.001 3.598.723 4.907 2.034 1.31 1.311 2.031 3.054 2.03 4.908-.001 3.825-3.113 6.938-6.937 6.938z"/>
+        </svg>
+    </a>
+
+    <!-- ========================================================================= -->
+    <!-- نافذة معاينة وطباعة التقرير الرسمي (A4 Print Report Modal)                 -->
+    <!-- ========================================================================= -->
+    <div id="print-modal" class="hidden fixed inset-0 z-50 bg-slate-900/75 backdrop-blur-sm overflow-y-auto p-3 sm:p-6">
+        <div id="print-sheet-wrapper" class="max-w-4xl mx-auto">
+
+            <!-- شريط أدوات نافذة المعاينة (يختفي عند الطباعة) -->
+            <div id="print-modal-controls" class="bg-white rounded-2xl p-4 mb-4 shadow-xl flex flex-wrap items-center justify-between gap-3 border border-slate-200">
+                <div class="flex items-center gap-2">
+                    <span class="text-2xl">📄</span>
+                    <div>
+                        <h3 class="font-black text-slate-800 text-sm sm:text-base">معاينة التقرير الرسمي لحصة الانتظار</h3>
+                        <p class="text-xs text-slate-500">يمكنك تعديل نص الملخص أو مستوى التفاعل مباشرة قبل الطباعة</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button onclick="regenerateReportSummary()" class="px-3 py-2 rounded-xl bg-amber-100 hover:bg-amber-200 text-amber-900 font-bold text-xs sm:text-sm">
+                        🔄 تحديث الصياغة تلقائياً
+                    </button>
+                    <button onclick="window.print()" class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-sm shadow flex items-center gap-2">
+                        <span>🖨️</span>
+                        <span>طباعة التقرير / حفظ PDF</span>
+                    </button>
+                    <button onclick="closeReportModal()" class="px-4 py-2.5 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold text-sm">
+                        إغلاق ✖
+                    </button>
+                </div>
+            </div>
+
+            <!-- ========================================================= -->
+            <!-- وثيقة التقرير الرسمي A4 المطابقة للنموذج المرفق           -->
+            <!-- ========================================================= -->
+            <div id="official-report-a4" class="bg-white rounded-xl shadow-2xl border-2 border-blue-900 p-6 sm:p-8 text-slate-900 font-cairo">
+
+                <!-- الترويسة الرسمية -->
+                <div class="flex items-center justify-between border-b-2 border-blue-900 pb-3 mb-4">
+                    <div class="text-right text-xs sm:text-sm font-bold leading-relaxed text-blue-950">
+                        <div>المملكة العربية السعودية</div>
+                        <div>وزارة التعليم</div>
+                        <div>الإدارة العامة للتعليم بمنطقة عسير</div>
+                        <div>مدرسة الهيشة للطفولة المبكرة - بيشة</div>
+                    </div>
+                </div>
+
+                <!-- عنوان التقرير -->
+                <div class="text-center mb-4">
+                    <h2 class="inline-block px-8 py-1.5 bg-blue-900 text-white font-black text-lg sm:text-xl rounded-lg tracking-wide">
+                        تقرير تنفيذ حصة انتظار
+                    </h2>
+                </div>
+
+                <!-- قسم 1: البيانات الأولية -->
+                <div class="mb-4">
+                    <div class="bg-blue-50 border-r-4 border-blue-900 px-3 py-1 font-black text-sm text-blue-950 mb-2">
+                        البيانات الأولية
+                    </div>
+                    <table class="w-full border-collapse border border-slate-400 text-xs sm:text-sm">
+                        <tbody>
+                            <tr>
+                                <td class="border border-slate-400 bg-slate-100 font-bold p-2 w-1/3">اسم المعلمة البديلة (منفذة الحصة):</td>
+                                <td class="border border-slate-400 font-extrabold p-2 text-blue-950" id="rep-sub-teacher">أ. هند القرني</td>
+                            </tr>
+                            <tr>
+                                <td class="border border-slate-400 bg-slate-100 font-bold p-2">اسم المعلمة الغائبة:</td>
+                                <td class="border border-slate-400 font-bold p-2" id="rep-absent-teacher">أ. هيا حسن</td>
+                            </tr>
+                            <tr>
+                                <td class="border border-slate-400 bg-slate-100 font-bold p-2">اليوم والتاريخ:</td>
+                                <td class="border border-slate-400 font-bold p-2" id="rep-date">الإثنين / ٠٦ / ٠٦ / ١٤٤٨ هـ - الموافق ١٦ / ١١ / ٢٠٢٦ م</td>
+                            </tr>
+                            <tr>
+                                <td class="border border-slate-400 bg-slate-100 font-bold p-2">الحصة والصف:</td>
+                                <td class="border border-slate-400 font-extrabold p-2" id="rep-period-grade">الثالثة | الثاني الابتدائي - بنات</td>
+                            </tr>
+                            <tr>
+                                <td class="border border-slate-400 bg-slate-100 font-bold p-2">المادة الدراسية:</td>
+                                <td class="border border-slate-400 font-bold p-2" id="rep-subject">لغتي / القرآن الكريم والدراسات الإسلامية</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- قسم 2: نوع النشاط / الإجراء المنفذ -->
+                <div class="mb-4">
+                    <div class="bg-blue-50 border-r-4 border-blue-900 px-3 py-1 font-black text-sm text-blue-950 mb-2">
+                        نوع النشاط / الإجراء المنفذ
+                    </div>
+                    <div class="border border-slate-400 rounded p-3 space-y-1.5 text-xs sm:text-sm">
+                        <div class="flex items-center gap-2">
+                            <span id="rep-chk-review" class="font-black text-base text-blue-900">☐</span>
+                            <span><strong>مراجعة وتطبيقات:</strong> مراجعة الدروس السابقة وحل تمارين.</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span id="rep-chk-enrichment" class="font-black text-base text-blue-900">☑</span>
+                            <span><strong>نشاط إثراء وتعزيز:</strong> تنفيذ أنشطة رقمية ورقية تفاعلية تعزز نواتج التعلم.</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span id="rep-chk-curriculum" class="font-black text-base text-blue-900">☐</span>
+                            <span><strong>استكمال المنهج:</strong> شرح درس جديد بناءً على خطة المادة بالتنسيق مع المعلمة.</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span id="rep-chk-guidance" class="font-black text-base text-blue-900">☐</span>
+                            <span id="rep-guidance-text"><strong>توجيه وإرشاد:</strong> تقديم نصائح توعوية وتربوية للطالبات.</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="font-black text-base text-blue-900">☐</span>
+                            <span><strong>أخرى:</strong> ....................................................................................................</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- قسم 3: ملخص ما تم إنجازه خلال الحصة -->
+                <div class="mb-4">
+                    <div class="bg-blue-50 border-r-4 border-blue-900 px-3 py-1 font-black text-sm text-blue-950 mb-2 flex justify-between items-center">
+                        <span>ملخص ما تم إنجازه خلال الحصة</span>
+                        <span class="text-[10px] font-normal text-slate-500 print:hidden">(قابل للتعديل المباشر)</span>
+                    </div>
+                    <div class="border border-slate-400 rounded p-3 bg-white">
+                        <textarea id="rep-summary-text" rows="5" oninput="autoResizeSummaryTextarea()"
+                            class="report-editable w-full text-xs sm:text-sm leading-relaxed text-justify font-semibold text-slate-800 outline-none focus:bg-yellow-50/40 rounded overflow-hidden resize-none"></textarea>
+                    </div>
+                </div>
+
+                <!-- قسم 4: مستوى انضباط وتفاعل الطلاب / الطالبات -->
+                <div class="mb-4">
+                    <div id="rep-discipline-header" class="bg-blue-50 border-r-4 border-blue-900 px-3 py-1 font-black text-sm text-blue-950 mb-2">
+                        مستوى انضباط وتفاعل الطالبات
+                    </div>
+                    <div class="border border-slate-400 rounded p-3 grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs sm:text-sm">
+                        <div class="flex flex-wrap items-center gap-2">
+                            <span class="font-bold">• مستوى الانضباط والهدوء:</span>
+                            <label class="cursor-pointer inline-flex items-center gap-1">
+                                <input type="radio" name="rep-discipline" value="ممتاز" checked class="accent-blue-900"> <span>ممتاز</span>
+                            </label>
+                            <label class="cursor-pointer inline-flex items-center gap-1">
+                                <input type="radio" name="rep-discipline" value="جيد جداً" class="accent-blue-900"> <span>جيد جداً</span>
+                            </label>
+                            <label class="cursor-pointer inline-flex items-center gap-1">
+                                <input type="radio" name="rep-discipline" value="متوسط" class="accent-blue-900"> <span>متوسط</span>
+                            </label>
+                        </div>
+
+                        <div class="flex flex-wrap items-center gap-2">
+                            <span class="font-bold">• مستوى التفاعل والمشاركة:</span>
+                            <label class="cursor-pointer inline-flex items-center gap-1">
+                                <input type="radio" name="rep-interaction" value="ممتاز" checked class="accent-blue-900"> <span>ممتاز</span>
+                            </label>
+                            <label class="cursor-pointer inline-flex items-center gap-1">
+                                <input type="radio" name="rep-interaction" value="جيد جداً" class="accent-blue-900"> <span>جيد جداً</span>
+                            </label>
+                            <label class="cursor-pointer inline-flex items-center gap-1">
+                                <input type="radio" name="rep-interaction" value="يحتاج متابعة" class="accent-blue-900"> <span>يحتاج إلى متابعة</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- قسم 5: التوثيق والاعتماد والشواهد -->
+                <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 items-stretch">
+                    <!-- الشواهد -->
+                    <div class="sm:col-span-7 border border-slate-400 rounded p-3 flex flex-col justify-between bg-slate-50/40">
+                        <div class="font-black text-blue-950 text-xs sm:text-sm mb-2 border-b border-slate-200 pb-1">
+                            الشواهد التوثيقية
+                        </div>
+                        <div class="flex-1 flex flex-col items-center justify-center text-center py-1">
+                            <p class="font-bold text-slate-600 text-xs mb-2">
+                                للاطلاع على الشواهد والملفات التفاعلية للحصة:
+                            </p>
+                            <a href="https://asrgirls-my.sharepoint.com/:f:/g/personal/t165922_asrg_moe_gov_sa/IgDQFJNuVFx6QIJPamY2ZGvrASxjK-M5mbG0LRj0UIxTgD4?e=OvhQTH"
+                               target="_blank" rel="noopener noreferrer"
+                               title="فتح مجلد الشواهد التفاعلية في SharePoint"
+                               class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-l from-blue-900 to-sky-700 hover:from-blue-800 hover:to-sky-600 text-white font-black text-base sm:text-lg shadow-sm border border-blue-950 flex items-center justify-center gap-2.5 transition">
+                                <span class="text-xl">📂</span>
+                                <span>فتح الشواهد التفاعلية</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- التوقيع والاعتماد -->
+                    <div class="sm:col-span-5 border border-slate-400 rounded p-3 text-xs flex flex-col justify-between bg-slate-50/60">
+                        <div class="font-black text-blue-950 border-b border-slate-200 pb-1 mb-2">التوثيق والاعتماد</div>
+                        <div class="flex justify-between items-center text-center gap-2 my-auto py-2">
+                            <div class="flex-1">
+                                <div class="font-bold text-slate-600">معلمة حصة الانتظار</div>
+                                <div class="font-black text-blue-950 mt-1.5 text-sm" id="rep-sign-teacher">أ. هند القرني</div>
+                            </div>
+                            <div class="h-12 w-[1px] bg-slate-300"></div>
+                            <div class="flex-1">
+                                <div class="font-bold text-slate-600">مديرة المدرسة</div>
+                                <div class="font-black text-blue-950 mt-1.5 text-sm">أ. هناء المعاوي</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- البرمجة التفاعلية المتكاملة (JavaScript)                                  -->
+    <!-- ========================================================================= -->
+    <script>
+        // ==========================================
+        // 1. إدارة الحالة العامة للتطبيق (App State)
+        // ==========================================
+        const state = {
+            subTeacher: 'أ. هند القرني',
+            absentTeacher: '',
+            grade: 2, // 1, 2, 3
+            gender: 'girls', // 'girls' | 'boys'
+            period: 'الثالثة',
+            subject: 'القرآن الكريم / لغتي',
+            date: '',
+            durationMinutes: 45,
+            procedures: ['enrichment'],
+            skills: ['competitions', 'reading', 'writing', 'speaking', 'critical', 'memory', 'pe', 'values'],
+            stars: 0,
+            soundEnabled: true,
+            timerSeconds: 45 * 60,
+            timerRunning: false,
+            timerInterval: null,
+            micSeconds: 60,
+            micInterval: null,
+            currentWheelAngle: 0
+        };
+
+        // قاموس التكييف اللغوي حسب الجنس (مذكر / مؤنث)
+        const langDict = {
+            girls: {
+                students: 'الطالبات',
+                studentSingular: 'طالبة',
+                hero: 'يا بطلة',
+                bravo: 'أحسنتِ يا مبدعة!',
+                tryAgain: 'حاولي مرة أخرى يا ذكية!',
+                gradeSuffix: 'بنات',
+                starsLabel: 'نجوم الطالبات',
+                wheelSub: 'أديري العجلة لاختيار مجال السؤال للطالبات'
+            },
+            boys: {
+                students: 'الطلاب',
+                studentSingular: 'طالب',
+                hero: 'يا بطل',
+                bravo: 'أحسنت يا مبدع!',
+                tryAgain: 'حاول مرة أخرى يا ذكي!',
+                gradeSuffix: 'بنين',
+                starsLabel: 'نجوم الطلاب',
+                wheelSub: 'أدر العجلة لاختيار مجال السؤال للطلاب'
+            }
+        };
+
+        // ==========================================
+        // 2. نظام المؤثرات الصوتية (Web Audio API)
+        // ==========================================
+        let audioCtx = null;
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
+
+        function playTone(type) {
+            if (!state.soundEnabled) return;
+            try {
+                initAudio();
+                const now = audioCtx.currentTime;
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                if (type === 'click') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(600, now);
+                    gain.gain.setValueAtTime(0.08, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+                    osc.start(now);
+                    osc.stop(now + 0.08);
+                } else if (type === 'success') {
+                    // نغمة فوز مبهجة
+                    const notes = [523.25, 659.25, 783.99, 1046.50];
+                    notes.forEach((freq, idx) => {
+                        const o = audioCtx.createOscillator();
+                        const g = audioCtx.createGain();
+                        o.type = 'triangle';
+                        o.frequency.setValueAtTime(freq, now + idx * 0.09);
+                        g.gain.setValueAtTime(0.15, now + idx * 0.09);
+                        g.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.09 + 0.25);
+                        o.connect(g);
+                        g.connect(audioCtx.destination);
+                        o.start(now + idx * 0.09);
+                        o.stop(now + idx * 0.09 + 0.25);
+                    });
+                } else if (type === 'wrong') {
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(220, now);
+                    osc.frequency.linearRampToValueAtTime(160, now + 0.25);
+                    gain.gain.setValueAtTime(0.1, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+                    osc.start(now);
+                    osc.stop(now + 0.25);
+                } else if (type === 'spin') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(400, now);
+                    gain.gain.setValueAtTime(0.05, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
+                    osc.start(now);
+                    osc.stop(now + 0.04);
+                }
+            } catch (e) {}
+        }
+
+        function toggleSound() {
+            state.soundEnabled = !state.soundEnabled;
+            document.getElementById('sound-icon').textContent = state.soundEnabled ? '🔊' : '🔇';
+            document.getElementById('sound-label').textContent = state.soundEnabled ? 'الصوت مفعل' : 'صامت';
+            if (state.soundEnabled) playTone('click');
+        }
+
+        // ==========================================
+        // 3. تأثير الاحتفال (Confetti) والإشعارات
+        // ==========================================
+        function launchConfetti() {
+            const canvas = document.getElementById('confetti-canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            const colors = ['#0EA5E9', '#F59E0B', '#10B981', '#F43F5E', '#8B5CF6'];
+            const pieces = Array.from({ length: 75 }, () => ({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height - canvas.height,
+                r: Math.random() * 7 + 4,
+                c: colors[Math.floor(Math.random() * colors.length)],
+                vx: Math.random() * 4 - 2,
+                vy: Math.random() * 4 + 3,
+                rot: Math.random() * 360
+            }));
+
+            let frame = 0;
+            function draw() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                pieces.forEach(p => {
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    p.rot += 5;
+                    ctx.save();
+                    ctx.translate(p.x, p.y);
+                    ctx.rotate((p.rot * Math.PI) / 180);
+                    ctx.fillStyle = p.c;
+                    ctx.fillRect(-p.r / 2, -p.r / 2, p.r, p.r * 1.4);
+                    ctx.restore();
+                });
+                frame++;
+                if (frame < 95) {
+                    requestAnimationFrame(draw);
+                } else {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                }
+            }
+            draw();
+        }
+
+        function showToast(msg, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            const bg = type === 'success' ? 'bg-emerald-600' : type === 'warn' ? 'bg-amber-600' : 'bg-sky-700';
+            toast.className = `${bg} text-white px-4 py-3 rounded-2xl shadow-lg font-bold text-sm flex items-center gap-2 fade-slide-in`;
+            toast.innerHTML = `<span>✨</span><span>${msg}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transition = 'opacity 0.3s';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // ==========================================
+        // 4. التنقل بين الشاشات واختيارات الإعداد
+        // ==========================================
+        function selectGrade(grade) {
+            playTone('click');
+            state.grade = grade;
+            document.querySelectorAll('.grade-btn').forEach(btn => {
+                const g = Number(btn.dataset.grade);
+                if (g === grade) {
+                    btn.className = 'grade-btn p-4 rounded-2xl border-2 border-sky-500 bg-sky-50 text-right transition flex items-center gap-3 shadow-sm';
+                } else {
+                    btn.className = 'grade-btn p-4 rounded-2xl border-2 border-slate-200 bg-slate-50 hover:border-sky-400 text-right transition flex items-center gap-3';
+                }
+            });
+        }
+
+        function selectGender(gender) {
+            playTone('click');
+            state.gender = gender;
+            const btnGirls = document.getElementById('btn-gender-girls');
+            const btnBoys = document.getElementById('btn-gender-boys');
+            if (gender === 'girls') {
+                btnGirls.className = 'p-4 rounded-2xl border-2 border-rose-500 bg-rose-50 text-rose-900 font-black flex items-center justify-center gap-3 text-lg shadow-sm transition';
+                btnBoys.className = 'p-4 rounded-2xl border-2 border-slate-200 bg-slate-50 text-slate-700 hover:border-sky-400 font-black flex items-center justify-center gap-3 text-lg transition';
+            } else {
+                btnBoys.className = 'p-4 rounded-2xl border-2 border-sky-500 bg-sky-50 text-sky-900 font-black flex items-center justify-center gap-3 text-lg shadow-sm transition';
+                btnGirls.className = 'p-4 rounded-2xl border-2 border-slate-200 bg-slate-50 text-slate-700 hover:border-rose-400 font-black flex items-center justify-center gap-3 text-lg transition';
+            }
+        }
+
+        function goToScreen(num) {
+            playTone('click');
+            if (num === 2) {
+                const sub = document.getElementById('input-sub-teacher').value.trim();
+                const absent = document.getElementById('input-absent-teacher').value.trim();
+                if (!absent) {
+                    showToast('يرجى كتابة اسم المعلمة الغائبة أولاً', 'warn');
+                    document.getElementById('input-absent-teacher').focus();
+                    return;
+                }
+                state.subTeacher = sub || 'أ. هند القرني';
+                state.absentTeacher = absent;
+                state.period = document.getElementById('input-period').value;
+
+                const selectedSubjects = Array.from(document.querySelectorAll('.subj-cb:checked')).map(cb => cb.value);
+                state.subject = selectedSubjects.length > 0 ? selectedSubjects.join(' / ') : 'أنشطة إثرائية شاملة';
+
+                state.date = document.getElementById('input-date').value;
+                state.durationMinutes = Number(document.getElementById('input-duration').value) || 45;
+            }
+
+            [1, 2, 3].forEach(i => {
+                document.getElementById(`screen-${i}`).classList.toggle('hidden', i !== num);
+                const badge = document.getElementById(`step-badge-${i}`);
+                if (i === num) {
+                    badge.className = 'px-2.5 py-1 rounded-full bg-sky-500 text-white transition-all';
+                } else if (i < num) {
+                    badge.className = 'px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-700 transition-all';
+                } else {
+                    badge.className = 'px-2.5 py-1 rounded-full text-slate-500 transition-all';
+                }
+            });
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // تنسيق بطاقات الاختيار في الشاشة الثانية
+        document.querySelectorAll('.proc-checkbox').forEach(cb => {
+            cb.addEventListener('change', function () {
+                playTone('click');
+                const parent = this.closest('.proc-item');
+                if (this.checked) {
+                    parent.classList.add('border-sky-500', 'bg-sky-50/70');
+                    parent.classList.remove('border-slate-200', 'bg-slate-50/60');
+                } else {
+                    parent.classList.remove('border-sky-500', 'bg-sky-50/70');
+                    parent.classList.add('border-slate-200', 'bg-slate-50/60');
+                }
+            });
+        });
+
+        // تنسيق بطاقات المقررات الدراسية
+        document.querySelectorAll('.subj-cb').forEach(cb => {
+            cb.addEventListener('change', function () {
+                playTone('click');
+                const parent = this.closest('.subj-label');
+                if (this.checked) {
+                    parent.classList.add('border-sky-500', 'bg-sky-50');
+                    parent.classList.remove('border-slate-200', 'bg-slate-50');
+                } else {
+                    parent.classList.remove('border-sky-500', 'bg-sky-50');
+                    parent.classList.add('border-slate-200', 'bg-slate-50');
+                }
+            });
+        });
+
+        // تحويل التاريخ المختار من التقويم إلى (اسم اليوم + التاريخ الهجري + التاريخ الميلادي)
+        function toArabicDigits(str) {
+            return String(str).replace(/\d/g, d => '٠١٢٣٤٥٦٧٨٩'[d]);
+        }
+
+        function updateFormattedDatesFromCalendar(isoDateStr) {
+            if (!isoDateStr) return;
+            const [y, m, d] = isoDateStr.split('-').map(Number);
+            const dateObj = new Date(y, m - 1, d);
+
+            const dayName = new Intl.DateTimeFormat('ar-SA', { weekday: 'long' }).format(dateObj);
+
+            // التاريخ الهجري (تقويم أم القرى)
+            let hijriFormatted = '';
+            try {
+                const hijriParts = new Intl.DateTimeFormat('ar-SA-u-ca-islamic-umalqura', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric'
+                }).formatToParts(dateObj);
+                const hDay = hijriParts.find(p => p.type === 'day')?.value || '';
+                const hMonth = hijriParts.find(p => p.type === 'month')?.value || '';
+                const hYear = hijriParts.find(p => p.type === 'year')?.value || '';
+                hijriFormatted = `${hDay} / ${hMonth} / ${hYear} هـ`;
+            } catch (e) {
+                hijriFormatted = new Intl.DateTimeFormat('ar-SA-u-ca-islamic', { dateStyle: 'short' }).format(dateObj);
+            }
+
+            // التاريخ الميلادي
+            const gregDay = toArabicDigits(String(d).padStart(2, '0'));
+            const gregMonth = toArabicDigits(String(m).padStart(2, '0'));
+            const gregYear = toArabicDigits(String(y));
+            const gregFormatted = `${gregDay} / ${gregMonth} / ${gregYear} م`;
+
+            const fullText = `${dayName} / ${hijriFormatted} - الموافق ${gregFormatted}`;
+            document.getElementById('input-date').value = fullText;
+            state.date = fullText;
+        }
+
+        function toggleAllSkills() {
+            const boxes = document.querySelectorAll('.skill-checkbox');
+            const allChecked = Array.from(boxes).every(b => b.checked);
+            boxes.forEach(b => {
+                b.checked = !allChecked;
+                b.dispatchEvent(new Event('change'));
+            });
+        }
+
+        function startClassroomSession() {
+            state.procedures = Array.from(document.querySelectorAll('.proc-checkbox:checked')).map(c => c.value);
+            state.skills = Array.from(document.querySelectorAll('.skill-checkbox:checked')).map(c => c.value);
+
+            if (state.procedures.length === 0) {
+                state.procedures = ['enrichment'];
+            }
+
+            // تحديث واجهة لوحة التفعيل حسب الاختيارات
+            const gradeNames = { 1: 'الأول الابتدائي', 2: 'الثاني الابتدائي', 3: 'الثالث الابتدائي' };
+            const d = langDict[state.gender];
+
+            document.getElementById('hub-grade-badge').textContent = `${gradeNames[state.grade]} - ${d.gradeSuffix}`;
+            document.getElementById('hub-period-badge').textContent = `الحصة ${state.period}`;
+            document.getElementById('hub-absent-name').textContent = state.absentTeacher;
+            document.getElementById('stars-title').textContent = d.starsLabel;
+            document.getElementById('wheel-subtitle').textContent = d.wheelSub;
+            document.getElementById('q-level-badge').textContent = `مستوى: ${gradeNames[state.grade]}`;
+
+            // ضبط المؤقت
+            state.timerSeconds = state.durationMinutes * 60;
+            updateTimerDisplay();
+
+            // تهيئة الألعاب والمحتوى التفاعلي
+            drawWheel();
+            nextRandomQuestion();
+            initWordPuzzle();
+            initMemoryGame();
+            nextFitnessChallenge();
+            nextSpeakingTopic();
+            nextCriticalPrompt();
+            nextCalligraphyModel();
+            nextStoryStarter();
+
+            goToScreen(3);
+            playTone('success');
+            showToast(`أهلاً بكِ أ. هند! تم تهيئة الأنشطة لصف ${gradeNames[state.grade]} (${d.gradeSuffix})`, 'success');
+        }
+
+        // ==========================================
+        // 5. المؤقت الزمني وعداد النجوم والتبويبات
+        // ==========================================
+        function updateTimerDisplay() {
+            const mins = Math.floor(state.timerSeconds / 60);
+            const secs = state.timerSeconds % 60;
+            document.getElementById('timer-display').textContent =
+                `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+        }
+
+        function toggleTimer() {
+            const btn = document.getElementById('timer-toggle-btn');
+            if (state.timerRunning) {
+                clearInterval(state.timerInterval);
+                state.timerRunning = false;
+                btn.textContent = 'استكمال';
+                btn.classList.replace('bg-amber-500', 'bg-emerald-500');
+            } else {
+                state.timerRunning = true;
+                btn.textContent = 'إيقاف';
+                btn.classList.replace('bg-emerald-500', 'bg-amber-500');
+                state.timerInterval = setInterval(() => {
+                    if (state.timerSeconds > 0) {
+                        state.timerSeconds--;
+                        updateTimerDisplay();
+                    } else {
+                        clearInterval(state.timerInterval);
+                        state.timerRunning = false;
+                        playTone('success');
+                        showToast('انتهى وقت الحصة المحدد بنجاح!', 'success');
+                    }
+                }, 1000);
+            }
+        }
+
+        function resetTimer() {
+            clearInterval(state.timerInterval);
+            state.timerRunning = false;
+            state.timerSeconds = state.durationMinutes * 60;
+            updateTimerDisplay();
+            const btn = document.getElementById('timer-toggle-btn');
+            btn.textContent = 'ابدأ';
+            btn.classList.remove('bg-amber-500');
+            btn.classList.add('bg-emerald-500');
+        }
+
+        function addClassStars(amount) {
+            state.stars = Math.max(0, state.stars + amount);
+            document.getElementById('class-stars-count').textContent = state.stars;
+            if (amount > 0) {
+                playTone('success');
+                launchConfetti();
+            } else {
+                playTone('click');
+            }
+        }
+
+        function switchHubTab(tabName) {
+            playTone('click');
+            ['competitions', 'games', 'skills'].forEach(t => {
+                document.getElementById(`hub-panel-${t}`).classList.toggle('hidden', t !== tabName);
+                const btn = document.getElementById(`tab-btn-${t}`);
+                if (t === tabName) {
+                    btn.className = 'hub-tab-btn py-3.5 px-3 rounded-2xl font-black text-sm sm:text-base flex items-center justify-center gap-2 bg-gradient-to-l from-sky-500 to-indigo-600 text-white shadow-md transition';
+                } else {
+                    btn.className = 'hub-tab-btn py-3.5 px-3 rounded-2xl font-black text-sm sm:text-base flex items-center justify-center gap-2 text-slate-600 hover:bg-slate-100 transition';
+                }
+            });
+        }
+
+        // ==========================================
+        // 6. بنك الأسئلة التفاعلية وعجلة الحظ
+        // ==========================================
+        const questionBank = [
+            // لغتي الجميلة
+            { grade: [1, 2], cat: 'لغتي', q: 'ما هو الحرف الذي يأتي بعد حرف (الشين) في الحروف الهجائية؟', opts: ['الصاد', 'السين', 'الضاد', 'الطاء'], ans: 0 },
+            { grade: [1], cat: 'لغتي', q: 'كلمة (مَدْرَسَة) تبدأ بحرف الميم وعليه حركة:', opts: ['الفتحة', 'الضمة', 'الكسرة', 'السكون'], ans: 0 },
+            { grade: [1, 2], cat: 'لغتي', q: 'ما جمع كلمة (كِتَاب)؟', opts: ['كُتُب', 'مَكْتَبَة', 'كَاتِب', 'كِتَابَان'], ans: 0 },
+            { grade: [2, 3], cat: 'لغتي', q: 'ما ضد كلمة (الكَرَم)؟', opts: ['البُخْل', 'الشَّجَاعَة', 'الصِّدْق', 'الجُود'], ans: 0 },
+            { grade: [2, 3], cat: 'لغتي', q: 'الكلمة التي تحتوي على (أل شمسية) هي:', opts: ['الشَّمْس', 'القَمَر', 'الكِتَاب', 'البَيْت'], ans: 0 },
+            { grade: [3], cat: 'لغتي', q: 'نوع الكلمة (يَكْتُبُ) من أقسام الكلام هو:', opts: ['فعل مضارع', 'اسم', 'حرف جر', 'فعل أمر'], ans: 0 },
+            { grade: [1, 2, 3], cat: 'لغتي', q: 'ما مرادف كلمة (سَعِيد)؟', opts: ['مَسْرُور', 'حَزِين', 'غَاضِب', 'خَائِف'], ans: 0 },
+
+            // القرآن الكريم والدراسات الإسلامية
+            { grade: [1, 2, 3], cat: 'إسلاميات', q: 'ما هي أول سورة في القرآن الكريم؟', opts: ['سورة الفاتحة', 'سورة الناس', 'سورة الإخلاص', 'سورة البقرة'], ans: 0 },
+            { grade: [1, 2], cat: 'إسلاميات', q: 'ماذا نقول عند البدء بتلاوة القرآن الكريم؟', opts: ['أعوذ بالله من الشيطان الرجيم', 'الحمد لله رب العالمين', 'سبحان الله وبحمده', 'أستغفر الله'], ans: 0 },
+            { grade: [1, 2, 3], cat: 'إسلاميات', q: 'كم عدد أركان الإسلام؟', opts: ['خمسة أركان', 'ستة أركان', 'أربعة أركان', 'ثلاثة أركان'], ans: 0 },
+            { grade: [2, 3], cat: 'إسلاميات', q: 'ما هي السورة التي تعدل ثلث القرآن الكريم؟', opts: ['سورة الإخلاص', 'سورة الفلق', 'سورة الكوثر', 'سورة العصر'], ans: 0 },
+            { grade: [1, 2, 3], cat: 'إسلاميات', q: 'ماذا نقول عندما نعطس؟', opts: ['الحمد لله', 'يرحمك الله', 'سبحان الله', 'ما شاء الله'], ans: 0 },
+            { grade: [2, 3], cat: 'إسلاميات', q: 'من هو خاتم الأنبياء والمرسلين؟', opts: ['نبينا محمد ﷺ', 'نوح عليه السلام', 'إبراهيم عليه السلام', 'موسى عليه السلام'], ans: 0 },
+
+            // علوم ورياضيات
+            { grade: [1], cat: 'علوم ورياضيات', q: 'كم يساوي ناتج جمع: ٥ + ٤ = ؟', opts: ['٩', '٨', '١٠', '٧'], ans: 0 },
+            { grade: [1, 2], cat: 'علوم ورياضيات', q: 'ما هو الجزء الذي يمتص الماء والغذاء من التربة في النبات؟', opts: ['الجذور', 'الأوراق', 'الأزهار', 'الثمار'], ans: 0 },
+            { grade: [2, 3], cat: 'علوم ورياضيات', q: 'كم ضلعاً للمثلث؟', opts: ['٣ أضلاع', '٤ أضلاع', '٥ أضلاع', 'ضلعان'], ans: 0 },
+            { grade: [2, 3], cat: 'علوم ورياضيات', q: 'ما هو أكبر كوكب في المجموعة الشمسية؟', opts: ['المشتري', 'الأرض', 'المريخ', 'عطارد'], ans: 0 },
+            { grade: [3], cat: 'علوم ورياضيات', q: 'كم يساوي ناتج: ٣ × ٤ = ؟', opts: ['١٢', '٧', '١٥', '٩'], ans: 0 },
+            { grade: [1, 2, 3], cat: 'علوم ورياضيات', q: 'ما هي الحاسة التي نستخدمها للتمييز بين الألوان؟', opts: ['البصر', 'السمع', 'الشم', 'التذوق'], ans: 0 },
+
+            // وطن وثقافة
+            { grade: [1, 2, 3], cat: 'وطن وثقافة', q: 'ما هو لون علم المملكة العربية السعودية؟', opts: ['الأخضر', 'الأزرق', 'الأحمر', 'الأصفر'], ans: 0 },
+            { grade: [1, 2, 3], cat: 'وطن وثقافة', q: 'ما هي عاصمة المملكة العربية السعودية؟', opts: ['الرياض', 'مكة المكرمة', 'جدة', 'أبها'], ans: 0 },
+            { grade: [2, 3], cat: 'وطن وثقافة', q: 'في أي منطقة تقع محافظتنا الجميلة (بيشة)؟', opts: ['منطقة عسير', 'منطقة مكة', 'منطقة القصيم', 'منطقة تبوك'], ans: 0 },
+            { grade: [1, 2, 3], cat: 'وطن وثقافة', q: 'كم عدد أيام الأسبوع؟', opts: ['٧ أيام', '٥ أيام', '٦ أيام', '٨ أيام'], ans: 0 }
+        ];
+
+        const wheelSegments = [
+            { label: 'لغتي الجميلة', cat: 'لغتي', color: '#0EA5E9' },
+            { label: 'قرآن وإسلاميات', cat: 'إسلاميات', color: '#10B981' },
+            { label: 'علوم ورياضيات', cat: 'علوم ورياضيات', color: '#F59E0B' },
+            { label: 'وطن وثقافة', cat: 'وطن وثقافة', color: '#F43F5E' }
+        ];
+
+        function drawWheel() {
+            const canvas = document.getElementById('wheelCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+            const radius = cx - 4;
+            const arc = (2 * Math.PI) / wheelSegments.length;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            wheelSegments.forEach((seg, i) => {
+                const angle = i * arc - Math.PI / 2;
+                ctx.beginPath();
+                ctx.fillStyle = seg.color;
+                ctx.moveTo(cx, cy);
+                ctx.arc(cx, cy, radius, angle, angle + arc);
+                ctx.fill();
+                ctx.strokeStyle = '#ffffff';
+                ctx.lineWidth = 3;
+                ctx.stroke();
+
+                ctx.save();
+                ctx.translate(cx, cy);
+                ctx.rotate(angle + arc / 2);
+                ctx.textAlign = 'right';
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 15px Cairo';
+                ctx.fillText(seg.label, radius - 18, 6);
+                ctx.restore();
+            });
+        }
+
+        function spinWheel() {
+            playTone('spin');
+            const extraDeg = Math.floor(Math.random() * 360) + 1080;
+            state.currentWheelAngle += extraDeg;
+            const canvas = document.getElementById('wheelCanvas');
+            canvas.style.transform = `rotate(${state.currentWheelAngle}deg)`;
+
+            setTimeout(() => {
+                const normalized = (360 - (state.currentWheelAngle % 360)) % 360;
+                const segIdx = Math.floor(normalized / (360 / wheelSegments.length));
+                const chosenCat = wheelSegments[segIdx].cat;
+                loadCategoryQuestion(chosenCat);
+            }, 4100);
+        }
+
+        function loadCategoryQuestion(cat) {
+            const pool = questionBank.filter(q => q.cat === cat && q.grade.includes(state.grade));
+            const finalPool = pool.length ? pool : questionBank.filter(q => q.cat === cat);
+            const item = finalPool[Math.floor(Math.random() * finalPool.length)];
+            renderQuestion(item);
+        }
+
+        function nextRandomQuestion() {
+            const pool = questionBank.filter(q => q.grade.includes(state.grade));
+            const item = pool[Math.floor(Math.random() * pool.length)];
+            renderQuestion(item);
+        }
+
+        function renderQuestion(item) {
+            const catIcons = {
+                'لغتي': '📖 لغتي الجميلة',
+                'إسلاميات': '🕌 القرآن والإسلاميات',
+                'علوم ورياضيات': '🔢 علوم ورياضيات',
+                'وطن وثقافة': '🇸🇦 وطن وثقافة'
+            };
+            document.getElementById('q-category-badge').textContent = catIcons[item.cat] || item.cat;
+            document.getElementById('q-text').textContent = item.q;
+            document.getElementById('q-feedback').textContent = `اختاري الإجابة الصحيحة ${langDict[state.gender].hero}!`;
+            document.getElementById('q-feedback').className = 'font-black text-base text-slate-600';
+
+            // خلط الخيارات مع تتبع الإجابة الصحيحة
+            const indexedOpts = item.opts.map((text, idx) => ({ text, isCorrect: idx === item.ans }));
+            indexedOpts.sort(() => Math.random() - 0.5);
+
+            const optsContainer = document.getElementById('q-options');
+            optsContainer.innerHTML = '';
+            indexedOpts.forEach((opt, i) => {
+                const btn = document.createElement('button');
+                btn.className = 'btn-bounce p-4 rounded-2xl border-2 border-slate-200 hover:border-sky-400 bg-white hover:bg-sky-50 text-right font-black text-base sm:text-lg text-slate-800 transition flex items-center gap-3 shadow-sm';
+                btn.innerHTML = `<span class="w-8 h-8 rounded-xl bg-sky-100 text-sky-700 flex items-center justify-center text-sm">${['أ', 'ب', 'ج', 'د'][i]}</span><span>${opt.text}</span>`;
+                btn.onclick = () => handleAnswerClick(btn, opt.isCorrect, optsContainer);
+                optsContainer.appendChild(btn);
+            });
+        }
+
+        function handleAnswerClick(btn, isCorrect, container) {
+            const d = langDict[state.gender];
+            if (isCorrect) {
+                btn.className = 'p-4 rounded-2xl border-2 border-emerald-500 bg-emerald-500 text-white text-right font-black text-base sm:text-lg transition flex items-center gap-3 shadow-md';
+                document.getElementById('q-feedback').textContent = `🎉 ${d.bravo} إجابة رائعة (+١ نجمة)`;
+                document.getElementById('q-feedback').className = 'font-black text-base text-emerald-600';
+                addClassStars(1);
+                Array.from(container.children).forEach(b => b.disabled = true);
+            } else {
+                playTone('wrong');
+                btn.className = 'p-4 rounded-2xl border-2 border-rose-400 bg-rose-50 text-rose-800 text-right font-black text-base sm:text-lg transition flex items-center gap-3 opacity-75';
+                btn.disabled = true;
+                document.getElementById('q-feedback').textContent = `💡 ${d.tryAgain}`;
+                document.getElementById('q-feedback').className = 'font-black text-base text-rose-600';
+            }
+        }
+
+        // ==========================================
+        // 7. الألعاب الذهنية والحركية (Games Arena)
+        // ==========================================
+        const wordPuzzles = [
+            { word: 'قَلَم', missingIdx: 1, hint: 'أداة نكتب بها في الدفتر', choices: ['ل', 'ب', 'س', 'ر'] },
+            { word: 'نَخْلَة', missingIdx: 2, hint: 'شجرة مباركة تعطينا التمر اللذيذ', choices: ['ل', 'م', 'ع', 'ف'] },
+            { word: 'مَسْجِد', missingIdx: 0, hint: 'المكان الذي نؤدي فيه الصلوات الخمس', choices: ['م', 'ك', 'ب', 'ت'] },
+            { word: 'عَسِير', missingIdx: 1, hint: 'اسم منطقتنا الجميلة ذات الطبيعة الخلابة', choices: ['س', 'ص', 'ش', 'ق'] },
+            { word: 'وَرْدَة', missingIdx: 2, hint: 'زهرة جميلة ذات رائحة عطرة', choices: ['د', 'ذ', 'ز', 'ر'] }
+        ];
+
+        function initWordPuzzle() {
+            const puzzle = wordPuzzles[Math.floor(Math.random() * wordPuzzles.length)];
+            const d = langDict[state.gender];
+            document.getElementById('word-hint').textContent = `💡 تلميح: ${puzzle.hint}`;
+            document.getElementById('word-feedback').textContent = '';
+
+            // تقسيم الكلمة إلى حروف مع حركاتها
+            const chars = puzzle.word.match(/[\u0621-\u064A][\u064B-\u0652]?/g) || [];
+            const correctChar = chars[puzzle.missingIdx][0];
+
+            const slotsEl = document.getElementById('word-slots');
+            slotsEl.innerHTML = '';
+            chars.forEach((ch, idx) => {
+                const box = document.createElement('div');
+                if (idx === puzzle.missingIdx) {
+                    box.id = 'missing-letter-box';
+                    box.className = 'w-14 h-14 sm:w-16 sm:h-16 rounded-2xl border-2 border-dashed border-amber-500 bg-amber-50 flex items-center justify-center text-2xl sm:text-3xl font-black text-amber-600';
+                    box.textContent = '؟';
+                } else {
+                    box.className = 'w-14 h-14 sm:w-16 sm:h-16 rounded-2xl border-2 border-slate-200 bg-slate-50 flex items-center justify-center text-2xl sm:text-3xl font-black text-slate-800';
+                    box.textContent = ch;
+                }
+                slotsEl.appendChild(box);
+            });
+
+            const choicesEl = document.getElementById('letter-choices');
+            choicesEl.innerHTML = '';
+            [...puzzle.choices].sort(() => Math.random() - 0.5).forEach(letter => {
+                const btn = document.createElement('button');
+                btn.className = 'btn-bounce w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-sky-500 hover:bg-sky-600 text-white font-black text-xl sm:text-2xl shadow';
+                btn.textContent = letter;
+                btn.onclick = () => {
+                    if (letter === correctChar) {
+                        document.getElementById('missing-letter-box').textContent = chars[puzzle.missingIdx];
+                        document.getElementById('missing-letter-box').className = 'w-14 h-14 sm:w-16 sm:h-16 rounded-2xl border-2 border-emerald-500 bg-emerald-100 flex items-center justify-center text-2xl sm:text-3xl font-black text-emerald-800';
+                        document.getElementById('word-feedback').textContent = `🌟 ${d.bravo} أكملت الكلمة بنجاح!`;
+                        addClassStars(1);
+                        Array.from(choicesEl.children).forEach(b => b.disabled = true);
+                    } else {
+                        playTone('wrong');
+                        btn.classList.add('opacity-40');
+                        btn.disabled = true;
+                    }
+                };
+                choicesEl.appendChild(btn);
+            });
+        }
+
+        // لعبة الذاكرة البصرية
+        const memorySymbols = ['🕌', '📖', '🌴', '⭐', '🍎', '🚀'];
+        let flippedCards = [];
+        let matchedPairs = 0;
+
+        function initMemoryGame() {
+            const grid = document.getElementById('memory-grid');
+            grid.innerHTML = '';
+            flippedCards = [];
+            matchedPairs = 0;
+
+            const deck = [...memorySymbols, ...memorySymbols].sort(() => Math.random() - 0.5);
+            deck.forEach((symbol) => {
+                const card = document.createElement('div');
+                card.className = 'memory-card h-full';
+                card.dataset.symbol = symbol;
+                card.innerHTML = `
+                    <div class="memory-card-inner">
+                        <div class="memory-front bg-gradient-to-br from-emerald-500 to-teal-600 text-white font-black text-2xl shadow-sm border-2 border-white">
+                            ؟
+                        </div>
+                        <div class="memory-back bg-amber-50 border-2 border-amber-300 text-3xl shadow-sm">
+                            ${symbol}
+                        </div>
+                    </div>
+                `;
+                card.onclick = () => handleMemoryFlip(card);
+                grid.appendChild(card);
+            });
+        }
+
+        function handleMemoryFlip(card) {
+            if (flippedCards.length >= 2 || card.classList.contains('flipped') || card.classList.contains('matched')) return;
+            playTone('click');
+            card.classList.add('flipped');
+            flippedCards.push(card);
+
+            if (flippedCards.length === 2) {
+                const [c1, c2] = flippedCards;
+                if (c1.dataset.symbol === c2.dataset.symbol) {
+                    c1.classList.add('matched');
+                    c2.classList.add('matched');
+                    flippedCards = [];
+                    matchedPairs++;
+                    playTone('success');
+                    if (matchedPairs === memorySymbols.length) {
+                        addClassStars(2);
+                        showToast(`رائع! اكتمل تحدي الذاكرة بنجاح!`, 'success');
+                    }
+                } else {
+                    setTimeout(() => {
+                        c1.classList.remove('flipped');
+                        c2.classList.remove('flipped');
+                        flippedCards = [];
+                    }, 800);
+                }
+            }
+        }
+
+        // بطاقات التحدي الحركي (التربية البدنية)
+        const fitnessChallenges = [
+            {
+                emoji: '🧘',
+                title: 'تمرين التوازن كطائر اللقلق',
+                descGirls: 'قفي باستقامة بجانب مقعدك، ارفعي قدماً واحدة عن الأرض مع فرد الذراعين جانباً لمدة ١٠ ثوانٍ مع التنفس العميق!',
+                descBoys: 'قف باستقامة بجانب مقعدك، ارفع قدماً واحدة عن الأرض مع فرد الذراعين جانباً لمدة ١٠ ثوانٍ مع التنفس العميق!'
+            },
+            {
+                emoji: '⭐',
+                title: 'قفز النجمة المضيئة',
+                descGirls: 'اقفزي في مكانك ٥ قفزات خفيفة مع فتح الذراعين والقدمين على شكل نجمة، ثم قفي بثبات وهدوء!',
+                descBoys: 'اقفز في مكانك ٥ قفزات خفيفة مع فتح الذراعين والقدمين على شكل نجمة، ثم قف بثبات وهدوء!'
+            },
+            {
+                emoji: '🌬️',
+                title: 'تمرين التنفس والهدوء (البالون)',
+                descGirls: 'خذي نفساً عميقاً من الأنف وكأنك تنفخين بالوناً كبيراً، ثم أخرجي الهواء ببطء من الفم ٣ مرات.',
+                descBoys: 'خذ نفساً عميقاً من الأنف وكأنك تنفخ بالوناً كبيراً، ثم أخرج الهواء ببطء من الفم ٣ مرات.'
+            },
+            {
+                emoji: '🦒',
+                title: 'إطالة الزرافة الطويلة',
+                descGirls: 'ارفعي يديك عالياً نحو السقف وحاولي ملامسة السحاب على أطراف أصابعك لمدة ٨ ثوانٍ لتنشيط العمود الفقري.',
+                descBoys: 'ارفع يديك عالياً نحو السقف وحاول ملامسة السحاب على أطراف أصابعك لمدة ٨ ثوانٍ لتنشيط العمود الفقري.'
+            }
+        ];
+        let fitnessIdx = 0;
+
+        function nextFitnessChallenge() {
+            playTone('click');
+            fitnessIdx = (fitnessIdx + 1) % fitnessChallenges.length;
+            const item = fitnessChallenges[fitnessIdx];
+            document.getElementById('fitness-emoji').textContent = item.emoji;
+            document.getElementById('fitness-title').textContent = item.title;
+            document.getElementById('fitness-desc').textContent = state.gender === 'girls' ? item.descGirls : item.descBoys;
+        }
+
+        function completeFitnessChallenge() {
+            addClassStars(2);
+            showToast(`حيوية ونشاط! تم منح الفصل نجمتين للتفاعل الحركي المنضبط`, 'success');
+        }
+
+        // ==========================================
+        // 8. ركن تنمية المهارات (إلقاء، نقد، خط)
+        // ==========================================
+        const speakingTopics = [
+            {
+                girls: 'لو أصبحتِ مديرة للمدرسة ليوم واحد، ما أجمل فكرة ستنفذينها لإسعاد زميلاتك؟',
+                boys: 'لو أصبحت مديراً للمدرسة ليوم واحد، ما أجمل فكرة ستنفذها لإسعاد زملائك؟'
+            },
+            {
+                girls: 'تحدثي في دقيقة عن أحب سورة قرآنية إلى قلبك ولماذا تحبين تلاوتها؟',
+                boys: 'تحدث في دقيقة عن أحب سورة قرآنية إلى قلبك ولماذا تحب تلاوتها؟'
+            },
+            {
+                girls: 'كيف نحافظ على نظافة فصلنا ومدرستنا لتكون أجمل مدرسة في بيشة؟',
+                boys: 'كيف نحافظ على نظافة فصلنا ومدرستنا لتكون أجمل مدرسة في بيشة؟'
+            },
+            {
+                girls: 'صفي لنا هوايتك المفضلة وكيف تمارسينها في وقت فراغك؟',
+                boys: 'صف لنا هوايتك المفضلة وكيف تمارسها في وقت فراغك؟'
+            }
+        ];
+        let speakingIdx = 0;
+
+        function nextSpeakingTopic() {
+            playTone('click');
+            speakingIdx = (speakingIdx + 1) % speakingTopics.length;
+            const item = speakingTopics[speakingIdx];
+            document.getElementById('speaking-topic').textContent = state.gender === 'girls' ? item.girls : item.boys;
+            clearInterval(state.micInterval);
+            state.micSeconds = 60;
+            document.getElementById('mic-timer').textContent = '01:00';
+        }
+
+        function startMicTimer() {
+            clearInterval(state.micInterval);
+            state.micSeconds = 60;
+            playTone('click');
+            state.micInterval = setInterval(() => {
+                if (state.micSeconds > 0) {
+                    state.micSeconds--;
+                    document.getElementById('mic-timer').textContent = `00:${String(state.micSeconds).padStart(2, '0')}`;
+                } else {
+                    clearInterval(state.micInterval);
+                    playTone('success');
+                }
+            }, 1000);
+        }
+
+        function celebrateSpeaker() {
+            addClassStars(2);
+            showToast(`إلقاء رائع وثقة عالية بالنفس! ${langDict[state.gender].bravo}`, 'success');
+        }
+
+        // مختبر التفكير الناقد
+        const criticalPrompts = [
+            {
+                type: 'موقف: الأمانة والتصرف السليم',
+                girls: 'وجدتِ قلماً جميلاً ملقى على أرض الساحة المدرسية ولا تعرفين صاحبته، كيف تتصرفين ولماذا؟',
+                boys: 'وجدت قلماً جميلاً ملقى على أرض الساحة المدرسية ولا تعرف صاحبه، كيف تتصرف ولماذا؟',
+                hint: 'الهدف التربوي: تعزيز قيمة الأمانة، وتسليم المفقودات لإدارة المدرسة أو المعلمة المناوبة.'
+            },
+            {
+                type: 'لغز منطقي: اكتشف المختلف',
+                girls: 'لدينا الكلمات التالية: (تفاح - موز - برتقال - سيارة). ما الكلمة المختلفة ولماذا؟',
+                boys: 'لدينا الكلمات التالية: (تفاح - موز - برتقال - سيارة). ما الكلمة المختلفة ولماذا؟',
+                hint: 'التحليل: (سيارة) هي المختلفة لأنها وسيلة نقل، بينما البقية فواكه صحية مفيدة للجسم.'
+            },
+            {
+                type: 'ماذا لو...؟ (تفكير إبداعي)',
+                girls: 'ماذا سيحدث لو اختفت جميع إشارات المرور من شوارع المدينة؟ وكيف نحل هذه المشكلة؟',
+                boys: 'ماذا سيحدث لو اختفت جميع إشارات المرور من شوارع المدينة؟ وكيف نحل هذه المشكلة؟',
+                hint: 'الهدف: إدراك أهمية النظام والقوانين في حفظ سلامة الناس وتنظيم الحركة.'
+            }
+        ];
+        let critIdx = 0;
+
+        function nextCriticalPrompt() {
+            playTone('click');
+            critIdx = (critIdx + 1) % criticalPrompts.length;
+            const item = criticalPrompts[critIdx];
+            document.getElementById('critical-type').textContent = item.type;
+            document.getElementById('critical-question').textContent = state.gender === 'girls' ? item.girls : item.boys;
+            document.getElementById('critical-hint').textContent = item.hint;
+            document.getElementById('critical-hint').classList.add('hidden');
+        }
+
+        function toggleCriticalHint() {
+            document.getElementById('critical-hint').classList.toggle('hidden');
+        }
+
+        // نماذج خط النسخ والكتابة الإبداعية
+        const calligraphyModels = [
+            'القِرَاءَةُ مِفْتَاحُ العُلُومِ وَالمَعْرِفَةِ',
+            'خَيْرُكُمْ مَنْ تَعَلَّمَ القُرْآنَ وَعَلَّمَهُ',
+            'العَقْلُ السَّلِيمُ فِي الجِسْمِ السَّلِيمِ',
+            'بِالأَخْلَاقِ الفَاضِلَةِ نَرْتَقِي وَنَسْمُو',
+            'وَقُلْ رَبِّ زِدْنِي عِلْمًا'
+        ];
+        let calligIdx = 0;
+
+        function nextCalligraphyModel() {
+            playTone('click');
+            calligIdx = (calligIdx + 1) % calligraphyModels.length;
+            document.getElementById('calligraphy-text').textContent = calligraphyModels[calligIdx];
+        }
+
+        const storyStarters = [
+            '"في صباح يوم مشمس، فتحت نافذة غرفتي فوجدت عصفوراً صغيراً يحمل في منقاره رسالة ملونة مكتوب عليها..."',
+            '"دخلت مكتبة المدرسة لأبحث عن كتاب، وفجأة سمعت همساً لطيفاً يخرج من بين رفوف القصص يقول..."',
+            '"في حصة التربية البدنية، قررنا تشكيل فريق للأبطال الصغار لمساعدة كل من يحتاج إلى العون، فبدأنا بـ..."'
+        ];
+        let storyIdx = 0;
+
+        function nextStoryStarter() {
+            playTone('click');
+            storyIdx = (storyIdx + 1) % storyStarters.length;
+            document.getElementById('story-starter').textContent = storyStarters[storyIdx];
+        }
+
+        // ==========================================
+        // 9. نظام معاينة وتوليد التقرير الرسمي A4
+        // ==========================================
+        function openReportModal() {
+            playTone('click');
+            const gradeNames = { 1: 'الأول الابتدائي', 2: 'الثاني الابتدائي', 3: 'الثالث الابتدائي' };
+            const isGirls = state.gender === 'girls';
+
+            // تعبئة جدول البيانات الأولية
+            document.getElementById('rep-sub-teacher').textContent = state.subTeacher;
+            document.getElementById('rep-absent-teacher').textContent = state.absentTeacher;
+            document.getElementById('rep-date').textContent = state.date;
+            document.getElementById('rep-period-grade').textContent = `${state.period} | ${gradeNames[state.grade]} - ${isGirls ? 'بنات' : 'بنين'}`;
+            document.getElementById('rep-subject').textContent = state.subject;
+            document.getElementById('rep-sign-teacher').textContent = state.subTeacher;
+
+            // تحديث علامات الصح في نوع النشاط المنفذ
+            document.getElementById('rep-chk-review').textContent = state.procedures.includes('review') ? '☑' : '☐';
+            document.getElementById('rep-chk-enrichment').textContent = state.procedures.includes('enrichment') ? '☑' : '☐';
+            document.getElementById('rep-chk-curriculum').textContent = state.procedures.includes('curriculum') ? '☑' : '☐';
+            document.getElementById('rep-chk-guidance').textContent = state.procedures.includes('guidance') ? '☑' : '☐';
+
+            // تحديث صيغة المؤنث والمذكر في عناوين التقرير
+            document.getElementById('rep-guidance-text').innerHTML = isGirls
+                ? '<strong>توجيه وإرشاد:</strong> تقديم نصائح توعوية وتربوية للطالبات.'
+                : '<strong>توجيه وإرشاد:</strong> تقديم نصائح توعوية وتربوية للطلاب.';
+
+            document.getElementById('rep-discipline-header').textContent = isGirls
+                ? 'مستوى انضباط وتفاعل الطالبات'
+                : 'مستوى انضباط وتفاعل الطلاب';
+
+            // توليد نص الملخص التربوي الاحترافي
+            regenerateReportSummary();
+
+            document.getElementById('print-modal').classList.remove('hidden');
+            setTimeout(autoResizeSummaryTextarea, 20);
+        }
+
+        function autoResizeSummaryTextarea() {
+            const ta = document.getElementById('rep-summary-text');
+            if (!ta) return;
+            ta.style.height = 'auto';
+            ta.style.height = (ta.scrollHeight + 4) + 'px';
+        }
+
+        function regenerateReportSummary() {
+            const isGirls = state.gender === 'girls';
+            const studentsWord = isGirls ? 'الطالبات' : 'الطلاب';
+            const eachStudent = isGirls ? 'لكل طالبة' : 'لكل طالب';
+            const distinguished = isGirls ? 'المتميزات' : 'المتميزين';
+            const struggling = isGirls ? 'المتعثرين' : 'المتعثرين';
+
+            const skillSentences = {
+                reading: `تنفيذ برنامج تقوية وتدريب في مهارات القراءة السليمة ونطق الحروف بالحركات القصيرة والطويلة والانطلاق القرائي، وتلاوة السور القرآنية المقررة مع متابعة الإتقان وتجويد النطق ${eachStudent} على حدة`,
+                competitions: `تفعيل المسابقات المعرفية التفاعلية الشاملة عبر عجلة التحدي الرقمية في مجالات (لغتي، الدراسات الإسلامية، العلوم والرياضيات، والثقافة العامة) لتعزيز نواتج التعلم بروح تنافسية إيجابية`,
+                writing: `تنمية مهارات الكتابة الإبداعية وتحسين الخط العربي (خط النسخ) وفق الأسطر الإرشادية`,
+                speaking: `تنمية مهارات الإلقاء والتعبير الشفهي والطلاقة اللغوية وبناء الثقة بالنفس من خلال فقرة (ميكروفون المبدعين)`,
+                critical: `تفعيل مهارات التفكير الناقد وحل المشكلات عبر مناقشة المواقف التربوية والألغاز المنطقية`,
+                memory: `تطبيق ألعاب الذكاء والتركيز والذاكرة البصرية لتنشيط الانتباه الذهني لدى ${studentsWord}`,
+                pe: `تنفيذ استراحة تنشيط بدني وحركي آمنة ومنضبطة داخل الصف لتجديد نشاط ${studentsWord}`,
+                values: `ترسيخ القيم الإسلامية والآداب العامة والسلوك الحسن والانضباط الصفي`
+            };
+
+            const selectedDescriptions = state.skills
+                .filter(s => skillSentences[s])
+                .map(s => skillSentences[s]);
+
+            const activitiesBody = selectedDescriptions.length > 0
+                ? selectedDescriptions.join('، إضافة إلى ')
+                : 'تنفيذ أنشطة تعليمية وإثرائية تفاعلية متنوعة لتعزيز المهارات الأساسية';
+
+            const summary = `تم استثمار وقت حصة الانتظار بفاعلية تربوية عالية لتعزيز المهارات الأساسية لدى ${studentsWord}؛ حيث استُهلت الحصة بالتهيئة الذهنية والتذكير بالآداب الإسلامية والانضباط الصفي، تلا ذلك ${activitiesBody}، مع تقديم التغذية الراجعة الفورية والدعم الفردي للجميع، واختُتمت الحصة بتعزيز ${distinguished} وتحفيز ${studentsWord} لمواصلة التفوق والإبداع.`;
+
+            document.getElementById('rep-summary-text').value = summary;
+            autoResizeSummaryTextarea();
+        }
+
+        window.addEventListener('beforeprint', autoResizeSummaryTextarea);
+
+        function closeReportModal() {
+            playTone('click');
+            document.getElementById('print-modal').classList.add('hidden');
+        }
+
+        // تهيئة أولية عند تحميل الصفحة
+        window.onload = function () {
+            drawWheel();
+            // ضبط التقويم على تاريخ اليوم تلقائياً
+            const today = new Date();
+            const yyyy = today.getFullYear();
+            const mm = String(today.getMonth() + 1).padStart(2, '0');
+            const dd = String(today.getDate()).padStart(2, '0');
+            const isoToday = `${yyyy}-${mm}-${dd}`;
+            const calInput = document.getElementById('input-calendar-picker');
+            if (calInput) {
+                calInput.value = isoToday;
+                updateFormattedDatesFromCalendar(isoToday);
+            }
+        };
+    </script>
+</body>
+</html>
