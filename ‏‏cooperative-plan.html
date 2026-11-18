@@ -1,0 +1,2783 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>تعزيز العمل التعاوني ١٤٤٨هـ | هند القرني</title>
+  
+  <!-- Google Fonts: Cairo, Tajawal & Cinzel Decorative -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=Cinzel+Decorative:wght@700&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            emeraldDark: '#0F3D3E',
+            emeraldBrand: '#006C35',
+            emeraldLight: '#E8F3EE',
+            goldWarm: '#C5A059',
+            goldBright: '#D4AF37',
+            goldSoft: '#FBF7EE',
+            creamBg: '#F8FAF9'
+          },
+          fontFamily: {
+            cairo: ['Cairo', 'sans-serif'],
+            tajawal: ['Tajawal', 'sans-serif'],
+            cinzel: ['Cinzel Decorative', 'serif'],
+          },
+          boxShadow: {
+            'luxury': '0 10px 30px -5px rgba(15, 61, 62, 0.08), 0 4px 12px -2px rgba(197, 160, 89, 0.06)',
+            'luxury-hover': '0 20px 35px -10px rgba(15, 61, 62, 0.14), 0 8px 16px -4px rgba(197, 160, 89, 0.12)',
+          }
+        }
+      }
+    }
+const firebaseConfig = {
+  apiKey: "AIzaSyCiAHWHlkPDx3l2yVpqxH3jTVU-d6n1zfo",
+  authDomain: "hind-initiatives.firebaseapp.com",
+  databaseURL: "https://hind-initiatives-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "hind-initiatives",
+  storageBucket: "hind-initiatives.firebasestorage.app",
+  messagingSenderId: "480807246183",
+  appId: "1:480807246183:web:2c3c108863c37f064af7c2"
+};
+
+firebase.initializeApp(firebaseConfig);
+const planRef = firebase.database().ref('cooperative_plan_1448');
+// جلب البيانات عند فتح الصفحة والتزامن الفوري
+planRef.on('value', (snapshot) => {
+    const cloudData = snapshot.val();
+    if (cloudData) {
+        if (cloudData.programs) appState.programs = cloudData.programs;
+        if (cloudData.kpis) appState.kpis = cloudData.kpis;
+        
+        // جلب كلمات المرور المحدثة من السحابة إن وجدت
+        if (cloudData.passwords) {
+            AuthConfig.coordinatorPass = cloudData.passwords.coordinator || "1448";
+            AuthConfig.principalPass = cloudData.passwords.principal || "2030";
+        }
+        
+        if (typeof renderAll === 'function') renderAll(); 
+    } else {
+        // رفع النسخة الأولية مع كلمات المرور الافتراضية إذا كانت القاعدة فارغة لأول مرة
+        planRef.set({
+            programs: appState.programs,
+            kpis: appState.kpis,
+            passwords: { coordinator: "1448", principal: "2030" }
+        });
+    }
+});
+
+// دالة الحفظ السحابي عند أي تغيير
+function saveToCloud() {
+    planRef.update({
+        programs: appState.programs,
+        kpis: appState.kpis
+    });
+}
+
+// دالة لتحديث كلمة المرور في سحابة Firebase للمنسقة أو المديرة
+function updatePasswordInCloud(role, newPassword) {
+    if (!newPassword || newPassword.trim() === "") {
+        showToast('يرجى إدخال كلمة مرور صالحة', 'error');
+        return;
+    }
+
+    const passRef = firebase.database().ref('cooperative_plan_1448/passwords');
+    
+    if (role === 'coordinator') {
+        passRef.update({ coordinator: newPassword.trim() }, (error) => {
+            if (!error) {
+                AuthConfig.coordinatorPass = newPassword.trim();
+                showToast('تم تحديث كلمة مرور المنسقة بنجاح سحابياً 🔐', 'success');
+            }
+        });
+    } else if (role === 'principal') {
+        passRef.update({ principal: newPassword.trim() }, (error) => {
+            if (!error) {
+                AuthConfig.principalPass = newPassword.trim();
+                showToast('تم تحديث كلمة مرور المديرة بنجاح سحابياً 🔐', 'success');
+            }
+        });
+    }
+}
+  </script>
+
+  <style>
+    body {
+      font-family: 'Tajawal', 'Cairo', sans-serif;
+      background-color: #F6F8F7;
+      color: #1E293B;
+      background-image: radial-gradient(circle at 10% 10%, rgba(197, 160, 89, 0.06) 0%, transparent 40%),
+                        radial-gradient(circle at 90% 80%, rgba(0, 108, 53, 0.05) 0%, transparent 45%);
+    }
+
+    h1, h2, h3, h4, .font-heading {
+      font-family: 'Cairo', sans-serif;
+    }
+
+    .font-hindobia {
+      font-family: 'Cinzel Decorative', serif;
+    }
+
+    /* Glowing Pulsing Animation for Hindobia Header Icon */
+    @keyframes hindobiaGlow {
+      0%, 100% {
+        opacity: 1;
+        text-shadow: 0 0 10px rgba(212, 175, 55, 0.8), 0 0 20px rgba(212, 175, 55, 0.5);
+      }
+      50% {
+        opacity: 0.6;
+        text-shadow: 0 0 4px rgba(212, 175, 55, 0.4), 0 0 8px rgba(212, 175, 55, 0.2);
+      }
+    }
+    .hindobia-glow {
+      animation: hindobiaGlow 2s ease-in-out infinite;
+    }
+
+    /* Glassmorphism & Luxury Card Utilities */
+    .glass-header {
+      background: linear-gradient(135deg, #092B2C 0%, #0F3D3E 55%, #006C35 100%);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .glass-header::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23C5A059' fill-opacity='0.07'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+      pointer-events: none;
+    }
+
+    .gold-border-gradient {
+      border-bottom: 3px solid transparent;
+      border-image: linear-gradient(to left, #0F3D3E, #C5A059, #D4AF37, #C5A059, #0F3D3E);
+      border-image-slice: 1;
+    }
+
+    .luxury-card {
+      background: rgba(255, 255, 255, 0.96);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(197, 160, 89, 0.22);
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .luxury-card:hover {
+      border-color: rgba(197, 160, 89, 0.55);
+      transform: translateY(-2px);
+    }
+
+    /* Smooth Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #EDF2F0;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #0F3D3E;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #C5A059;
+    }
+
+    /* Toast Animation */
+    @keyframes slideUpFade {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .toast-enter {
+      animation: slideUpFade 0.3s ease forwards;
+    }
+
+    /* Print Styles */
+    @media print {
+      body {
+        background: #ffffff !important;
+        color: #000000 !important;
+        font-size: 11pt;
+      }
+      .no-print {
+        display: none !important;
+      }
+      .print-only {
+        display: block !important;
+      }
+      .glass-header {
+        background: #0F3D3E !important;
+        color: #ffffff !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+        padding: 16px !important;
+      }
+      .luxury-card {
+        box-shadow: none !important;
+        border: 1px solid #cbd5e1 !important;
+        break-inside: avoid;
+        margin-bottom: 12px !important;
+      }
+      #tab-timeline, #tab-framework, #tab-kpis {
+        display: block !important;
+      }
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased selection:bg-goldWarm selection:text-white">
+
+  <!-- Top Role & Utility Bar (Sticky) with Responsive Burger Menu for Small Screens -->
+  <div class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-goldWarm/30 shadow-sm no-print">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5 flex items-center justify-between gap-3">
+      
+      <!-- Desktop Role Switcher Pills (Hidden on Small Screens) -->
+      <div class="hidden md:flex flex-wrap items-center gap-2">
+        <span class="text-xs font-bold text-emeraldDark/70 inline-flex items-center gap-1.5 ml-1">
+          <i class="fa-solid fa-user-shield text-goldWarm"></i>
+          وضع الدخول:
+        </span>
+        
+        <button onclick="switchRole('visitor')" id="btn-role-visitor"
+          class="px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-bold transition-all flex items-center gap-1.5 border">
+          <i class="fa-solid fa-eye"></i>
+          <span>الزائر (للاطلاع)</span>
+        </button>
+
+        <button onclick="openAuthModal('coordinator')" id="btn-role-coordinator"
+          class="px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-bold transition-all flex items-center gap-1.5 border">
+          <i class="fa-solid fa-pen-to-square"></i>
+          <span>المنسقة: أ. هند القرني</span>
+        </button>
+
+        <button onclick="openAuthModal('principal')" id="btn-role-principal"
+          class="px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-bold transition-all flex items-center gap-1.5 border">
+          <i class="fa-solid fa-stamp"></i>
+          <span>المديرة: أ. هناء المعاوي</span>
+        </button>
+      </div>
+
+      <!-- Mobile Burger Menu Button (Visible ONLY on small screens) -->
+      <div class="flex md:hidden items-center gap-2">
+        <button onclick="toggleMobileMenu()" aria-label="القائمة"
+          class="p-2 rounded-xl bg-emeraldLight text-emeraldDark border border-emeraldBrand/20 hover:bg-emeraldBrand hover:text-white transition">
+          <i class="fa-solid fa-bars text-lg"></i>
+        </button>
+        <span class="text-xs font-bold text-emeraldDark">القائمة</span>
+      </div>
+
+      <!-- Active Role Status & Print Actions -->
+      <div class="flex items-center gap-2">
+        <div id="active-role-badge" class="hidden md:flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emeraldLight text-emeraldDark border border-emeraldBrand/20">
+          <span class="w-2 h-2 rounded-full bg-emeraldBrand animate-pulse"></span>
+          <span id="active-role-text">الواجهة الافتتاحية (الإطار التنظيمي)</span>
+        </div>
+
+        <button onclick="window.print()" title="طباعة التقرير الشامل"
+          class="px-3.5 py-2 rounded-xl bg-emeraldDark hover:bg-emeraldBrand text-white text-xs font-bold flex items-center gap-1.5 shadow-sm transition">
+          <i class="fa-solid fa-print text-goldBright"></i>
+          <span class="hidden sm:inline">طباعة التقرير</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile Burger Dropdown Menu (Hidden by default, shown when toggled) -->
+    <div id="mobile-burger-menu" class="hidden md:hidden bg-white border-t border-goldWarm/30 px-4 py-3 space-y-2.5 shadow-lg">
+      <p class="text-[11px] font-bold text-slate-400 mb-1">اختر صفة الدخول أو الإجراء:</p>
+      
+      <button onclick="switchRole('visitor'); toggleMobileMenu();"
+        class="w-full text-right px-4 py-2.5 rounded-xl text-xs font-bold bg-slate-50 hover:bg-emeraldLight text-emeraldDark flex items-center gap-2.5 border border-slate-200">
+        <i class="fa-solid fa-eye text-goldWarm"></i>
+        <span>الزائر (للاطلاع)</span>
+      </button>
+
+      <button onclick="openAuthModal('coordinator'); toggleMobileMenu();"
+        class="w-full text-right px-4 py-2.5 rounded-xl text-xs font-bold bg-slate-50 hover:bg-emeraldLight text-emeraldDark flex items-center gap-2.5 border border-slate-200">
+        <i class="fa-solid fa-pen-to-square text-emeraldBrand"></i>
+        <span>المنسقة: أ. هند القرني</span>
+      </button>
+
+      <button onclick="openAuthModal('principal'); toggleMobileMenu();"
+        class="w-full text-right px-4 py-2.5 rounded-xl text-xs font-bold bg-slate-50 hover:bg-emeraldLight text-emeraldDark flex items-center gap-2.5 border border-slate-200">
+        <i class="fa-solid fa-stamp text-amber-600"></i>
+        <span>المديرة: أ. هناء المعاوي</span>
+      </button>
+
+      <a href="https://hindobia.github.io/Hindobia/" target="_blank" rel="noopener noreferrer"
+        class="w-full text-right px-4 py-2.5 rounded-xl text-xs font-bold bg-goldSoft hover:bg-goldWarm hover:text-white text-amber-900 flex items-center gap-2.5 border border-goldWarm/40">
+        <i class="fa-solid fa-globe text-goldBright"></i>
+        <span class="font-hindobia tracking-wider">Hindobia</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Official Luxury Header -->
+  <header class="glass-header text-white gold-border-gradient shadow-lg">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-7 sm:py-9 relative z-10">
+      <div class="flex flex-col lg:flex-row items-center justify-between gap-6">
+        
+        <!-- Right: Ministry & School Identity -->
+        <div class="flex flex-col sm:flex-row items-center text-center sm:text-right gap-4">
+          <!-- Custom Luxury Emblem Icon (No Text) -->
+          <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-white/10 backdrop-blur-md border border-goldWarm/50 flex items-center justify-center shadow-inner shrink-0">
+            <i class="fa-solid fa-hands-holding-child text-3xl sm:text-4xl text-amber-300"></i>
+          </div>
+
+          <div>
+            <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2 text-xs sm:text-sm text-goldBright font-semibold mb-1">
+              <span>المملكة العربية السعودية</span>
+              <span class="opacity-50">•</span>
+              <span>وزارة التعليم</span>
+              <span class="opacity-50">•</span>
+              <span>الإدارة العامة للتعليم بمنطقة عسير</span>
+            </div>
+            <h2 class="text-base sm:text-lg font-bold text-emerald-100 mb-1.5">
+              مدرسة الهيشة للطفولة المبكرة | بيشة
+            </h2>
+            <h1 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white tracking-tight leading-snug">
+              خطة تعزيز العمل التعاوني <span class="text-goldBright">١٤٤٨هـ</span>
+            </h1>
+          </div>
+        </div>
+
+        <!-- Left: Leadership & Coordinator Badges with Glowing Hindobia Icon Link -->
+        <div class="flex flex-col sm:flex-row lg:flex-col gap-2.5 w-full sm:w-auto">
+          <div class="bg-white/10 backdrop-blur-md border border-goldWarm/40 rounded-2xl px-4 py-2.5 flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl bg-goldWarm/20 border border-goldBright/50 flex items-center justify-center text-goldBright shrink-0">
+              <i class="fa-solid fa-user-tie"></i>
+            </div>
+            <div>
+              <p class="text-[11px] text-emerald-200">إعداد وتنسيق ومتابعة</p>
+              <a href="https://hindobia.github.io/Hindobia/" target="_blank" rel="noopener noreferrer" 
+                class="group inline-block mt-0.5 transition hover:scale-[1.02]">
+                <span class="text-sm font-bold text-white block">أ. هند حريسن القرني</span>
+                <span class="font-hindobia text-xs text-goldBright font-extrabold tracking-wider hindobia-glow inline-flex items-center gap-1">
+                  <span>Hindobia</span>
+                  <i class="fa-solid fa-arrow-up-right-from-square text-[9px] opacity-80"></i>
+                </span>
+              </a>
+            </div>
+          </div>
+
+          <div class="bg-white/10 backdrop-blur-md border border-goldWarm/40 rounded-2xl px-4 py-2.5 flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl bg-emeraldBrand/40 border border-goldBright/50 flex items-center justify-center text-goldBright shrink-0">
+              <i class="fa-solid fa-award"></i>
+            </div>
+            <div>
+              <p class="text-[11px] text-emerald-200">اعتماد مديرة المدرسة</p>
+              <p class="text-sm font-bold text-white">أ. هناء مشحن المعاوي</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Wrapper -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6">
+
+    <!-- Quick Executive Dashboard KPIs -->
+    <section aria-label="ملخص مؤشرات التنفيذ" class="grid grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4">
+      <!-- Total Programs -->
+      <div class="luxury-card rounded-2xl p-4 shadow-luxury flex items-center gap-3.5">
+        <div class="w-12 h-12 rounded-2xl bg-emeraldDark text-goldBright flex items-center justify-center text-xl shrink-0">
+          <i class="fa-solid fa-layer-group"></i>
+        </div>
+        <div>
+          <p class="text-xs font-semibold text-slate-500">إجمالي البرامج والمهام</p>
+          <p class="text-2xl font-extrabold text-emeraldDark" id="stat-total">37</p>
+        </div>
+      </div>
+
+      <!-- Completed -->
+      <div class="luxury-card rounded-2xl p-4 shadow-luxury flex items-center gap-3.5">
+        <div class="w-12 h-12 rounded-2xl bg-emeraldLight text-emeraldBrand flex items-center justify-center text-xl shrink-0">
+          <i class="fa-solid fa-circle-check"></i>
+        </div>
+        <div>
+          <p class="text-xs font-semibold text-slate-500">البرامج المنفذة</p>
+          <div class="flex items-baseline gap-1.5">
+            <p class="text-2xl font-extrabold text-emeraldBrand" id="stat-completed">0</p>
+            <span class="text-xs font-bold text-slate-400" id="stat-inprogress-sub">(0 قيد التنفيذ)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Attached Evidences -->
+      <div class="luxury-card rounded-2xl p-4 shadow-luxury flex items-center gap-3.5">
+        <div class="w-12 h-12 rounded-2xl bg-goldSoft text-goldWarm border border-goldWarm/30 flex items-center justify-center text-xl shrink-0">
+          <i class="fa-solid fa-link"></i>
+        </div>
+        <div>
+          <p class="text-xs font-semibold text-slate-500">روابط الشواهد المرفقة</p>
+          <p class="text-2xl font-extrabold text-amber-700" id="stat-evidences">0</p>
+        </div>
+      </div>
+
+      <!-- Principal Approvals -->
+      <div class="luxury-card rounded-2xl p-4 shadow-luxury flex items-center gap-3.5">
+        <div class="w-12 h-12 rounded-2xl bg-teal-50 text-teal-800 border border-teal-200 flex items-center justify-center text-xl shrink-0">
+          <i class="fa-solid fa-stamp"></i>
+        </div>
+        <div>
+          <p class="text-xs font-semibold text-slate-500">اعتمادات المديرة</p>
+          <p class="text-2xl font-extrabold text-teal-900" id="stat-approvals">0</p>
+        </div>
+      </div>
+
+      <!-- Overall Completion Progress Bar -->
+      <div class="col-span-2 lg:col-span-1 luxury-card rounded-2xl p-4 shadow-luxury flex flex-col justify-center">
+        <div class="flex items-center justify-between mb-1.5">
+          <span class="text-xs font-bold text-emeraldDark">نسبة الإنجاز الكلية</span>
+          <span class="text-lg font-extrabold text-emeraldBrand" id="stat-percentage">0%</span>
+        </div>
+        <div class="w-full h-3 bg-slate-100 rounded-full overflow-hidden border border-slate-200/70">
+          <div id="stat-progress-bar" class="h-full bg-gradient-to-l from-goldBright via-emeraldBrand to-emeraldDark rounded-full transition-all duration-700" style="width: 0%"></div>
+        </div>
+        <p class="text-[11px] text-slate-500 mt-1.5 text-left" id="stat-remaining-text">متبقي 37 برنامجاً</p>
+      </div>
+    </section>
+
+    <!-- Role Guidance Banner (Contextual) -->
+    <div id="role-banner" class="rounded-2xl p-4 border transition-all no-print flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-white border-goldWarm/40 shadow-sm">
+      <div class="flex items-center gap-3">
+        <div id="role-banner-icon" class="w-10 h-10 rounded-xl bg-emeraldLight text-emeraldDark flex items-center justify-center text-lg shrink-0">
+          <i class="fa-solid fa-landmark"></i>
+        </div>
+        <div>
+          <h3 id="role-banner-title" class="text-sm font-bold text-emeraldDark">الإطار التنظيمي والمجالات — خطة تعزيز العمل التعاوني ١٤٤٨هـ</h3>
+          <p id="role-banner-desc" class="text-xs text-slate-600 mt-0.5">تستعرض هذه الصفحة المرجعيات والتكليفات والرؤية والمجالات الأربعة. للدخول إلى <b>المتابعة الزمنية ومؤشرات الأداء</b>، يرجى اختيار صفة المستخدم من <b>بوابة الدخول والمتابعة</b> في أسفل الصفحة أو من الشريط العلوي.</p>
+        </div>
+      </div>
+      <button id="role-logout-btn" onclick="returnToLanding()" class="hidden px-3.5 py-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-bold shrink-0 transition">
+        <i class="fa-solid fa-right-from-bracket ml-1"></i> خروج للواجهة الرئيسية
+      </button>
+    </div>
+
+    <!-- Navigation Tabs (Hidden on Landing View, Visible after Login) -->
+    <nav id="workspace-nav" class="hidden bg-white rounded-2xl p-1.5 shadow-luxury border border-goldWarm/25 flex-wrap gap-1.5 no-print" aria-label="أقسام المتابعة">
+      <button onclick="switchTab('timeline')" id="tab-btn-timeline"
+        class="flex-1 min-w-[160px] py-3 px-4 rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2 bg-emeraldDark text-white shadow-sm">
+        <i class="fa-solid fa-calendar-check text-goldBright"></i>
+        <span>المتابعة الزمنية والتنفيذ (٣٧)</span>
+      </button>
+
+      <button onclick="switchTab('kpis')" id="tab-btn-kpis"
+        class="flex-1 min-w-[160px] py-3 px-4 rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2 text-slate-600 hover:bg-emeraldLight/60">
+        <i class="fa-solid fa-chart-line text-emeraldBrand"></i>
+        <span>مؤشرات الأداء (KPIs)</span>
+      </button>
+
+      <button onclick="switchTab('framework')" id="tab-btn-framework"
+        class="flex-1 min-w-[160px] py-3 px-4 rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2 text-slate-600 hover:bg-emeraldLight/60">
+        <i class="fa-solid fa-sitemap text-goldWarm"></i>
+        <span>الإطار التنظيمي والمجالات</span>
+      </button>
+    </nav>
+
+    <!-- ===================================================================== -->
+    <!-- TAB 1: TIMELINE & EXECUTION TRACKING (HIDDEN ON INITIAL LANDING)      -->
+    <!-- ===================================================================== -->
+    <section id="tab-timeline" class="hidden space-y-5">
+      
+      <!-- Smart Filters Bar -->
+      <div class="luxury-card rounded-2xl p-4 shadow-luxury no-print space-y-3">
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-3">
+          <!-- Search Input -->
+          <div class="md:col-span-4 relative">
+            <i class="fa-solid fa-magnifying-glass absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+            <input type="text" id="filter-search" oninput="renderTimeline()"
+              placeholder="ابحث باسم البرنامج، الأسبوع، أو الجهة المنفذة..."
+              class="w-full pr-10 pl-3 py-2.5 rounded-xl border border-slate-200 focus:border-goldWarm focus:ring-2 focus:ring-goldWarm/20 outline-none text-sm bg-slate-50/70" />
+          </div>
+
+          <!-- Phase Filter -->
+          <div class="md:col-span-3">
+            <select id="filter-phase" onchange="renderTimeline()"
+              class="w-full px-3 py-2.5 rounded-xl border border-slate-200 focus:border-goldWarm focus:ring-2 focus:ring-goldWarm/20 outline-none text-sm font-semibold text-emeraldDark bg-slate-50/70">
+              <option value="all">جميع المراحل الدراسية (٣٧)</option>
+              <option value="prep">مرحلة الإعداد والبناء (٣ مهام)</option>
+              <option value="sem1">الفصل الدراسي الأول: الأسابيع ٣ - ١٨ (١٦ برنامجاً)</option>
+              <option value="sem2">الفصل الدراسي الثاني: الأسابيع ١ - ١٨ (١٨ برنامجاً)</option>
+            </select>
+          </div>
+
+          <!-- Status Filter -->
+          <div class="md:col-span-3">
+            <select id="filter-status" onchange="renderTimeline()"
+              class="w-full px-3 py-2.5 rounded-xl border border-slate-200 focus:border-goldWarm focus:ring-2 focus:ring-goldWarm/20 outline-none text-sm font-semibold text-emeraldDark bg-slate-50/70">
+              <option value="all">جميع حالات التنفيذ</option>
+              <option value="completed">مكتمل ومنفذ ✓</option>
+              <option value="in_progress">قيد التنفيذ ⏳</option>
+              <option value="pending">لم يبدأ بعد</option>
+              <option value="approved">معتمد من المديرة 🏅</option>
+              <option value="needs_evidence">بدون شاهد مرفق</option>
+            </select>
+          </div>
+
+          <!-- Domain Filter -->
+          <div class="md:col-span-2">
+            <select id="filter-domain" onchange="renderTimeline()"
+              class="w-full px-3 py-2.5 rounded-xl border border-slate-200 focus:border-goldWarm focus:ring-2 focus:ring-goldWarm/20 outline-none text-sm font-semibold text-emeraldDark bg-slate-50/70">
+              <option value="all">كل المجالات</option>
+              <option value="داخل المدرسة">داخل المدرسة</option>
+              <option value="مع الطلبة">مع الطلبة</option>
+              <option value="مع الأسرة">مع الأسرة</option>
+              <option value="المجتمع المحلي">المجتمع المحلي</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Results Counter & Quick Filter Reset -->
+        <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-100 text-xs text-slate-500">
+          <div>
+            يتم عرض <span id="visible-count" class="font-bold text-emeraldDark">37</span> برنامجاً ومهمة تنفيذية مرتبة زمنياً
+          </div>
+          <button onclick="resetFilters()" class="text-goldWarm hover:text-emeraldDark font-bold flex items-center gap-1 transition">
+            <i class="fa-solid fa-rotate-right"></i>
+            <span>إعادة ضبط الفلاتر</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Timeline Cards Container -->
+      <div id="timeline-container" class="space-y-4">
+        <!-- Populated dynamically via JS -->
+      </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- TAB 2: ORGANIZATIONAL FRAMEWORK & DOMAINS (DEFAULT LANDING VIEW)      -->
+    <!-- ===================================================================== -->
+    <section id="tab-framework" class="space-y-6">
+      
+      <!-- 1. إضاءة وطن -->
+      <div class="luxury-card rounded-3xl p-6 sm:p-8 shadow-luxury border-t-4 border-t-emeraldBrand relative overflow-hidden">
+        <div class="flex items-center gap-3 mb-5">
+          <div class="w-11 h-11 rounded-2xl bg-emeraldDark text-goldBright flex items-center justify-center text-xl">
+            <i class="fa-solid fa-crown"></i>
+          </div>
+          <div>
+            <h2 class="text-xl sm:text-2xl font-extrabold text-emeraldDark">إضاءة وطن</h2>
+            <p class="text-xs text-slate-500">توجيهات القيادة الرشيدة في جودة التعليم وتنمية القدرات البشرية</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <div class="bg-gradient-to-bl from-emeraldLight/80 to-white p-5 rounded-2xl border border-emeraldBrand/20 relative">
+            <i class="fa-solid fa-quote-right text-3xl text-goldWarm/30 absolute top-4 left-4"></i>
+            <p class="text-base sm:text-lg font-bold text-emeraldDark leading-relaxed mb-3">
+              «سنعمل على أن يكون التعليم في المملكة العربية السعودية نموذجاً ناجحاً ومرجعاً عالمياً في الجودة والتميز.»
+            </p>
+            <div class="flex items-center gap-2 text-xs sm:text-sm font-extrabold text-emeraldBrand">
+              <span class="w-2 h-2 rounded-full bg-goldWarm"></span>
+              <span>خادم الحرمين الشريفين الملك سلمان بن عبد العزيز آل سعود — حفظه الله</span>
+            </div>
+          </div>
+
+          <div class="bg-gradient-to-bl from-goldSoft to-white p-5 rounded-2xl border border-goldWarm/30 relative">
+            <i class="fa-solid fa-quote-right text-3xl text-emeraldBrand/20 absolute top-4 left-4"></i>
+            <p class="text-base sm:text-lg font-bold text-emeraldDark leading-relaxed mb-3">
+              «ثروتنا الأولى التي لا تعادلها ثروة مهما بلغت شعب طموح معظمه من الشباب، هو فخر بلادنا وضمان مستقبلها بعون الله.»
+            </p>
+            <div class="flex items-center gap-2 text-xs sm:text-sm font-extrabold text-amber-800">
+              <span class="w-2 h-2 rounded-full bg-emeraldBrand"></span>
+              <span>صاحب السمو الملكي ولي العهد الأمير محمد بن سلمان بن عبد العزيز آل سعود — حفظه الله</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. خطاب التكليف الرسمي -->
+      <div class="luxury-card rounded-3xl p-6 sm:p-8 shadow-luxury">
+        <div class="flex flex-wrap items-center justify-between gap-3 pb-4 mb-5 border-b border-goldWarm/25">
+          <div class="flex items-center gap-3">
+            <div class="w-11 h-11 rounded-2xl bg-goldSoft text-goldWarm border border-goldWarm/40 flex items-center justify-center text-xl">
+              <i class="fa-solid fa-file-signature"></i>
+            </div>
+            <div>
+              <h2 class="text-xl font-extrabold text-emeraldDark">خطاب التكليف الرسمي</h2>
+              <p class="text-xs text-slate-500">الموضوع: تكليف بإعداد وتنسيق خطة العمل التعاوني للعام الدراسي ١٤٤٨هـ</p>
+            </div>
+          </div>
+          <span class="px-3.5 py-1.5 rounded-full bg-emeraldLight text-emeraldDark text-xs font-bold border border-emeraldBrand/20">
+            التاريخ: الثلاثاء ٥ / ٣ / ١٤٤٨هـ
+          </span>
+        </div>
+
+        <div class="bg-slate-50/90 rounded-2xl p-5 sm:p-6 border border-slate-200/80 space-y-3 text-slate-700 leading-relaxed text-sm sm:text-base">
+          <p class="font-bold text-emeraldDark">المكرمة المعلمة / أ. هند القرني ... وفقها الله</p>
+          <p class="font-semibold text-emeraldBrand">السلام عليكم ورحمة الله وبركاته ،،، وبعد :</p>
+          <p>
+            انطلاقاً من توجهات وزارة التعليم نحو تعزيز العمل المؤسسي وتكامل الأدوار داخل المجتمع المدرسي، ونظراً لما تتميزون به من كفاءة مهنية وروح مبادرة؛ فقد تقرر تكليفكم بإعداد وتنسيق خطة تعزيز العمل التعاوني بمدرسة الهيشة للطفولة المبكرة للعام الدراسي ١٤٤٨هـ، ومتابعة تنفيذ برامجها وتوثيق شواهدها بالتعاون مع منسوبات المدرسة ولجانها، على أن يتم الانتهاء من بناء الخطة خلال أسبوعين من تاريخ القرار، ليبدأ التنفيذ الفعلي مع مطلع الأسبوع الثالث من الفصل الدراسي الأول.
+          </p>
+          <p>سائلين الله لكم التوفيق والسداد، وأن يجعل جهودكم مباركة ومثمرة في الارتقاء ببيئتنا التعليمية.</p>
+          <div class="pt-3 flex justify-end">
+            <div class="text-center bg-white px-6 py-3 rounded-xl border border-goldWarm/30 shadow-sm">
+              <p class="text-xs text-slate-500">مديرة المدرسة</p>
+              <p class="text-base font-extrabold text-emeraldDark mt-0.5">أ. هناء مشحن المعاوي</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. المقدمة التربوية والمرجعيات -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="lg:col-span-2 luxury-card rounded-3xl p-6 shadow-luxury flex flex-col justify-between">
+          <div>
+            <h3 class="text-lg font-extrabold text-emeraldDark mb-3 flex items-center gap-2">
+              <i class="fa-solid fa-feather-pointed text-goldWarm"></i>
+              <span>المقدمة التربوية</span>
+            </h3>
+            <p class="text-sm sm:text-base text-slate-700 leading-relaxed mb-4">
+              انطلاقاً من توجهات وزارة التعليم نحو ترسيخ العمل المؤسسي وتحقيق التكامل بين جميع منسوبات المدرسة، وإيماناً بأهمية العمل التعاوني في تجويد الأداء التعليمي والإداري؛ أُعدت هذه الخطة لتكون إطاراً عملياً منظماً يرسّخ ثقافة الفريق الواحد، ويرتقي بجودة الممارسات التربوية في مرحلة الطفولة المبكرة والصفوف الأولية.
+            </p>
+            <blockquote class="bg-emeraldLight/60 border-r-4 border-goldWarm p-4 rounded-xl text-sm text-emeraldDark italic leading-relaxed">
+              «إن العقل الواحد قد يبتكر حلاً، أما العقول المتكاملة فتصنع مستقبلاً تربوياً واعداً. فالعمل التعاوني الذي نطمح إليه في مجتمعنا المدرسي يتجاوز مجرد توزيع المهام، ليكون تناغماً في الرؤى، وتشاركاً في الخبرات، وبناءً راسخاً لجسور الثقة المهنية؛ فكما تصنع قطرات المطر باتحادها نهراً يروي، وتتلاحم خيوط النسيج لتشكل درعاً يحمي، تتآزر جهودنا التربوية لتثمر بيئة تعليمية ملهمة ومستدامة.»
+              <footer class="not-italic font-bold text-xs text-emeraldBrand mt-2">— أ. هند القرني</footer>
+            </blockquote>
+          </div>
+        </div>
+
+        <div class="luxury-card rounded-3xl p-6 shadow-luxury">
+          <h3 class="text-lg font-extrabold text-emeraldDark mb-4 flex items-center gap-2">
+            <i class="fa-solid fa-book-bookmark text-emeraldBrand"></i>
+            <span>المرجعيات المعتمدة</span>
+          </h3>
+          <ul class="space-y-3 text-sm text-slate-700">
+            <li class="flex items-start gap-2.5 bg-slate-50 p-3 rounded-xl border border-slate-100">
+              <i class="fa-solid fa-check-circle text-emeraldBrand mt-1"></i>
+              <span>الدليل التنظيمي لمدارس التعليم العام — وزارة التعليم.</span>
+            </li>
+            <li class="flex items-start gap-2.5 bg-slate-50 p-3 rounded-xl border border-slate-100">
+              <i class="fa-solid fa-check-circle text-emeraldBrand mt-1"></i>
+              <span>الدليل الإجرائي لمدارس التعليم العام — وزارة التعليم.</span>
+            </li>
+            <li class="flex items-start gap-2.5 bg-slate-50 p-3 rounded-xl border border-slate-100">
+              <i class="fa-solid fa-check-circle text-emeraldBrand mt-1"></i>
+              <span>إطار التقويم المدرسي — هيئة تقويم التعليم والتدريب.</span>
+            </li>
+            <li class="flex items-start gap-2.5 bg-slate-50 p-3 rounded-xl border border-slate-100">
+              <i class="fa-solid fa-check-circle text-goldWarm mt-1"></i>
+              <span>مستهدفات رؤية المملكة العربية السعودية ٢٠٣٠ في تنمية القدرات البشرية.</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- 4. الرؤية والرسالة والقيم الجوهرية الست -->
+      <div class="luxury-card rounded-3xl p-6 sm:p-8 shadow-luxury space-y-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <div class="bg-emeraldDark text-white rounded-2xl p-6 relative overflow-hidden">
+            <div class="w-10 h-10 rounded-xl bg-goldWarm/20 text-goldBright flex items-center justify-center text-lg mb-3">
+              <i class="fa-solid fa-eye"></i>
+            </div>
+            <h3 class="text-lg font-extrabold text-goldBright mb-2">الرؤية</h3>
+            <p class="text-sm sm:text-base text-emerald-50 leading-relaxed">
+              بناء بيئة مدرسية تعاونية محفّزة تعزز العمل بروح الفريق وتحقق التميز في الأداء المؤسسي ونواتج التعلم.
+            </p>
+          </div>
+
+          <div class="bg-gradient-to-br from-emeraldBrand to-emeraldDark text-white rounded-2xl p-6 relative overflow-hidden">
+            <div class="w-10 h-10 rounded-xl bg-white/15 text-goldBright flex items-center justify-center text-lg mb-3">
+              <i class="fa-solid fa-bullseye"></i>
+            </div>
+            <h3 class="text-lg font-extrabold text-goldBright mb-2">الرسالة</h3>
+            <p class="text-sm sm:text-base text-emerald-50 leading-relaxed">
+              تفعيل الشراكة المهنية والمجتمعية بين منسوبات المدرسة والطلبة، وأولياء الأمور، ومؤسسات المجتمع المحلي، عبر ممارسات منظمة قائمة على التواصل الفعّال وتبادل الخبرات والمسؤولية المشتركة.
+            </p>
+          </div>
+        </div>
+
+        <div>
+          <h3 class="text-lg font-extrabold text-emeraldDark mb-3 flex items-center gap-2">
+            <i class="fa-solid fa-gem text-goldWarm"></i>
+            <span>القيم الجوهرية الست</span>
+          </h3>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
+            <div class="p-4 rounded-2xl bg-goldSoft/70 border border-goldWarm/30">
+              <h4 class="font-extrabold text-emeraldDark text-sm mb-1">١. التعاون</h4>
+              <p class="text-xs text-slate-600">توحيد الجهود بروح الفريق الواحد لتحقيق الأهداف المشتركة.</p>
+            </div>
+            <div class="p-4 rounded-2xl bg-emeraldLight/50 border border-emeraldBrand/20">
+              <h4 class="font-extrabold text-emeraldDark text-sm mb-1">٢. المسؤولية</h4>
+              <p class="text-xs text-slate-600">الالتزام بالأدوار والمهام الموكلة بوضوح وإيجابية.</p>
+            </div>
+            <div class="p-4 rounded-2xl bg-goldSoft/70 border border-goldWarm/30">
+              <h4 class="font-extrabold text-emeraldDark text-sm mb-1">٣. الاحترام</h4>
+              <p class="text-xs text-slate-600">بناء علاقات مهنية وإنسانية قائمة على التقدير المتبادل.</p>
+            </div>
+            <div class="p-4 rounded-2xl bg-emeraldLight/50 border border-emeraldBrand/20">
+              <h4 class="font-extrabold text-emeraldDark text-sm mb-1">٤. الشراكة</h4>
+              <p class="text-xs text-slate-600">مد جسور التكامل مع الأسرة والمجتمع المحلي.</p>
+            </div>
+            <div class="p-4 rounded-2xl bg-goldSoft/70 border border-goldWarm/30">
+              <h4 class="font-extrabold text-emeraldDark text-sm mb-1">٥. المبادرة والإتقان</h4>
+              <p class="text-xs text-slate-600">تقديم أفكار تطويرية وتنفيذها بجودة عالية.</p>
+            </div>
+            <div class="p-4 rounded-2xl bg-emeraldLight/50 border border-emeraldBrand/20">
+              <h4 class="font-extrabold text-emeraldDark text-sm mb-1">٦. الانتماء</h4>
+              <p class="text-xs text-slate-600">تعزيز الولاء للدين والوطن والمدرسة.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- الأهداف العامة والخاصة -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5 pt-2">
+          <div class="bg-slate-50 rounded-2xl p-5 border border-slate-200/80">
+            <h4 class="font-extrabold text-emeraldDark text-base mb-3 flex items-center gap-2">
+              <i class="fa-solid fa-star text-goldWarm"></i>
+              <span>الأهداف العامة</span>
+            </h4>
+            <ol class="list-decimal list-inside space-y-2 text-xs sm:text-sm text-slate-700">
+              <li>ترسيخ ثقافة العمل التعاوني والعمل بروح الفريق بين جميع منسوبات المدرسة.</li>
+              <li>رفع كفاءة الأداء التعليمي والإداري عبر تكامل الجهود وتبادل الخبرات التربوية.</li>
+              <li>بناء بيئة صفية ومدرسية آمنة وجاذبة تدعم نمو طلبة الطفولة المبكرة معرفياً وسلوكياً.</li>
+              <li>تعزيز الشراكة الفاعلة مع الأسرة والمجتمع المحلي لدعم نواتج التعلم والاختبارات الوطنية.</li>
+              <li>تحقيق متطلبات التقويم المدرسي والتحسين المستمر والتميز المؤسسي.</li>
+            </ol>
+          </div>
+
+          <div class="bg-slate-50 rounded-2xl p-5 border border-slate-200/80">
+            <h4 class="font-extrabold text-emeraldDark text-base mb-3 flex items-center gap-2">
+              <i class="fa-solid fa-list-check text-emeraldBrand"></i>
+              <span>الأهداف الخاصة</span>
+            </h4>
+            <ol class="list-decimal list-inside space-y-2 text-xs sm:text-sm text-slate-700">
+              <li>عقد اجتماعات دورية وورش تشاركية لتبادل الخبرات وتوحيد الرؤى التربوية.</li>
+              <li>تفعيل مجتمعات التعلم المهنية والزيارات التبادلية وتدريب الأقران بين المعلمات.</li>
+              <li>توزيع الأدوار والمسؤوليات بعدالة ووضوح وفق اللجان وفرق العمل المدرسية.</li>
+              <li>تطبيق استراتيجيات التعلم التعاوني وتشكيل الفرق الطلابية لتنمية مهارات العمل الجماعي.</li>
+              <li>تفعيل قنوات التواصل المنتظمة مع أولياء الأمور وإشراكهم في البرامج والمجالس المدرسية.</li>
+              <li>توثيق كافة الممارسات والشواهد وفق نماذج متابعة ميسرة وقياس أثرها.</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+
+      <!-- 5. مجالات العمل التعاوني الأربعة -->
+      <div class="space-y-4">
+        <h2 class="text-xl font-extrabold text-emeraldDark flex items-center gap-2">
+          <i class="fa-solid fa-shapes text-goldWarm"></i>
+          <span>مجالات العمل التعاوني الأربعة وآليات تنفيذها</span>
+        </h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <!-- Domain 1 -->
+          <div class="luxury-card rounded-3xl p-6 shadow-luxury border-r-4 border-r-emeraldDark">
+            <div class="flex items-center justify-between mb-3">
+              <span class="px-3 py-1 rounded-full bg-emeraldDark text-goldBright text-xs font-bold">المجال الأول</span>
+              <i class="fa-solid fa-users-gear text-emeraldDark/40 text-xl"></i>
+            </div>
+            <h3 class="text-lg font-extrabold text-emeraldDark mb-3">أولاً: داخل المدرسة (بين المنسوبات)</h3>
+            <ul class="space-y-1.5 text-xs sm:text-sm text-slate-700 mb-4 list-disc list-inside">
+              <li>تشكيل اللجان وفرق العمل وتوزيع الأدوار بعدالة.</li>
+              <li>تفعيل مجتمعات التعلم المهنية والزيارات التبادلية وتدريب الأقران.</li>
+              <li>عقد لقاءات دورية ودية وحلقات نقاش لتبادل الأفكار والمقترحات.</li>
+              <li>التعاون في بناء الخطط العلاجية والإثرائية والبرامج الصحية.</li>
+            </ul>
+            <div class="pt-3 border-t border-slate-100 text-xs space-y-1">
+              <p><strong class="text-emeraldDark">الجهات المنفذة:</strong> مديرة المدرسة، الوكيلة، منسقة الخطة، المعلمات، الموجهة الطلابية والصحية.</p>
+              <p><strong class="text-goldWarm">الشواهد:</strong> سجل توزيع المهام، محاضر الاجتماعات، تقارير الزيارات التبادلية.</p>
+            </div>
+          </div>
+
+          <!-- Domain 2 -->
+          <div class="luxury-card rounded-3xl p-6 shadow-luxury border-r-4 border-r-emeraldBrand">
+            <div class="flex items-center justify-between mb-3">
+              <span class="px-3 py-1 rounded-full bg-emeraldBrand text-white text-xs font-bold">المجال الثاني</span>
+              <i class="fa-solid fa-children text-emeraldBrand/40 text-xl"></i>
+            </div>
+            <h3 class="text-lg font-extrabold text-emeraldDark mb-3">ثانياً: مع الطلبة داخل الصف وخارجه</h3>
+            <ul class="space-y-1.5 text-xs sm:text-sm text-slate-700 mb-4 list-disc list-inside">
+              <li>تطبيق استراتيجيات التعلم التعاوني وتوزيع الطلبة في فرق صفية.</li>
+              <li>تشكيل مجالس الحوار الطلابي والفرق المدرسية (الثقافية، الرياضية، التطوعية).</li>
+              <li>تشجيع مساعدة الأقران والمبادرات التطوعية البسيطة المناسبة لأعمارهم.</li>
+            </ul>
+            <div class="pt-3 border-t border-slate-100 text-xs space-y-1">
+              <p><strong class="text-emeraldDark">الجهات المنفذة:</strong> المعلمات، رائدة النشاط، الموجهة الطلابية.</p>
+              <p><strong class="text-goldWarm">الشواهد:</strong> خطط الدروس، صور الأنشطة الجماعية، سجل الفرق الطلابية.</p>
+            </div>
+          </div>
+
+          <!-- Domain 3 -->
+          <div class="luxury-card rounded-3xl p-6 shadow-luxury border-r-4 border-r-goldWarm">
+            <div class="flex items-center justify-between mb-3">
+              <span class="px-3 py-1 rounded-full bg-goldWarm text-white text-xs font-bold">المجال الثالث</span>
+              <i class="fa-solid fa-house-user text-goldWarm/50 text-xl"></i>
+            </div>
+            <h3 class="text-lg font-extrabold text-emeraldDark mb-3">ثالثاً: مع الأسرة (أولياء الأمور)</h3>
+            <ul class="space-y-1.5 text-xs sm:text-sm text-slate-700 mb-4 list-disc list-inside">
+              <li>تفعيل قنوات تواصل متنوعة ومنظمة مع الأسر.</li>
+              <li>عقد مجالس أولياء الأمور وإشراك ممثلين عنهم في اللجان والمقترحات.</li>
+              <li>تزويد الأسر بالأدلة الإرشادية لدعم التعلم والاختبارات الوطنية (نافس).</li>
+              <li>دعوة الأسر للمشاركة في المناسبات والأنشطة وتكريم المتفاعلين.</li>
+            </ul>
+            <div class="pt-3 border-t border-slate-100 text-xs space-y-1">
+              <p><strong class="text-emeraldDark">الجهات المنفذة:</strong> مديرة المدرسة، الوكيلة، الموجهة الطلابية، منسقة الإعلام.</p>
+              <p><strong class="text-goldWarm">الشواهد:</strong> محاضر مجالس أولياء الأمور، أرشيف الرسائل، بطاقات الدعوة والشكر.</p>
+            </div>
+          </div>
+
+          <!-- Domain 4 -->
+          <div class="luxury-card rounded-3xl p-6 shadow-luxury border-r-4 border-r-teal-700">
+            <div class="flex items-center justify-between mb-3">
+              <span class="px-3 py-1 rounded-full bg-teal-700 text-white text-xs font-bold">المجال الرابع</span>
+              <i class="fa-solid fa-handshake-angle text-teal-700/40 text-xl"></i>
+            </div>
+            <h3 class="text-lg font-extrabold text-emeraldDark mb-3">رابعاً: مع المجتمع المحلي (الشراكات المجتمعية)</h3>
+            <ul class="space-y-1.5 text-xs sm:text-sm text-slate-700 mb-4 list-disc list-inside">
+              <li>عقد شراكات مجتمعية مع المراكز الصحية والجهات الحكومية والخيرية.</li>
+              <li>تنفيذ حملات توعوية وصحية مشتركة تخدم الطلبة والحي.</li>
+              <li>تبادل الخبرات والتعاون الإيجابي مع المدارس المجاورة.</li>
+            </ul>
+            <div class="pt-3 border-t border-slate-100 text-xs space-y-1">
+              <p><strong class="text-emeraldDark">الجهات المنفذة:</strong> مديرة المدرسة، منسقة الشراكة المجتمعية، رائدة النشاط.</p>
+              <p><strong class="text-goldWarm">الشواهد:</strong> عقود ومذكرات الشراكة، تقارير الفعاليات، التغطيات الإعلامية.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 6. السجلات التوثيقية وجدول الاعتماد الرسمي الموقّع (ضمن الإطار التنظيمي) -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- 7 Documentary Records Checklist -->
+        <div class="luxury-card rounded-3xl p-6 shadow-luxury">
+          <h3 class="text-lg font-extrabold text-emeraldDark mb-1 flex items-center gap-2">
+            <i class="fa-solid fa-folder-open text-goldWarm"></i>
+            <span>قائمة التحقق من السجلات التوثيقية</span>
+          </h3>
+          <p class="text-xs text-slate-500 mb-4">السجلات السبعة المعتمدة في ملف الخطة</p>
+          <div id="records-checklist" class="space-y-2.5">
+            <!-- Populated via JS -->
+          </div>
+        </div>
+
+        <!-- Official Sign-off Table -->
+        <div class="luxury-card rounded-3xl p-6 shadow-luxury">
+          <h3 class="text-lg font-extrabold text-emeraldDark mb-1 flex items-center gap-2">
+            <i class="fa-solid fa-signature text-emeraldBrand"></i>
+            <span>جدول التوقيع والاعتماد الرسمي للخطة</span>
+          </h3>
+          <p class="text-xs text-slate-500 mb-4">اعتماد فريق العمل والقيادة المدرسية للعام الدراسي ١٤٤٨هـ</p>
+          <div class="overflow-x-auto">
+            <table class="w-full text-right text-xs sm:text-sm">
+              <thead>
+                <tr class="bg-goldSoft text-emeraldDark border-b border-goldWarm/30">
+                  <th class="p-3 rounded-tr-xl">الصفة في الخطة</th>
+                  <th class="p-3">الاسم</th>
+                  <th class="p-3">التاريخ</th>
+                  <th class="p-3 rounded-tl-xl text-center">الحالة</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100">
+                <tr>
+                  <td class="p-3 font-semibold text-slate-600">منسقة الخطة</td>
+                  <td class="p-3 font-bold text-emeraldDark">أ. هند القرني</td>
+                  <td class="p-3 text-slate-500">١٧ / ٣ / ١٤٤٨هـ</td>
+                  <td class="p-3 text-center"><span class="px-2.5 py-0.5 rounded-full bg-emeraldLight text-emeraldBrand text-xs font-bold">معتمد ✓</span></td>
+                </tr>
+                <tr>
+                  <td class="p-3 font-semibold text-slate-600">وكيلة المدرسة</td>
+                  <td class="p-3 font-bold text-emeraldDark">أ. أمل المعاوي</td>
+                  <td class="p-3 text-slate-500">١٨ / ٣ / ١٤٤٨هـ</td>
+                  <td class="p-3 text-center"><span class="px-2.5 py-0.5 rounded-full bg-emeraldLight text-emeraldBrand text-xs font-bold">معتمد ✓</span></td>
+                </tr>
+                <tr>
+                  <td class="p-3 font-semibold text-slate-600">رائدة النشاط الطلابي</td>
+                  <td class="p-3 font-bold text-emeraldDark">أ. سارة الشهراني</td>
+                  <td class="p-3 text-slate-500">١٨ / ٣ / ١٤٤٨هـ</td>
+                  <td class="p-3 text-center"><span class="px-2.5 py-0.5 rounded-full bg-emeraldLight text-emeraldBrand text-xs font-bold">معتمد ✓</span></td>
+                </tr>
+                <tr>
+                  <td class="p-3 font-semibold text-slate-600">الموجهة الطلابية</td>
+                  <td class="p-3 font-bold text-emeraldDark">أ. عفاف الشهراني</td>
+                  <td class="p-3 text-slate-500">١٩ / ٣ / ١٤٤٨هـ</td>
+                  <td class="p-3 text-center"><span class="px-2.5 py-0.5 rounded-full bg-emeraldLight text-emeraldBrand text-xs font-bold">معتمد ✓</span></td>
+                </tr>
+                <tr>
+                  <td class="p-3 font-semibold text-slate-600">منسقة الشراكة المجتمعية</td>
+                  <td class="p-3 font-bold text-emeraldDark">أ. عفاف الزهراني</td>
+                  <td class="p-3 text-slate-500">٢٠ / ٣ / ١٤٤٨هـ</td>
+                  <td class="p-3 text-center"><span class="px-2.5 py-0.5 rounded-full bg-emeraldLight text-emeraldBrand text-xs font-bold">معتمد ✓</span></td>
+                </tr>
+                <tr class="bg-emeraldLight/40">
+                  <td class="p-3 font-extrabold text-emeraldBrand">يعتمد / مديرة المدرسة</td>
+                  <td class="p-3 font-extrabold text-emeraldDark">أ. هناء مشحن المعاوي</td>
+                  <td class="p-3 font-bold text-emeraldDark">٢١ / ٣ / ١٤٤٨هـ</td>
+                  <td class="p-3 text-center"><span class="px-2.5 py-1 rounded-full bg-emeraldDark text-goldBright text-xs font-bold">اعتماد نهائي 🏅</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- 7. بوابة الدخول والمتابعة (بوكس المستخدمين الثلاثة في نهاية الصفحة الافتتاحية) -->
+      <div id="landing-login-portal" class="luxury-card rounded-3xl p-6 sm:p-9 shadow-luxury border-2 border-goldWarm/40 bg-gradient-to-b from-white via-goldSoft/25 to-emeraldLight/30 no-print">
+        <div class="text-center max-w-2xl mx-auto mb-7">
+          <span class="inline-flex items-center gap-1.5 px-4 py-1 rounded-full bg-emeraldDark text-goldBright text-xs font-extrabold mb-2.5 shadow-sm">
+            <i class="fa-solid fa-door-open"></i>
+            <span>بوابة الدخول والمتابعة التنفيذية</span>
+          </span>
+          <h2 class="text-2xl sm:text-3xl font-extrabold text-emeraldDark">اختاري صفة الدخول للانتقال إلى المتابعة ومؤشرات الأداء</h2>
+          <p class="text-xs sm:text-sm text-slate-600 mt-1.5">
+            تم فصل مساحات العمل لضمان خصوصية ووضوح مهام كل دور؛ اختاري حسابكِ للمتابعة أو ادخلي كزائر للاطلاع العام.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+          <!-- User Card 1: Principal -->
+          <div class="rounded-2xl bg-white p-6 border-2 border-goldWarm/40 hover:border-goldWarm shadow-luxury hover:shadow-luxury-hover transition-all flex flex-col justify-between text-center group">
+            <div>
+              <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-goldWarm to-amber-700 text-white flex items-center justify-center text-2xl mx-auto mb-4 shadow-md group-hover:scale-105 transition-transform">
+                <i class="fa-solid fa-stamp"></i>
+              </div>
+              <span class="px-3 py-0.5 rounded-full bg-goldSoft text-amber-800 text-[11px] font-extrabold border border-goldWarm/30">القيادة المدرسية</span>
+              <h3 class="text-lg font-extrabold text-emeraldDark mt-2">مديرة المدرسة</h3>
+              <p class="text-sm font-bold text-amber-800 mt-0.5">أ. هناء مشحن المعاوي</p>
+              <p class="text-xs text-slate-500 mt-2.5 leading-relaxed">
+                الاطلاع على البرامج والشواهد المرفوعة، اختيار وإرسال التغذية الراجعة الجاهزة أو المعدلة، ومنح ختم الاعتماد الرسمي.
+              </p>
+            </div>
+            <button onclick="openAuthModal('principal')"
+              class="mt-5 w-full py-3 px-4 rounded-xl bg-goldWarm hover:bg-amber-600 text-white font-bold text-sm shadow-sm transition flex items-center justify-center gap-2">
+              <i class="fa-solid fa-lock"></i>
+              <span>دخول مديرة المدرسة</span>
+            </button>
+          </div>
+
+          <!-- User Card 2: Coordinator -->
+          <div class="rounded-2xl bg-white p-6 border-2 border-emeraldBrand/40 hover:border-emeraldBrand shadow-luxury hover:shadow-luxury-hover transition-all flex flex-col justify-between text-center group">
+            <div>
+              <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-emeraldBrand to-emeraldDark text-goldBright flex items-center justify-center text-2xl mx-auto mb-4 shadow-md group-hover:scale-105 transition-transform">
+                <i class="fa-solid fa-pen-to-square"></i>
+              </div>
+              <span class="px-3 py-0.5 rounded-full bg-emeraldLight text-emeraldBrand text-[11px] font-extrabold border border-emeraldBrand/20">التنسيق والمتابعة</span>
+              <h3 class="text-lg font-extrabold text-emeraldDark mt-2">منسقة الخطة</h3>
+              <p class="text-sm font-bold text-emeraldBrand mt-0.5">أ. هند القرني</p>
+              <p class="text-xs text-slate-500 mt-2.5 leading-relaxed">
+                تحديث حالات تنفيذ البرامج (٣٧ برنامجاً)، تحديد تواريخ التنفيذ الفعلية، إرفاق روابط الشواهد التوثيقية، وتحديث نسب المؤشرات.
+              </p>
+            </div>
+            <button onclick="openAuthModal('coordinator')"
+              class="mt-5 w-full py-3 px-4 rounded-xl bg-emeraldDark hover:bg-emeraldBrand text-white font-bold text-sm shadow-sm transition flex items-center justify-center gap-2">
+              <i class="fa-solid fa-lock"></i>
+              <span>دخول منسقة الخطة</span>
+            </button>
+          </div>
+
+          <!-- User Card 3: Visitor -->
+          <div class="rounded-2xl bg-white p-6 border-2 border-slate-200 hover:border-emeraldDark/50 shadow-luxury hover:shadow-luxury-hover transition-all flex flex-col justify-between text-center group">
+            <div>
+              <div class="w-16 h-16 rounded-2xl bg-slate-100 text-emeraldDark flex items-center justify-center text-2xl mx-auto mb-4 border border-slate-200 group-hover:scale-105 transition-transform">
+                <i class="fa-solid fa-eye"></i>
+              </div>
+              <span class="px-3 py-0.5 rounded-full bg-slate-100 text-slate-600 text-[11px] font-extrabold">دخول مباشر بدون كلمة مرور</span>
+              <h3 class="text-lg font-extrabold text-emeraldDark mt-2">الزائر / الاطلاع العام</h3>
+              <p class="text-sm font-bold text-slate-600 mt-0.5">المشرفات والمنسوبات وأولياء الأمور</p>
+              <p class="text-xs text-slate-500 mt-2.5 leading-relaxed">
+                استعراض الخطة الزمنية، متابعة نسب الإنجاز، الاطلاع على روابط الشواهد المعتمدة وتغذية مديرة المدرسة دون صلاحية تعديل.
+              </p>
+            </div>
+            <button onclick="enterWorkspaceAs('visitor')"
+              class="mt-5 w-full py-3 px-4 rounded-xl bg-slate-800 hover:bg-emeraldDark text-white font-bold text-sm shadow-sm transition flex items-center justify-center gap-2">
+              <i class="fa-solid fa-arrow-left"></i>
+              <span>دخول للاطلاع العام</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- TAB 3: KPIs (HIDDEN ON INITIAL LANDING, SHOWN AFTER LOGIN)            -->
+    <!-- ===================================================================== -->
+    <section id="tab-kpis" class="hidden space-y-6">
+      
+      <!-- KPIs Table -->
+      <div class="luxury-card rounded-3xl p-6 sm:p-8 shadow-luxury">
+        <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
+          <div>
+            <h2 class="text-xl font-extrabold text-emeraldDark flex items-center gap-2">
+              <i class="fa-solid fa-chart-pie text-goldWarm"></i>
+              <span>مؤشرات الأداء الرئيسة (KPIs) وقياس الأثر</span>
+            </h2>
+            <p id="kpi-subtitle-hint" class="text-xs text-slate-500 mt-0.5">متابعة النسب المحققة فعلياً مقارنة بخط الأساس والمستهدف السنوي</p>
+          </div>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-right border-collapse">
+            <thead>
+              <tr class="bg-emeraldDark text-white text-xs sm:text-sm">
+                <th class="p-3.5 rounded-tr-xl">م</th>
+                <th class="p-3.5">مؤشر الأداء</th>
+                <th class="p-3.5 text-center">خط الأساس</th>
+                <th class="p-3.5 text-center">المستهدف</th>
+                <th class="p-3.5 text-center w-52">المحقق الفعلي</th>
+                <th class="p-3.5 rounded-tl-xl">الأثر المتوقع</th>
+              </tr>
+            </thead>
+            <tbody id="kpi-table-body" class="divide-y divide-slate-100 text-xs sm:text-sm">
+              <!-- Populated via JS -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Evaluation Tools -->
+        <div class="mt-6 pt-5 border-t border-slate-100">
+          <h3 class="text-sm font-extrabold text-emeraldDark mb-3">أدوات التقييم والمتابعة المعتمدة:</h3>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+            <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/70">
+              <p class="font-bold text-emeraldDark mb-1">١. استبانات قياس الرضا الإلكترونية</p>
+              <p class="text-slate-600">تُطبق منتصف ونهاية العام الدراسي على المنسوبات وأولياء الأمور.</p>
+            </div>
+            <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/70">
+              <p class="font-bold text-emeraldDark mb-1">٢. بطاقة ملاحظة الأداء التعاوني</p>
+              <p class="text-slate-600">تُستخدم شهرياً لمتابعة تفاعل الفرق الصفية والمهنية.</p>
+            </div>
+            <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/70">
+              <p class="font-bold text-emeraldDark mb-1">٣. ملف التوثيق الإلكتروني والورقي</p>
+              <p class="text-slate-600">لحفظ الشواهد والصور والتقارير أولاً بأول.</p>
+            </div>
+            <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/70">
+              <p class="font-bold text-emeraldDark mb-1">٤. اجتماعات تحليل الأداء</p>
+              <p class="text-slate-600">تُعقد نهاية كل فصل دراسي لاستخلاص نقاط القوة وفرص التحسين.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- Floating WhatsApp Button (Fixed on Bottom-Left) -->
+  <a href="https://wa.me/966565588869" target="_blank" rel="noopener noreferrer" aria-label="تواصل معنا"
+    class="fixed bottom-6 left-6 z-50 w-14 h-14 rounded-full bg-[#25D366] hover:bg-[#20ba5a] text-white shadow-2xl flex items-center justify-center text-2xl transition-all hover:scale-110 active:scale-95 no-print group">
+    <i class="fa-brands fa-whatsapp"></i>
+    <span class="absolute right-full ml-3 px-3 py-1.5 rounded-xl bg-slate-900 text-white text-xs font-bold whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none shadow-md">
+      تواصل معنا
+    </span>
+  </a>
+
+  <!-- Footer (Centered & Stacked vertically as requested) -->
+  <footer class="bg-emeraldDark text-white/90 border-t border-goldWarm/30 py-6 mt-10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-2 text-xs sm:text-sm">
+      <p class="font-bold text-goldBright tracking-wide">
+        All Rights Reserved 2026©
+      </p>
+      <p class="font-bold text-white">
+        هند القرني | <span class="font-hindobia tracking-wider text-goldBright">Hindobia</span>
+      </p>
+      <p class="text-emerald-200 font-semibold">
+        بيشة - المملكة العربية السعودية
+      </p>
+    </div>
+  </footer>
+
+  <!-- ===================================================================== -->
+  <!-- MODAL 1: ROLE AUTHENTICATION MODAL                                    -->
+  <!-- ===================================================================== -->
+  <div id="auth-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 no-print">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 sm:p-7 shadow-2xl border border-goldWarm/40 relative animate-[slideUpFade_0.25s_ease]">
+      <button onclick="closeAuthModal()" class="absolute left-4 top-4 w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <div class="text-center mb-5">
+        <div id="auth-modal-icon" class="w-14 h-14 rounded-2xl bg-emeraldDark text-goldBright flex items-center justify-center text-2xl mx-auto mb-3 shadow-md">
+          <i class="fa-solid fa-key"></i>
+        </div>
+        <h3 id="auth-modal-title" class="text-xl font-extrabold text-emeraldDark">تسجيل الدخول</h3>
+        <p id="auth-modal-subtitle" class="text-xs text-slate-500 mt-1">أدخلي رمز الدخول المخصص للصلاحيات</p>
+      </div>
+
+      <form onsubmit="handleAuthSubmit(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-bold text-emeraldDark mb-1.5">كلمة المرور المعتمدة</label>
+          <input type="password" id="auth-pin-input"
+            class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:border-goldWarm focus:ring-2 focus:ring-goldWarm/25 outline-none text-center text-lg font-extrabold tracking-widest"
+            placeholder="••••" required />
+        </div>
+
+        <p id="auth-error-msg" class="hidden text-xs text-rose-600 font-bold text-center">كلمة المرور غير صحيحة، يرجى التحقق والمحاولة مرة أخرى.</p>
+
+        <div class="pt-1">
+          <button type="submit" class="w-full py-3 rounded-xl bg-emeraldDark hover:bg-emeraldBrand text-white font-bold text-sm shadow-md transition flex items-center justify-center gap-2">
+            <i class="fa-solid fa-unlock-keyhole text-goldBright"></i>
+            <span>دخول وتفعيل الصلاحيات</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+<!-- واجهة تغيير وتحديث كلمة المرور سحابياً -->
+<div class="my-6 p-5 bg-white/90 backdrop-blur-md rounded-3xl border border-goldWarm/40 shadow-luxury max-w-xl mx-auto no-print">
+    <h4 class="text-sm font-extrabold text-emeraldDark mb-3 flex items-center gap-2">
+        <i class="fa-solid fa-key text-goldWarm"></i> إعدادات الأمان وتغيير كلمات المرور سحابياً
+    </h4>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200">
+            <label class="block text-xs text-slate-600 mb-1 font-bold">كلمة مرور المنسقة الجديدة</label>
+            <div class="flex gap-2">
+                <input type="text" id="coord-new-pass" placeholder="مثال: 1448" class="flex-1 p-2 border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-emerald-600 bg-white">
+                <button onclick="updatePasswordInCloud('coordinator', document.getElementById('coord-new-pass').value)" class="bg-emeraldDark text-white px-3 py-2 rounded-xl text-xs font-bold hover:bg-emeraldBrand transition">تحديث</button>
+            </div>
+        </div>
+        <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200">
+            <label class="block text-xs text-slate-600 mb-1 font-bold">كلمة مرور المديرة الجديدة</label>
+            <div class="flex gap-2">
+                <input type="text" id="prin-new-pass" placeholder="مثال: 2030" class="flex-1 p-2 border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-emerald-600 bg-white">
+                <button onclick="updatePasswordInCloud('principal', document.getElementById('prin-new-pass').value)" class="bg-goldWarm text-white px-3 py-2 rounded-xl text-xs font-bold hover:bg-amber-600 transition">تحديث</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+  <!-- ===================================================================== -->
+  <!-- MODAL 2: COORDINATOR EVIDENCE & EXECUTION MODAL                       -->
+  <!-- ===================================================================== -->
+  <div id="coordinator-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 no-print overflow-y-auto">
+    <div class="bg-white rounded-3xl max-w-xl w-full p-6 sm:p-7 shadow-2xl border border-goldWarm/40 relative my-8">
+      <button onclick="closeCoordinatorModal()" class="absolute left-4 top-4 w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <div class="mb-4">
+        <span class="px-3 py-1 rounded-full bg-emeraldLight text-emeraldBrand text-xs font-bold">لوحة متابعة المنسقة — أ. هند القرني</span>
+        <h3 id="coord-modal-program-title" class="text-lg font-extrabold text-emeraldDark mt-2 leading-snug">اسم البرنامج</h3>
+        <p id="coord-modal-program-date" class="text-xs text-slate-500 mt-0.5">التاريخ المجدول</p>
+      </div>
+
+      <div class="space-y-4">
+        <!-- Execution Status & Actual Date -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-slate-50 p-4 rounded-2xl border border-slate-200/70">
+          <div>
+            <label class="block text-xs font-bold text-emeraldDark mb-1.5">حالة التنفيذ</label>
+            <select id="coord-status-select" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 text-sm font-bold text-emeraldDark bg-white outline-none focus:border-goldWarm">
+              <option value="pending">لم يبدأ بعد</option>
+              <option value="in_progress">قيد التنفيذ ⏳</option>
+              <option value="completed">مكتمل ومنفذ ✓</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-emeraldDark mb-1.5">تاريخ التنفيذ الفعلي (هجري / ميلادي)</label>
+            <input type="text" id="coord-actual-date" placeholder="مثال: ٢٥ / ٣ / ١٤٤٨هـ"
+              class="w-full px-3 py-2.5 rounded-xl border border-slate-300 text-sm bg-white outline-none focus:border-goldWarm" />
+          </div>
+        </div>
+
+        <!-- Coordinator Notes -->
+        <div>
+          <label class="block text-xs font-bold text-emeraldDark mb-1.5">ملاحظات التنفيذ (اختياري)</label>
+          <input type="text" id="coord-notes-input" placeholder="أضيفي أي ملاحظة توضيحية حول سير التنفيذ..."
+            class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm outline-none focus:border-goldWarm" />
+        </div>
+
+        <!-- Evidence Links Management -->
+        <div class="border-t border-slate-100 pt-4">
+          <div class="flex items-center justify-between mb-2">
+            <label class="text-xs font-extrabold text-emeraldDark flex items-center gap-1.5">
+              <i class="fa-solid fa-link text-goldWarm"></i>
+              <span>روابط الشواهد التوثيقية (Drive / OneDrive / صور / تقارير)</span>
+            </label>
+            <span id="coord-required-evidence-hint" class="text-[11px] text-slate-500"></span>
+          </div>
+
+          <!-- Existing Evidences List -->
+          <div id="coord-evidences-list" class="space-y-2 mb-3 max-h-40 overflow-y-auto">
+            <!-- Dynamic -->
+          </div>
+
+          <!-- Add New Evidence Form -->
+          <div class="bg-goldSoft/60 p-3.5 rounded-2xl border border-goldWarm/30 space-y-2.5">
+            <p class="text-xs font-bold text-emeraldDark">إضافة رابط شاهد جديد:</p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              <input type="text" id="new-evidence-title" placeholder="عنوان الشاهد (مثلاً: محضر الاجتماع)"
+                class="px-3 py-2 rounded-xl border border-slate-300 text-xs bg-white outline-none focus:border-goldWarm" />
+              <input type="url" id="new-evidence-url" placeholder="الرابط https://..."
+                class="px-3 py-2 rounded-xl border border-slate-300 text-xs bg-white outline-none focus:border-goldWarm text-left" dir="ltr" />
+            </div>
+            <button type="button" onclick="addEvidenceItem()"
+              class="w-full py-2 rounded-xl bg-goldWarm hover:bg-amber-600 text-white text-xs font-bold transition flex items-center justify-center gap-1.5">
+              <i class="fa-solid fa-plus"></i>
+              <span>إدراج الشاهد في القائمة</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Save Button -->
+        <div class="flex gap-2.5 pt-2">
+          <button type="button" onclick="saveCoordinatorChanges()"
+            class="flex-1 py-3 rounded-xl bg-emeraldDark hover:bg-emeraldBrand text-white font-bold text-sm shadow-md transition">
+            <i class="fa-solid fa-floppy-disk ml-1"></i> حفظ التحديثات والشواهد
+          </button>
+          <button type="button" onclick="closeCoordinatorModal()"
+            class="px-5 py-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-sm transition">
+            إلغاء
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- MODAL 3: PRINCIPAL FEEDBACK & APPROVAL MODAL                          -->
+  <!-- ===================================================================== -->
+  <div id="principal-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 no-print overflow-y-auto">
+    <div class="bg-white rounded-3xl max-w-xl w-full p-6 sm:p-7 shadow-2xl border border-goldWarm/50 relative my-8">
+      <button onclick="closePrincipalModal()" class="absolute left-4 top-4 w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <div class="mb-4">
+        <span class="px-3 py-1 rounded-full bg-goldSoft text-amber-800 border border-goldWarm/40 text-xs font-bold">
+          <i class="fa-solid fa-stamp ml-1"></i> اعتماد وتغذية راجعة — مديرة المدرسة أ. هناء المعاوي
+        </span>
+        <h3 id="prin-modal-program-title" class="text-lg font-extrabold text-emeraldDark mt-2 leading-snug">اسم البرنامج</h3>
+      </div>
+
+      <!-- Review Attached Evidences -->
+      <div class="mb-4 bg-slate-50 p-3.5 rounded-2xl border border-slate-200/80">
+        <p class="text-xs font-bold text-emeraldDark mb-2">الشواهد المرفوعة من المنسقة:</p>
+        <div id="prin-evidences-preview" class="space-y-1.5 text-xs">
+          <!-- Dynamic -->
+        </div>
+      </div>
+
+      <!-- Ready-made Feedback Dropdown -->
+      <div class="space-y-3">
+        <div>
+          <label class="block text-xs font-bold text-emeraldDark mb-1.5">اختيار عبارة تغذية راجعة جاهزة الصياغة:</label>
+          <select id="prin-preset-select" onchange="applyPresetFeedback()"
+            class="w-full px-3.5 py-2.5 rounded-xl border border-goldWarm/50 bg-goldSoft/50 text-xs sm:text-sm font-semibold text-emeraldDark outline-none focus:ring-2 focus:ring-goldWarm/30">
+            <option value="">-- اختاري عبارة جاهزة أو اكتبي مباشرة بالأسفل --</option>
+            <option value="عمل متميز وجهد مشكور يعكس روح الفريق الواحد، يُعتمد الشاهد.">🌟 عمل متميز وجهد مشكور يعكس روح الفريق الواحد، يُعتمد الشاهد.</option>
+            <option value="توثيق رائع وتنفيذ متقن وفق الخطة الزمنية المعتمدة، بارك الله في جهودكم.">🏅 توثيق رائع وتنفيذ متقن وفق الخطة الزمنية المعتمدة، بارك الله في جهودكم.</option>
+            <option value="مبادرة نوعية ذات أثر ملموس على البيئة المدرسية، نأمل الاستمرار بهذا التميز.">✨ مبادرة نوعية ذات أثر ملموس على البيئة المدرسية، نأمل الاستمرار بهذا التميز.</option>
+            <option value="جهد رائع، ويُقترح تعميم التجربة للاستفادة منها في بقية الفصول.">💡 جهد رائع، ويُقترح تعميم التجربة للاستفادة منها في بقية الفصول.</option>
+            <option value="تفعيل متميز لمجتمعات التعلم المهنية وتبادل الخبرات بين المعلمات، بوركت الجهود.">🤝 تفعيل متميز لمجتمعات التعلم المهنية وتبادل الخبرات بين المعلمات، بوركت الجهود.</option>
+            <option value="شراكة فاعلة ومثمرة مع الأسرة والمجتمع المحلي تخدم مصلحة أبنائنا الطلبة.">🏡 شراكة فاعلة ومثمرة مع الأسرة والمجتمع المحلي تخدم مصلحة أبنائنا الطلبة.</option>
+            <option value="أداء احترافي وتنظيم دقيق يعزز جاهزية المدرسة لمتطلبات التقويم المدرسي.">📊 أداء احترافي وتنظيم دقيق يعزز جاهزية المدرسة لمتطلبات التقويم المدرسي.</option>
+            <option value="نشكر لفريق العمل حسن التخطيط والتنفيذ، مع تمنياتنا بمزيد من العطاء والتميز.">💐 نشكر لفريق العمل حسن التخطيط والتنفيذ، مع تمنياتنا بمزيد من العطاء والتميز.</option>
+            <option value="يُرجى استكمال إرفاق رابط الشاهد التوثيقي لاعتماد البرنامج.">📎 يُرجى استكمال إرفاق رابط الشاهد التوثيقي لاعتماد البرنامج.</option>
+          </select>
+        </div>
+
+        <!-- Editable Textarea -->
+        <div>
+          <label class="block text-xs font-bold text-emeraldDark mb-1.5">نص التغذية الراجعة (قابل للتعديل والإضافة):</label>
+          <textarea id="prin-feedback-text" rows="3"
+            placeholder="اكتبي التغذية الراجعة أو عدّلي العبارة المختارة أعلاه..."
+            class="w-full p-3.5 rounded-2xl border border-slate-300 focus:border-goldWarm focus:ring-2 focus:ring-goldWarm/20 outline-none text-sm leading-relaxed"></textarea>
+        </div>
+
+        <!-- Approval Toggle -->
+        <label class="flex items-center gap-2.5 p-3 rounded-xl bg-emeraldLight/60 border border-emeraldBrand/20 cursor-pointer">
+          <input type="checkbox" id="prin-approve-checkbox" checked class="w-4 h-4 accent-emeraldBrand rounded" />
+          <span class="text-xs sm:text-sm font-bold text-emeraldDark">منح ختم الاعتماد الرسمي للبرنامج وشواهده</span>
+        </label>
+
+        <!-- Actions -->
+        <div class="flex gap-2.5 pt-2">
+          <button type="button" onclick="savePrincipalFeedback()"
+            class="flex-1 py-3 rounded-xl bg-emeraldBrand hover:bg-emeraldDark text-white font-bold text-sm shadow-md transition">
+            <i class="fa-solid fa-paper-plane ml-1"></i> اعتماد وإرسال التغذية الراجعة
+          </button>
+          <button type="button" onclick="closePrincipalModal()"
+            class="px-5 py-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-sm transition">
+            إلغاء
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="fixed bottom-5 left-5 z-50 space-y-2 no-print"></div>
+
+  <!-- ===================================================================== -->
+  <!-- JAVASCRIPT APPLICATION LOGIC                                          -->
+  <!-- ===================================================================== -->
+  <script>
+    // 1. INITIAL DATA: 37 Exact Programs & Tasks from PDF
+    const INITIAL_PROGRAMS = [
+      // مرحلة الإعداد والبناء (3 مهام)
+      {
+        id: 1,
+        phase: 'prep',
+        phaseLabel: 'مرحلة الإعداد والبناء',
+        week: 'أسبوع عودة المعلمين',
+        hijriDate: 'الثلاثاء ٥ / ٣ / ١٤٤٨هـ',
+        gregDate: '١٨ / ٨ / ٢٠٢٦م',
+        title: 'استلام خطاب التكليف الرسمي من مديرة المدرسة والبدء بجمع المرجعيات',
+        executors: 'أ. هناء المعاوي + أ. هند القرني',
+        requiredEvidence: 'خطاب التكليف الرسمي',
+        domain: 'داخل المدرسة',
+        status: 'completed',
+        actualDate: '٥ / ٣ / ١٤٤٨هـ',
+        coordinatorNotes: 'تم استلام خطاب التكليف الرسمي والبدء بحصر المرجعيات التنظيمية.',
+        evidences: [],
+        principalFeedback: 'بداية موفقة ومنظمة، تمنياتي لكِ بالتوفيق في قيادة فريق العمل التعاوني.',
+        approved: true
+      },
+      {
+        id: 2,
+        phase: 'prep',
+        phaseLabel: 'مرحلة الإعداد والبناء',
+        week: 'الأسبوع ١',
+        hijriDate: '١٠ - ١٤ / ٣ / ١٤٤٨هـ',
+        gregDate: '٢٣ - ٢٧ / ٨ / ٢٠٢٦م',
+        title: 'تحليل واقع المدرسة، حصر اللجان والفرق المدرسية، وصياغة مسودة الخطة',
+        executors: 'أ. هند القرني',
+        requiredEvidence: 'مسودة الخطة وحصر اللجان',
+        domain: 'داخل المدرسة',
+        status: 'completed',
+        actualDate: '١٤ / ٣ / ١٤٤٨هـ',
+        coordinatorNotes: '',
+        evidences: [],
+        principalFeedback: '',
+        approved: true
+      },
+      {
+        id: 3,
+        phase: 'prep',
+        phaseLabel: 'مرحلة الإعداد والبناء',
+        week: 'الأسبوع ٢',
+        hijriDate: '١٧ - ٢١ / ٣ / ١٤٤٨هـ',
+        gregDate: '٣٠ / ٨ - ٣ / ٩ / ٢٠٢٦م',
+        title: 'مراجعة الخطة واعتمادها من مديرة المدرسة، وتوزيع المهام على المنسوبات',
+        executors: 'أ. هناء المعاوي + أ. هند القرني',
+        requiredEvidence: 'نسخة الخطة المعتمدة + سجل التوزيع',
+        domain: 'داخل المدرسة',
+        status: 'completed',
+        actualDate: '٢١ / ٣ / ١٤٤٨هـ',
+        coordinatorNotes: '',
+        evidences: [],
+        principalFeedback: 'خطة شاملة ومبنية بدقة وفق التقويم الدراسي، تُعتمد للتنفيذ.',
+        approved: true
+      },
+
+      // الفصل الدراسي الأول: الأسابيع 3 - 18 (16 برنامجاً)
+      {
+        id: 4,
+        phase: 'sem1',
+        phaseLabel: 'الفصل الدراسي الأول',
+        week: 'الأسبوع ٣',
+        hijriDate: '٢٤ - ٢٨ / ٣ / ١٤٤٨هـ',
+        gregDate: '٦ - ١٠ / ٩ / ٢٠٢٦م',
+        title: 'الاجتماع التمهيدي لمنسوبات المدرسة للتعريف بالخطة وتشكيل فرق العمل الطلابية داخل الصفوف',
+        executors: 'مديرة المدرسة + منسقة الخطة + المعلمات',
+        requiredEvidence: 'محضر الاجتماع + قوائم الفرق',
+        domain: 'داخل المدرسة',
+        status: 'pending',
+        actualDate: '',
+        coordinatorNotes: '',
+        evidences: [],
+        principalFeedback: '',
+        approved: false
+      },
+      {
+        id: 5,
+        phase: 'sem1',
+        phaseLabel: 'الفصل الدراسي الأول',
+        week: 'الأسبوع ٤',
+        hijriDate: '٢ - ٤ / ٤ / ١٤٤٨هـ',
+        gregDate: '١٣ - ١٧ / ٩ / ٢٠٢٦م',
+        title: 'تفعيل قنوات التواصل الرقمية مع أولياء الأمور وإطلاق مبادرة «معاً نحتفي بالوطن» استعداداً لليوم الوطني',
+        executors: 'منسقة الإعلام + رائدة النشاط + المعلمات',
+        requiredEvidence: 'رسائل التواصل + خطة الاحتفاء',
+        domain: 'مع الأسرة',
+        status: 'pending',
+        actualDate: '',
+        coordinatorNotes: '',
+        evidences: [],
+        principalFeedback: '',
+        approved: false
+      },
+      {
+        id: 6,
+        phase: 'sem1',
+        phaseLabel: 'الفصل الدراسي الأول',
+        week: 'الأسبوع ٥',
+        hijriDate: '٩ - ١١ / ٤ / ١٤٤٨هـ',
+        gregDate: '٢٠ - ٢٢ / ٩ / ٢٠٢٦م',
+        title: 'تنفيذ فعالية اليوم الوطني بروح الفريق الواحد بمشاركة المنسوبات والطلبة والأسر',
+        executors: 'جميع منسوبات المدرسة',
+        requiredEvidence: 'تقرير الفعالية + صور التوثيق',
+        domain: 'مع الأسرة',
+        status: 'pending',
+        actualDate: '',
+        coordinatorNotes: '',
+        evidences: [],
+        principalFeedback: '',
+        approved: false
+      },
+      {
+        id: 7,
+        phase: 'sem1',
+        phaseLabel: 'الفصل الدراسي الأول',
+        week: 'الأسبوع ٦',
+        hijriDate: '١٦ - ٢٠ / ٤ / ١٤٤٨هـ',
+        gregDate: '٢٧ / ٩ - ١ / ١٠ / ٢٠٢٦م',
+        title: 'انطلاق مجتمعات التعلم المهنية (الجلسة الأولى) وتحديد الاحتياجات التدريبية للمعلمات',
+        executors: 'منسقة التطوير المهني + المعلمات',
+        requiredEvidence: 'سجل مجتمعات التعلم',
+        domain: 'داخل المدرسة',
+        status: 'pending',
+        actualDate: '',
+        coordinatorNotes: '',
+        evidences: [],
+        principalFeedback: '',
+        approved: false
+      },
+      {
+        id: 8,
+        phase: 'sem1',
+        phaseLabel: 'الفصل الدراسي الأول',
+        week: 'الأسبوع ٧',
+        hijriDate: '٢٣ - ٢٧ / ٤ / ١٤٤٨هـ',
+        gregDate: '٤ - ٨ / ١٠ / ٢٠٢٦م',
+        title: 'عقد مجلس أولياء الأمور الأول ومناقشة سبل دعم نواتج التعلم والسلوك الإيجابي',
+        executors: 'الإدارة المدرسية + الموجهة الطلابية',
+        requiredEvidence: 'محضر مجلس أولياء الأمور',
+        domain: 'مع الأسرة',
+        status: 'pending',
+        actualDate: '',
+        coordinatorNotes: '',
+        evidences: [],
+        principalFeedback: '',
+        approved: false
+      },
+      {
+        id: 9,
+        phase: 'sem1',
+        phaseLabel: 'الفصل الدراسي الأول',
+        week: 'الأسبوع ٨',
+        hijriDate: '٣٠ / ٤ - ٤ / ٥ / ١٤٤٨هـ',
+        gregDate: '١١ - ١٥ / ١٠ / ٢٠٢٦م',
+        title: 'بدء تنفيذ جدول الزيارات التبادلية وتدريب الأقران بين معلمات الصفوف الأولية',
+        executors: 'الوكيلة + المعلمات',
+        requiredEvidence: 'استمارات الزيارات التبادلية',
+        domain: 'داخل المدرسة',
+        status: 'pending',
+        actualDate: '',
+        coordinatorNotes: '',
+        evidences: [],
+        principalFeedback: '',
+        approved: false
+      },
+      {
+        id: 10,
+        phase: 'sem1',
+        phaseLabel: 'الفصل الدراسي الأول',
+        week: 'الأسبوع ٩',
+        hijriDate: '٧ - ١١ / ٥ / ١٤٤٨هـ',
+        gregDate: '١٨ - ٢٢ / ١٠ / ٢٠٢٦م',
+        title: 'تفعيل الشراكة المجتمعية مع المركز الصحي لتنفيذ برنامج توعوي مشترك للطلبة',
+        executors: 'منسقة الشراكة + الموجهة الصحية',
+        requiredEvidence: 'تقرير الشراكة الصحية',
+        domain: 'المجتمع المحلي',
+        status: 'pending',
+        actualDate: '',
+        coordinatorNotes: '',
+        evidences: [],
+        principalFeedback: '',
+        approved: false
+      },
+      {
+        id: 11,
+        phase: 'sem1',
+        phaseLabel: 'الفصل الدراسي الأول',
+        week: 'الأسبوع ١٠',
+        hijriDate: '١٥ - ١٨ / ٥ / ١٤٤٨هـ',
+        gregDate: '٢٦ - ٢٩ / ١٠ / ٢٠٢٦م',
+        title: 'حلقة نقاش ودية بين المنسوبات لتبادل التجارب الصفية الناجحة في التعلم التعاوني',
+        executors: 'منسقة الخطة + المعلمات',
+        requiredEvidence: 'محضر حلقة النقاش',
+        domain: 'داخل المدرسة',
+        status: 'pending',
+        actualDate: '',
+        coordinatorNotes: '',
+        evidences: [],
+        principalFeedback: '',
+        approved: false
+      },
+      {
+        id: 12,
+        phase: 'sem1',
+        phaseLabel: 'الفصل الدراسي الأول',
+        week: 'الأسبوع ١١',
+        hijriDate: '٢١ - ٢٥ / ٥ / ١٤٤٨هـ',
+        gregDate: '١ - ٥ / ١١ / ٢٠٢٦م',
+        title: 'إطلاق مبادرة تطوعية طلابية «يدي بيدك لمدرستي» لتعزيز قيم التعاون والانتماء',
+        executors: 'رائدة النشاط + المعلمات',
+        requiredEvidence: 'سجل العمل التطوعي',
+        domain: 'مع الطلبة',
+        status: 'pending',
+        actualDate: '',
+        coordinatorNotes: '',
+        evidences: [],
+        principalFeedback: '',
+        approved: false
+      },
+      {
+        id: 13,
+        phase: 'sem1',
+        phaseLabel: 'الفصل الدراسي الأول',
+        week: 'الأسبوع ١٢',
+        hijriDate: '٢٨ / ٥ - ٢ / ٦ / ١٤٤٨هـ',
+        gregDate: '٨ - ١٢ / ١١ / ٢٠٢٦م',
+        title: 'الاجتماع الدوري الثاني لمتابعة سير الخطة التشغيلية وتذليل أي تحديات ميدانية',
+        executors: 'مديرة المدرسة + رؤساء اللجان',
+        requiredEvidence: 'محضر الاجتماع الدوري',
+        domain: 'داخل المدرسة',
+        status: 'pending',
+        actualDate: '',
+        coordinatorNotes: '',
+        evidences: [],
+        principalFeedback: '',
+        approved: false
+      },
+      {
+        id: 14,
+        phase: 'sem1',
+        phaseLabel: 'الفصل الدراسي الأول',
+        week: 'الأسبوع ١٣',
+        hijriDate: '٥ - ٩ / ٦ / ١٤٤٨هـ',
+        gregDate: '١٥ - ١٩ / ١١ / ٢٠٢٦م',
+        title: 'مسابقة ثقافية وحركية جماعية بين الفرق الطلابية لتعزيز روح الفريق قبل الإجازة',
+        executors: 'رائدة النشاط + معلمات التربية البدنية',
+        requiredEvidence: 'تقرير المسابقة + صور',
+        domain: 'مع الطلبة',
+        status: 'pending',
+        actualDate: '',
+        coordinatorNotes: '',
+        evidences: [],
+        principalFeedback: '',
+        approved: false
+      },
+      {
+        id: 15,
+        phase: 'sem1',
+        phaseLabel: 'الفصل الدراسي الأول',
+        week: 'الأسبوع ١٤',
+        hijriDate: '٢٠ - ٢٣ / ٦ / ١٤٤٨هـ',
+        gregDate: '٣٠ / ١١ - ٣ / ١٢ / ٢٠٢٦م',
+        title: 'التعاون في بناء وتطبيق الخطط العلاجية والإثرائية للطلبة بناءً على نتائج التقويم المستمر',
+        executors: 'الموجهة الطلابية + المعلمات',
+        requiredEvidence: 'سجل الخطط العلاجية',
+        domain: 'مع الطلبة',
+        status: 'pending',
+        actualDate: '',
+        coordinatorNotes: '',
+        evidences: [],
+        principalFeedback: '',
+        approved: false
+      },
+      {
+        id: 16,
+        phase: 'sem1',
+        phaseLabel: 'الفصل الدراسي الأول',
+        week: 'الأسبوع ١٥',
+        hijriDate: '٢٦ / ٦ - ١ / ٧ / ١٤٤٨هـ',
+        gregDate: '٦ - ١٠ / ١٢ / ٢٠٢٦م',
+        title: 'الجلسة الثانية لمجتمعات التعلم المهنية حول توظيف التقنية والألعاب التفاعلية في التعلم التعاوني',
+        executors: 'منسقة التطوير المهني + المعلمات',
+        requiredEvidence: 'تقرير مجتمع التعلم',
+        domain: 'داخل المدرسة',
+        status: 'pending',
+        actualDate: '',
+        coordinatorNotes: '',
+        evidences: [],
+        principalFeedback: '',
+        approved: false
+      },
+      {
+        id: 17,
+        phase: 'sem1',
+        phaseLabel: 'الفصل الدراسي الأول',
+        week: 'الأسبوع ١٦',
+        hijriDate: '٤ - ٨ / ٧ / ١٤٤٨هـ',
+        gregDate: '١٣ - ١٧ / ١٢ / ٢٠٢٦م',
+        title: 'تنفيذ استبانة قياس رضا المنسوبات وأولياء الأمور عن برامج الفصل الدراسي الأول',
+        executors: 'منسقة الخطة + وحدة الجودة',
+        requiredEvidence: 'نتائج الاستبانة الإلكترونية',
+        domain: 'مع الأسرة',
+        status: 'pending',
+        actualDate: '',
+        coordinatorNotes: '',
+        evidences: [],
+        principalFeedback: '',
+        approved: false
+      },
+      {
+        id: 18,
+        phase: 'sem1',
+        phaseLabel: 'الفصل الدراسي الأول',
+        week: 'الأسبوع ١٧',
+        hijriDate: '١١ - ١٥ / ٧ / ١٤٤٨هـ',
+        gregDate: '٢٠ - ٢٤ / ١٢ / ٢٠٢٦م',
+        title: 'اجتماع لجنة التقييم الذاتي لتحليل نتائج الفصل الأول واستخلاص فرص التحسين',
+        executors: 'مديرة المدرسة + فريق التميز',
+        requiredEvidence: 'تقرير تحليل الأداء',
+        domain: 'داخل المدرسة',
+        status: 'pending',
+        actualDate: '',
+        coordinatorNotes: '',
+        evidences: [],
+        principalFeedback: '',
+        approved: false
+      },
+      {
+        id: 19,
+        phase: 'sem1',
+        phaseLabel: 'الفصل الدراسي الأول',
+        week: 'الأسبوع ١٨',
+        hijriDate: '١٨ - ٢٢ / ٧ / ١٤٤٨هـ',
+        gregDate: '٢٧ - ٣١ / ١٢ / ٢٠٢٦م',
+        title: '«الاحتفاء بالنجاح»: تكريم المنسوبات المتميزات والطلبة المتعاونين، وأولياء الأمور المتفاعلين',
+        executors: 'مديرة المدرسة + منسقة الخطة',
+        requiredEvidence: 'سجل التحفيز والتكريم',
+        domain: 'مع الأسرة',
+        status: 'pending',
+        actualDate: '',
+        coordinatorNotes: '',
+        evidences: [],
+        principalFeedback: '',
+        approved: false
+      },
+
+      // الفصل الدراسي الثاني: الأسابيع 1 - 18 (18 برنامجاً)
+      {
+        id: 20,
+        phase: 'sem2',
+        phaseLabel: 'الفصل الدراسي الثاني',
+        week: 'الأسبوع ١ (تمهيد)',
+        hijriDate: '٩ - ١٣ / ٨ / ١٤٤٨هـ',
+        gregDate: '١٧ - ٢١ / ١ / ٢٠٢٧م',
+        title: 'التهيئة والاستعداد ومراجعة خطط التحسين للفصل الدراسي الثاني',
+        executors: 'إدارة المدرسة + منسقة الخطة',
+        requiredEvidence: 'خطة التهيئة والتحسين',
+        domain: 'داخل المدرسة',
+        status: 'pending',
+        actualDate: '',
+        coordinatorNotes: '',
+        evidences: [],
+        principalFeedback: '',
+        approved: false
+      },
+      {
+        id: 21,
+        phase: 'sem2',
+        phaseLabel: 'الفصل الدراسي الثاني',
+        week: 'الأسبوع ٢',
+        hijriDate: '١٦ - ٢٠ / ٨ / ١٤٤٨هـ',
+        gregDate: '٢٤ - ٢٨ / ١ / ٢٠٢٧م',
+        title: 'لقاء انطلاقة الفصل الثاني مع المنسوبات لتوزيع المهام المحدثة وتفعيل الفرق الصفية',
+        executors: 'مديرة المدرسة + منسقة الخطة',
+        requiredEvidence: 'محضر الاجتماع + خطة التوزيع',
+        domain: 'داخل المدرسة',
+        status: 'pending',
+        actualDate: '',
+        coordinatorNotes: '',
+        evidences: [],
+        principalFeedback: '',
+        approved: false
+      },
+      {
+        id: 22,
+        phase: 'sem2',
+        phaseLabel: 'الفصل الدراسي الثاني',
+        week: 'الأسبوع ٣',
+        hijriDate: '٢٣ - ٢٧ / ٨ / ١٤٤٨هـ',
+        gregDate: '٣١ / ١ - ٤ / ٢ / ٢٠٢٧م',
+        title: 'إطلاق برنامج «شركاء النجاح» لتزويد الأسر بالأدلة الإرشادية لدعم اختبارات (نافس) ومهارات القراءة',
+        executors: 'الوكيلة + الموجهة الطلابية + المعلمات',
+        requiredEvidence: 'الأدلة الإرشادية + إشعارات الأسر',
+        domain: 'مع الأسرة',
+        status: 'pending',
+        actualDate: '',
+        coordinatorNotes: '',
+        evidences: [],
+        principalFeedback: '',
+        approved: false
+      },
+      {
+        id: 23,
+        phase: 'sem2',
+        phaseLabel: 'الفصل الدراسي الثاني',
+        week: 'الأسبوع ٤',
+        hijriDate: '٣٠ / ٨ - ٤ / ٩ / ١٤٤٨هـ',
+        gregDate: '٧ - ١١ / ٢ / ٢٠٢٧م',
+        title: 'تفعيل مجالس الحوار الطلابية لتعزيز مهارات التعبير والتعاون واحترام الرأي لدى الطلبة',
+        executors: 'الموجهة الطلابية + رائدة النشاط',
+        requiredEvidence: 'محاضر مجالس الحوار',
+        domain: 'مع الطلبة',
+        status: 'pending',
+        actualDate: '',
+        coordinatorNotes: '',
+        evidences: [],
+        principalFeedback: '',
+        approved: false
+      },
+      {
+        id: 24,
+        phase: 'sem2',
+        phaseLabel: 'الفصل الدراسي الثاني',
+        week: 'الأسبوع ٥',
+        hijriDate: '٧ - ١١ / ٩ / ١٤٤٨هـ',
+        gregDate: '١٤ - ١٨ / ٢ / ٢٠٢٧م',
+        title: 'ورشة عمل تشاركية بين المعلمات لتبادل استراتيجيات التعلم النشط والتعاوني',
+        executors: 'منسقة التطوير المهني + المعلمات',
+        requiredEvidence: 'تقرير الورشة التدريبية',
+        domain: 'داخل المدرسة',
+        status: 'pending',
+        actualDate: '',
+        coordinatorNotes: '',
+        evidences: [],
+        principalFeedback: '',
+        approved: false
+      },
+      {
+        id: 25,
+        phase: 'sem2',
+        phaseLabel: 'الفصل الدراسي الثاني',
+        week: 'الأسبوع ٦',
+        hijriDate: '١٦ - ١٨ / ٩ / ١٤٤٨هـ',
+        gregDate: '٢٣ - ٢٥ / ٢ / ٢٠٢٧م',
+        title: 'الاحتفاء بيوم التأسيس السعودي بمبادرات ثقافية وتراثية مشتركة بين المدرسة والأسرة',
+        executors: 'جميع منسوبات المدرسة',
+        requiredEvidence: 'تقرير الاحتفاء + التغطية الإعلامية',
+        domain: 'مع الأسرة',
+        status: 'pending',
+        actualDate: '',
+        coordinatorNotes: '',
+        evidences: [],
+        principalFeedback: '',
+        approved: false
+      },
+      {
+        id: 26,
+        phase: 'sem2',
+        phaseLabel: 'الفصل الدراسي الثاني',
+        week: 'الأسبوع ٧',
+        hijriDate: '٦ - ١٠ / ١٠ / ١٤٤٨هـ',
+        gregDate: '١٤ - ١٨ / ٣ / ٢٠٢٧م',
+        title: 'مبادرة «تواصل ومودة» لمعايدة منسوبات المدرسة والطلبة وتجديد الحماس الدراسي بعد العيد',
+        executors: 'الإدارة المدرسية + رائدة النشاط',
+        requiredEvidence: 'تقرير الفعالية',
+        domain: 'داخل المدرسة',
+        status: 'pending',
+        actualDate: '',
+        coordinatorNotes: '',
+        evidences: [],
+        principalFeedback: '',
+        approved: false
+      },
+      {
+        id: 27,
+        phase: 'sem2',
+        phaseLabel: 'الفصل الدراسي الثاني',
+        week: 'الأسبوع ٨',
+        hijriDate: '١٣ - ١٧ / ١٠ / ١٤٤٨هـ',
+        gregDate: '٢١ - ٢٥ / ٣ / ٢٠٢٧م',
+        title: 'استكمال الجولة الثانية من الزيارات التبادلية وتبادل الخبرات الصفية بين المعلمات',
+        executors: 'الوكيلة + المعلمات',
+        requiredEvidence: 'سجل الزيارات التبادلية',
+        domain: 'داخل المدرسة',
+        status: 'pending',
+        actualDate: '',
+        coordinatorNotes: '',
+        evidences: [],
+        principalFeedback: '',
+        approved: false
+      },
+      {
+        id: 28,
+        phase: 'sem2',
+        phaseLabel: 'الفصل الدراسي الثاني',
+        week: 'الأسبوع ٩',
+        hijriDate: '٢٠ - ٢٤ / ١٠ / ١٤٤٨هـ',
+        gregDate: '٢٨ / ٣ - ١ / ٤ / ٢٠٢٧م',
+        title: 'عقد مجلس أولياء الأمور الثاني وإشراك الأسر في مقترحات تطوير الأنشطة اللاصفية',
+        executors: 'الإدارة المدرسية + الموجهة الطلابية',
+        requiredEvidence: 'محضر المجلس + استطلاع الرأي',
+        domain: 'مع الأسرة',
+        status: 'pending',
+        actualDate: '',
+        coordinatorNotes: '',
+        evidences: [],
+        principalFeedback: '',
+        approved: false
+      },
+      {
+        id: 29,
+        phase: 'sem2',
+        phaseLabel: 'الفصل الدراسي الثاني',
+        week: 'الأسبوع ١٠',
+        hijriDate: '٢٧ / ١٠ - ١ / ١١ / ١٤٤٨هـ',
+        gregDate: '٤ - ٨ / ٤ / ٢٠٢٧م',
+        title: 'تنفيذ مبادرة تبادل الخبرات المدرسية بالتعاون مع مدرسة مجاورة في المرحلة الابتدائية',
+        executors: 'مديرة المدرسة + منسقة الخطة',
+        requiredEvidence: 'تقرير الزيارة / اللقاء المشترك',
+        domain: 'المجتمع المحلي',
+        status: 'pending',
+        actualDate: '',
+        coordinatorNotes: '',
+        evidences: [],
+        principalFeedback: '',
+        approved: false
+      },
+      {
+        id: 30,
+        phase: 'sem2',
+        phaseLabel: 'الفصل الدراسي الثاني',
+        week: 'الأسبوع ١١',
+        hijriDate: '٥ - ٨ / ١١ / ١٤٤٨هـ',
+        gregDate: '١٢ - ١٥ / ٤ / ٢٠٢٧م',
+        title: 'يوم رياضي وترفيهي تعاوني بمشاركة أولياء الأمور والفرق الطلابية',
+        executors: 'رائدة النشاط + معلمات التربية البدنية + الأسر',
+        requiredEvidence: 'تقرير اليوم الرياضي + الصور',
+        domain: 'مع الأسرة',
+        status: 'pending',
+        actualDate: '',
+        coordinatorNotes: '',
+        evidences: [],
+        principalFeedback: '',
+        approved: false
+      },
+      {
+        id: 31,
+        phase: 'sem2',
+        phaseLabel: 'الفصل الدراسي الثاني',
+        week: 'الأسبوع ١٢',
+        hijriDate: '١١ - ١٥ / ١١ / ١٤٤٨هـ',
+        gregDate: '١٨ - ٢٢ / ٤ / ٢٠٢٧م',
+        title: 'تفعيل مبادرة مجتمعية بالتعاون مع جمعية خيرية أو بلدية المحافظة لخدمة البيئة والمجتمع',
+        executors: 'منسقة الشراكة المجتمعية + العمل التطوعي',
+        requiredEvidence: 'ملف الشراكة المجتمعية',
+        domain: 'المجتمع المحلي',
+        status: 'pending',
+        actualDate: '',
+        coordinatorNotes: '',
+        evidences: [],
+        principalFeedback: '',
+        approved: false
+      },
+      {
+        id: 32,
+        phase: 'sem2',
+        phaseLabel: 'الفصل الدراسي الثاني',
+        week: 'الأسبوع ١٣',
+        hijriDate: '١٨ - ٢٢ / ١١ / ١٤٤٨هـ',
+        gregDate: '٢٥ - ٢٩ / ٤ / ٢٠٢٧م',
+        title: 'جلسة مجتمع التعلم المهني الختامية لمراجعة أثر التدريب التعاوني على تحصيل الطلبة',
+        executors: 'منسقة التطوير المهني + المعلمات',
+        requiredEvidence: 'محضر مجتمع التعلم',
+        domain: 'داخل المدرسة',
+        status: 'pending',
+        actualDate: '',
+        coordinatorNotes: '',
+        evidences: [],
+        principalFeedback: '',
+        approved: false
+      },
+      {
+        id: 33,
+        phase: 'sem2',
+        phaseLabel: 'الفصل الدراسي الثاني',
+        week: 'الأسبوع ١٤',
+        hijriDate: '٢٥ - ٢٩ / ١١ / ١٤٤٨هـ',
+        gregDate: '٢ - ٦ / ٥ / ٢٠٢٧م',
+        title: 'مسابقة «الفريق المبدع» لإنجاز المشاريع الإثرائية الصفية الجماعية قبل إجازة عيد الأضحى',
+        executors: 'المعلمات + رائدة النشاط',
+        requiredEvidence: 'نماذج المشاريع الطلابية',
+        domain: 'مع الطلبة',
+        status: 'pending',
+        actualDate: '',
+        coordinatorNotes: '',
+        evidences: [],
+        principalFeedback: '',
+        approved: false
+      },
+      {
+        id: 34,
+        phase: 'sem2',
+        phaseLabel: 'الفصل الدراسي الثاني',
+        week: 'الأسبوع ١٥',
+        hijriDate: '١٧ - ٢١ / ١٢ / ١٤٤٨هـ',
+        gregDate: '٢٣ - ٢٧ / ٥ / ٢٠٢٧م',
+        title: 'حملة «معاً نحو الإتقان» للمراجعة التعاونية ودعم الطلبة استعداداً للتقويم الختامي',
+        executors: 'المعلمات + الموجهة الطلابية',
+        requiredEvidence: 'خطة الدعم والمراجعة',
+        domain: 'مع الطلبة',
+        status: 'pending',
+        actualDate: '',
+        coordinatorNotes: '',
+        evidences: [],
+        principalFeedback: '',
+        approved: false
+      },
+      {
+        id: 35,
+        phase: 'sem2',
+        phaseLabel: 'الفصل الدراسي الثاني',
+        week: 'الأسبوع ١٦',
+        hijriDate: '٢٤ - ٢٨ / ١٢ / ١٤٤٨هـ',
+        gregDate: '٣٠ / ٥ - ٣ / ٦ / ٢٠٢٧م',
+        title: 'تطبيق استبانات قياس الرضا الختامية للمنسوبات وأولياء الأمور وتجميع كافة الشواهد',
+        executors: 'منسقة الخطة + وحدة الجودة',
+        requiredEvidence: 'ملف الشواهد والنتائج',
+        domain: 'مع الأسرة',
+        status: 'pending',
+        actualDate: '',
+        coordinatorNotes: '',
+        evidences: [],
+        principalFeedback: '',
+        approved: false
+      },
+      {
+        id: 36,
+        phase: 'sem2',
+        phaseLabel: 'الفصل الدراسي الثاني',
+        week: 'الأسبوع ١٧',
+        hijriDate: '١ - ٥ / ١ / ١٤٤٩هـ',
+        gregDate: '٦ - ١٠ / ٦ / ٢٠٢٧م',
+        title: 'إعداد التقرير الختامي الشامل لخطة العمل التعاوني وقياس مؤشرات الأداء السنوية',
+        executors: 'منسقة الخطة + فريق التميز',
+        requiredEvidence: 'التقرير الختامي للخطة',
+        domain: 'داخل المدرسة',
+        status: 'pending',
+        actualDate: '',
+        coordinatorNotes: '',
+        evidences: [],
+        principalFeedback: '',
+        approved: false
+      },
+      {
+        id: 37,
+        phase: 'sem2',
+        phaseLabel: 'الفصل الدراسي الثاني',
+        week: 'الأسبوع ١٨',
+        hijriDate: '٨ - ١٢ / ١ / ١٤٤٩هـ',
+        gregDate: '١٣ - ١٧ / ٦ / ٢٠٢٧م',
+        title: 'الحفل الختامي السنوي وتكريم كافة المشاركات في إنجاح خطة العمل التعاوني والشركاء',
+        executors: 'مديرة المدرسة + جميع المنسوبات',
+        requiredEvidence: 'سجل التكريم الختامي',
+        domain: 'مع الأسرة',
+        status: 'pending',
+        actualDate: '',
+        coordinatorNotes: '',
+        evidences: [],
+        principalFeedback: '',
+        approved: false
+      }
+    ];
+
+    const INITIAL_KPIS = [
+      { id: 1, name: 'نسبة تنفيذ برامج وأنشطة خطة العمل التعاوني', baseline: 80, target: 100, actual: 80, impact: 'ترسيخ ثقافة العمل التعاوني المؤسسي.' },
+      { id: 2, name: 'نسبة مشاركة منسوبات المدرسة في اللجان والأعمال التعاونية', baseline: 85, target: 100, actual: 85, impact: 'تعزيز روح الفريق وتكامل الأدوار.' },
+      { id: 3, name: 'نسبة تفعيل مجتمعات التعلم المهنية والزيارات التبادلية', baseline: 75, target: 95, actual: 75, impact: 'تطوير الممارسات التدريسية ونواتج التعلم.' },
+      { id: 4, name: 'نسبة مشاركة أولياء الأمور في المجالس والأنشطة المدرسية', baseline: 70, target: 90, actual: 70, impact: 'تعزيز الشراكة الفاعلة بين الأسرة والمدرسة.' },
+      { id: 5, name: 'نسبة تنفيذ مبادرات الشراكة المجتمعية والعمل التطوعي', baseline: 70, target: 95, actual: 70, impact: 'تنمية قيم المواطنة والمسؤولية المجتمعية.' },
+      { id: 6, name: 'نسبة رضا المنسوبات وأولياء الأمور عن العمل التعاوني', baseline: 80, target: 95, actual: 80, impact: 'رفع مستوى الرضا الوظيفي والانتماء للمدرسة.' },
+      { id: 7, name: 'نسبة توثيق الشواهد والأدلة وفق السجلات المعتمدة', baseline: 80, target: 100, actual: 80, impact: 'الجاهزية التامة لمتطلبات التقويم المدرسي.' }
+    ];
+
+    const INITIAL_RECORDS = [
+      { id: 1, title: 'سجل الاجتماعات الدورية وورش العمل', checked: true },
+      { id: 2, title: 'سجل توزيع الأدوار والمسؤوليات واللجان المدرسية', checked: true },
+      { id: 3, title: 'سجل مجتمعات التعلم المهنية والزيارات التبادلية', checked: true },
+      { id: 4, title: 'محاضر مجالس أولياء الأمور وأرشيف التواصل الإلكتروني', checked: true },
+      { id: 5, title: 'ملفات الشراكة المجتمعية والمبادرات التطوعية', checked: true },
+      { id: 6, title: 'استبانات قياس رضا المستفيدين وتقارير تحليل الأداء', checked: true },
+      { id: 7, title: 'سجل التحفيز والتكريم والشواهد المصورة للفعاليات', checked: true }
+    ];
+
+    const AuthConfig = {
+      passwords: {
+        coordinator: '1448',
+        principal: '2030'
+      },
+      async verifyPassword(role, inputPassword) {
+        return String(this.passwords[role]) === String(inputPassword);
+      }
+    };
+
+    const STORAGE_KEY = 'alhaisha_coop_plan_1448_v2';
+    const AppStorage = {
+      async load() {
+        try {
+          const saved = localStorage.getItem(STORAGE_KEY);
+          if (saved) {
+            const parsed = JSON.parse(saved);
+            return {
+              programs: parsed.programs || JSON.parse(JSON.stringify(INITIAL_PROGRAMS)),
+              kpis: parsed.kpis || JSON.parse(JSON.stringify(INITIAL_KPIS)),
+              records: parsed.records || JSON.parse(JSON.stringify(INITIAL_RECORDS))
+            };
+          }
+        } catch (e) {
+          console.error('Storage load error:', e);
+        }
+        return {
+          programs: JSON.parse(JSON.stringify(INITIAL_PROGRAMS)),
+          kpis: JSON.parse(JSON.stringify(INITIAL_KPIS)),
+          records: JSON.parse(JSON.stringify(INITIAL_RECORDS))
+        };
+      },
+      async save(data) {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        } catch (e) {
+          showToast('تعذر حفظ البيانات محلياً', 'error');
+        }
+      }
+    };
+
+    let appState = {
+      isLoggedIn: false,
+      role: 'visitor',
+      programs: [],
+      kpis: [],
+      records: []
+    };
+
+    let pendingAuthRole = null;
+    let activeEditProgramId = null;
+    let tempEvidences = [];
+
+    async function initAppData() {
+      const loaded = await AppStorage.load();
+      appState.programs = loaded.programs;
+      appState.kpis = loaded.kpis;
+      appState.records = loaded.records;
+      await AppStorage.save({
+        programs: appState.programs,
+        kpis: appState.kpis,
+        records: appState.records
+      });
+    }
+
+    async function saveState() {
+      await AppStorage.save({
+        programs: appState.programs,
+        kpis: appState.kpis,
+        records: appState.records
+      });
+    }
+
+    function toggleMobileMenu() {
+      const menu = document.getElementById('mobile-burger-menu');
+      menu.classList.toggle('hidden');
+    }
+
+    function handleHeaderRoleClick(targetRole) {
+      if (targetRole === 'visitor') {
+        enterWorkspaceAs('visitor');
+        return;
+      }
+      if (appState.isLoggedIn && appState.role === targetRole) {
+        switchTab('timeline');
+        return;
+      }
+      openAuthModal(targetRole);
+    }
+
+    function openAuthModal(targetRole) {
+      pendingAuthRole = targetRole;
+      const modal = document.getElementById('auth-modal');
+      const title = document.getElementById('auth-modal-title');
+      const subtitle = document.getElementById('auth-modal-subtitle');
+      const input = document.getElementById('auth-pin-input');
+      const err = document.getElementById('auth-error-msg');
+
+      err.classList.add('hidden');
+      input.value = '';
+
+      if (targetRole === 'coordinator') {
+        title.textContent = 'دخول منسقة الخطة: أ. هند القرني';
+        subtitle.textContent = 'مساحة المتابعة وتحديث التنفيذ وإرفاق روابط الشواهد';
+      } else if (targetRole === 'principal') {
+        title.textContent = 'دخول مديرة المدرسة: أ. هناء المعاوي';
+        subtitle.textContent = 'مساحة المراجعة والتغذية الراجعة ومنح الاعتماد الرسمي';
+      }
+
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      setTimeout(() => input.focus(), 100);
+    }
+
+    function closeAuthModal() {
+      const modal = document.getElementById('auth-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+      pendingAuthRole = null;
+    }
+
+    async function handleAuthSubmit(e) {
+      e.preventDefault();
+      const pin = document.getElementById('auth-pin-input').value.trim();
+      const err = document.getElementById('auth-error-msg');
+
+      if (!pendingAuthRole) return;
+
+      const isValid = await AuthConfig.verifyPassword(pendingAuthRole, pin);
+      if (isValid) {
+        const verifiedRole = pendingAuthRole;
+        closeAuthModal();
+        enterWorkspaceAs(verifiedRole);
+      } else {
+        err.classList.remove('hidden');
+      }
+    }
+
+    function enterWorkspaceAs(newRole) {
+      appState.isLoggedIn = true;
+      appState.role = newRole;
+
+      const nav = document.getElementById('workspace-nav');
+      nav.classList.remove('hidden');
+      nav.classList.add('flex');
+
+      updateRoleUI();
+      switchTab('timeline');
+      renderTimeline();
+      renderKPIs();
+      renderRecords();
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      if (newRole === 'coordinator') {
+        showToast('أهلاً بكِ أ. هند القرني — تم فتح مساحة عمل المنسقة بنجاح', 'success');
+      } else if (newRole === 'principal') {
+        showToast('أهلاً بكِ أ. هناء المعاوي — تم فتح مساحة عمل مديرة المدرسة بنجاح', 'success');
+      } else {
+        showToast('مرحباً بك في وضع الاطلاع العام على المتابعة ومؤشرات الأداء', 'info');
+      }
+    }
+
+    function returnToLanding() {
+      appState.isLoggedIn = false;
+      appState.role = 'visitor';
+
+      const nav = document.getElementById('workspace-nav');
+      nav.classList.add('hidden');
+      nav.classList.remove('flex');
+
+      document.getElementById('tab-timeline').classList.add('hidden');
+      document.getElementById('tab-kpis').classList.add('hidden');
+      document.getElementById('tab-framework').classList.remove('hidden');
+
+      updateRoleUI();
+      renderRecords();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      showToast('تمت العودة إلى الواجهة الرئيسية (الإطار التنظيمي والمجالات)', 'info');
+    }
+
+    function updateRoleUI() {
+      const btnVisitor = document.getElementById('btn-role-visitor');
+      const btnCoord = document.getElementById('btn-role-coordinator');
+      const btnPrin = document.getElementById('btn-role-principal');
+
+      if (btnVisitor && btnCoord && btnPrin) {
+        const baseClass = "px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-bold transition-all flex items-center gap-1.5 border ";
+        const inactiveClass = baseClass + "bg-white text-slate-600 border-slate-200 hover:border-goldWarm/60";
+        
+        btnVisitor.className = (appState.isLoggedIn && appState.role === 'visitor')
+          ? baseClass + "bg-emeraldDark text-white border-emeraldDark shadow-sm"
+          : inactiveClass;
+
+        btnCoord.className = (appState.isLoggedIn && appState.role === 'coordinator')
+          ? baseClass + "bg-emeraldBrand text-white border-emeraldBrand shadow-sm"
+          : inactiveClass;
+
+        btnPrin.className = (appState.isLoggedIn && appState.role === 'principal')
+          ? baseClass + "bg-goldWarm text-white border-goldWarm shadow-sm"
+          : inactiveClass;
+      }
+
+      const badgeText = document.getElementById('active-role-text');
+      const banner = document.getElementById('role-banner');
+      const bannerTitle = document.getElementById('role-banner-title');
+      const bannerDesc = document.getElementById('role-banner-desc');
+      const bannerIcon = document.getElementById('role-banner-icon');
+      const logoutBtn = document.getElementById('role-logout-btn');
+
+      if (!appState.isLoggedIn) {
+        if (badgeText) badgeText.textContent = 'الواجهة الافتتاحية (الإطار التنظيمي)';
+        if (banner) banner.className = "rounded-2xl p-4 border transition-all no-print flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-white border-goldWarm/40 shadow-sm";
+        if (bannerIcon) {
+          bannerIcon.className = "w-10 h-10 rounded-xl bg-emeraldLight text-emeraldDark flex items-center justify-center text-lg shrink-0";
+          bannerIcon.innerHTML = '<i class="fa-solid fa-landmark"></i>';
+        }
+        if (bannerTitle) bannerTitle.textContent = 'الإطار التنظيمي والمجالات — خطة تعزيز العمل التعاوني ١٤٤٨هـ';
+        if (bannerDesc) bannerDesc.innerHTML = 'تستعرض هذه الصفحة المرجعيات والتكليفات والرؤية والمجالات الأربعة. للدخول إلى <b>المتابعة الزمنية ومؤشرات الأداء</b>، يرجى اختيار صفة المستخدم من <a href="#landing-login-portal" class="text-emeraldBrand font-extrabold underline">بوابة الدخول والمتابعة</a> في أسفل الصفحة.';
+        if (logoutBtn) logoutBtn.classList.add('hidden');
+        return;
+      }
+
+      if (appState.role === 'coordinator') {
+        if (badgeText) badgeText.textContent = 'مساحة المنسقة: أ. هند القرني';
+        if (banner) banner.className = "rounded-2xl p-4 border transition-all no-print flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-emeraldLight/70 border-emeraldBrand/30 shadow-sm";
+        if (bannerIcon) {
+          bannerIcon.className = "w-10 h-10 rounded-xl bg-emeraldBrand text-white flex items-center justify-center text-lg shrink-0";
+          bannerIcon.innerHTML = '<i class="fa-solid fa-pen-to-square"></i>';
+        }
+        if (bannerTitle) bannerTitle.textContent = 'مساحة عمل منسقة الخطة: أ. هند القرني';
+        if (bannerDesc) bannerDesc.textContent = 'مهامكِ المفعّلة: تحديث حالة تنفيذ البرامج، تسجيل تواريخ التنفيذ الفعلية، إرفاق روابط الشواهد التوثيقية، وتحديث نسب مؤشرات الأداء.';
+        if (logoutBtn) logoutBtn.classList.remove('hidden');
+      } else if (appState.role === 'principal') {
+        if (badgeText) badgeText.textContent = 'مساحة المديرة: أ. هناء المعاوي';
+        if (banner) banner.className = "rounded-2xl p-4 border transition-all no-print flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-goldSoft border-goldWarm/50 shadow-sm";
+        if (bannerIcon) {
+          bannerIcon.className = "w-10 h-10 rounded-xl bg-goldWarm text-white flex items-center justify-center text-lg shrink-0";
+          bannerIcon.innerHTML = '<i class="fa-solid fa-stamp"></i>';
+        }
+        if (bannerTitle) bannerTitle.textContent = 'مساحة عمل مديرة المدرسة: أ. هناء مشحن المعاوي';
+        if (bannerDesc) bannerDesc.textContent = 'مهامكِ المفعّلة: مراجعة الشواهد المرفوعة، اختيار التغذية الراجعة التربوية الجاهزة أو تعديلها، ومنح ختم الاعتماد الرسمي للبرامج.';
+        if (logoutBtn) logoutBtn.classList.remove('hidden');
+      } else {
+        if (badgeText) badgeText.textContent = 'وضع الاطلاع العام (الزائر)';
+        if (banner) banner.className = "rounded-2xl p-4 border transition-all no-print flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-slate-50 border-slate-200 shadow-sm";
+        if (bannerIcon) {
+          bannerIcon.className = "w-10 h-10 rounded-xl bg-emeraldDark text-goldBright flex items-center justify-center text-lg shrink-0";
+          bannerIcon.innerHTML = '<i class="fa-solid fa-eye"></i>';
+        }
+        if (bannerTitle) bannerTitle.textContent = 'وضع الاطلاع العام — متابعة الخطة ومؤشرات الأداء';
+        if (bannerDesc) bannerDesc.textContent = 'أنتِ الآن تستعرضين سير تنفيذ برامج الخطة والشواهد المعتمدة ومؤشرات الأداء (للقراءة فقط).';
+        if (logoutBtn) logoutBtn.classList.remove('hidden');
+      }
+    }
+
+    function switchTab(tabName) {
+      const tabs = ['timeline', 'kpis', 'framework'];
+      tabs.forEach(t => {
+        const sec = document.getElementById('tab-' + t);
+        const btn = document.getElementById('tab-btn-' + t);
+        if (t === tabName) {
+          if (sec) sec.classList.remove('hidden');
+          if (btn) btn.className = "flex-1 min-w-[160px] py-3 px-4 rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2 bg-emeraldDark text-white shadow-sm";
+        } else {
+          if (sec) sec.classList.add('hidden');
+          if (btn) btn.className = "flex-1 min-w-[160px] py-3 px-4 rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2 text-slate-600 hover:bg-emeraldLight/60";
+        }
+      });
+    }
+
+    function updateDashboardStats() {
+      const total = appState.programs.length;
+      const completed = appState.programs.filter(p => p.status === 'completed').length;
+      const inProgress = appState.programs.filter(p => p.status === 'in_progress').length;
+      const approvals = appState.programs.filter(p => p.approved).length;
+      const evidencesCount = appState.programs.reduce((acc, p) => acc + (p.evidences ? p.evidences.length : 0), 0);
+      const pct = total > 0 ? Math.round((completed / total) * 100) : 0;
+
+      const elTotal = document.getElementById('stat-total');
+      const elCompleted = document.getElementById('stat-completed');
+      const elInprogSub = document.getElementById('stat-inprogress-sub');
+      const elEvidences = document.getElementById('stat-evidences');
+      const elApprovals = document.getElementById('stat-approvals');
+      const elPercentage = document.getElementById('stat-percentage');
+      const elProgressBar = document.getElementById('stat-progress-bar');
+      const elRemaining = document.getElementById('stat-remaining-text');
+
+      if (elTotal) elTotal.textContent = total;
+      if (elCompleted) elCompleted.textContent = completed;
+      if (elInprogSub) elInprogSub.textContent = `(${inProgress} قيد التنفيذ)`;
+      if (elEvidences) elEvidences.textContent = evidencesCount;
+      if (elApprovals) elApprovals.textContent = approvals;
+      if (elPercentage) elPercentage.textContent = pct + '%';
+      if (elProgressBar) elProgressBar.style.width = pct + '%';
+      if (elRemaining) elRemaining.textContent = `متبقي ${total - completed} برنامجاً`;
+    }
+
+    function resetFilters() {
+      const search = document.getElementById('filter-search');
+      const phase = document.getElementById('filter-phase');
+      const status = document.getElementById('filter-status');
+      const domain = document.getElementById('filter-domain');
+
+      if (search) search.value = '';
+      if (phase) phase.value = 'all';
+      if (status) status.value = 'all';
+      if (domain) domain.value = 'all';
+      renderTimeline();
+    }
+
+    function renderTimeline() {
+      const searchEl = document.getElementById('filter-search');
+      const phaseEl = document.getElementById('filter-phase');
+      const statusEl = document.getElementById('filter-status');
+      const domainEl = document.getElementById('filter-domain');
+
+      const search = searchEl ? searchEl.value.trim().toLowerCase() : '';
+      const phase = phaseEl ? phaseEl.value : 'all';
+      const status = statusEl ? statusEl.value : 'all';
+      const domain = domainEl ? domainEl.value : 'all';
+
+      const filtered = appState.programs.filter(p => {
+        if (phase !== 'all' && p.phase !== phase) return false;
+        if (domain !== 'all' && p.domain !== domain) return false;
+        if (status === 'completed' && p.status !== 'completed') return false;
+        if (status === 'in_progress' && p.status !== 'in_progress') return false;
+        if (status === 'pending' && p.status !== 'pending') return false;
+        if (status === 'approved' && !p.approved) return false;
+        if (status === 'needs_evidence' && p.evidences && p.evidences.length > 0) return false;
+
+        if (search) {
+          const hay = `${p.title} ${p.week} ${p.executors} ${p.hijriDate} ${p.requiredEvidence}`.toLowerCase();
+          if (!hay.includes(search)) return false;
+        }
+        return true;
+      });
+
+      const visCountEl = document.getElementById('visible-count');
+      if (visCountEl) visCountEl.textContent = filtered.length;
+      const container = document.getElementById('timeline-container');
+      if (!container) return;
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div class="luxury-card rounded-3xl p-10 text-center">
+            <i class="fa-solid fa-folder-open text-4xl text-slate-300 mb-3"></i>
+            <h3 class="text-base font-bold text-emeraldDark">لا توجد برامج مطابقة لخيارات البحث الحالية</h3>
+            <p class="text-xs text-slate-500 mt-1">جرّب تغيير الفلاتر أو إعادة ضبط البحث لعرض جميع البرامج.</p>
+          </div>
+        `;
+        return;
+      }
+
+      let currentPhaseHeader = '';
+      let html = '';
+
+      filtered.forEach(p => {
+        if (p.phaseLabel !== currentPhaseHeader) {
+          currentPhaseHeader = p.phaseLabel;
+          let phaseBadgeColor = 'bg-emeraldDark text-goldBright';
+          if (p.phase === 'sem1') phaseBadgeColor = 'bg-emeraldBrand text-white';
+          if (p.phase === 'sem2') phaseBadgeColor = 'bg-amber-700 text-white';
+
+          html += `
+            <div class="pt-3 pb-1 flex items-center gap-3">
+              <span class="px-4 py-1.5 rounded-full text-xs sm:text-sm font-extrabold shadow-sm ${phaseBadgeColor}">
+                <i class="fa-solid fa-bookmark ml-1.5"></i> ${currentPhaseHeader}
+              </span>
+              <div class="h-px flex-1 bg-gradient-to-l from-goldWarm/50 to-transparent"></div>
+            </div>
+          `;
+        }
+
+        let statusBadge = '';
+        let cardBorderLeft = 'border-r-4 border-r-slate-300';
+        if (p.status === 'completed') {
+          statusBadge = `<span class="px-3 py-1 rounded-full bg-emeraldLight text-emeraldBrand border border-emeraldBrand/20 text-xs font-extrabold flex items-center gap-1"><i class="fa-solid fa-circle-check"></i> مكتمل ومنفذ</span>`;
+          cardBorderLeft = 'border-r-4 border-r-emeraldBrand';
+        } else if (p.status === 'in_progress') {
+          statusBadge = `<span class="px-3 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-200 text-xs font-extrabold flex items-center gap-1"><i class="fa-solid fa-spinner fa-spin"></i> قيد التنفيذ</span>`;
+          cardBorderLeft = 'border-r-4 border-r-amber-500';
+        } else {
+          statusBadge = `<span class="px-3 py-1 rounded-full bg-slate-100 text-slate-600 border border-slate-200 text-xs font-bold flex items-center gap-1"><i class="fa-regular fa-clock"></i> لم يبدأ بعد</span>`;
+        }
+
+        const approvalStamp = p.approved
+          ? `<span class="px-3 py-1 rounded-full bg-goldSoft text-amber-800 border border-goldWarm/50 text-xs font-extrabold flex items-center gap-1"><i class="fa-solid fa-stamp text-goldWarm"></i> معتمد من المديرة</span>`
+          : '';
+
+        let evidencesHTML = '';
+        if (p.evidences && p.evidences.length > 0) {
+          const links = p.evidences.map(ev => `
+            <a href="${escapeHTML(ev.url)}" target="_blank" rel="noopener noreferrer"
+              class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emeraldLight/70 hover:bg-emeraldBrand hover:text-white text-emeraldDark border border-emeraldBrand/20 text-xs font-bold transition">
+              <i class="fa-solid fa-arrow-up-right-from-square text-[11px]"></i>
+              <span>${escapeHTML(ev.title)}</span>
+            </a>
+          `).join('');
+          evidencesHTML = `
+            <div class="mt-3 pt-3 border-t border-slate-100 flex flex-wrap items-center gap-2">
+              <span class="text-xs font-bold text-slate-500"><i class="fa-solid fa-paperclip text-goldWarm ml-1"></i>الشواهد المرفقة:</span>
+              ${links}
+            </div>
+          `;
+        } else {
+          evidencesHTML = `
+            <div class="mt-3 pt-3 border-t border-slate-100 flex items-center gap-2 text-xs text-slate-400">
+              <i class="fa-solid fa-folder-minus"></i>
+              <span>الشاهد المطلوب: <strong class="text-slate-600">${escapeHTML(p.requiredEvidence)}</strong> (لم يُرفق رابط بعد)</span>
+            </div>
+          `;
+        }
+
+        const coordNoteHTML = p.coordinatorNotes
+          ? `<div class="mt-2.5 text-xs text-slate-600 bg-slate-50 px-3 py-2 rounded-xl border border-slate-200/60">
+               <strong class="text-emeraldDark">ملاحظة المنسقة:</strong> ${escapeHTML(p.coordinatorNotes)}
+             </div>`
+          : '';
+
+        const principalFeedbackHTML = p.principalFeedback
+          ? `<div class="mt-3 bg-gradient-to-l from-goldSoft to-white p-3.5 rounded-2xl border border-goldWarm/40 flex items-start gap-2.5">
+               <div class="w-8 h-8 rounded-xl bg-goldWarm text-white flex items-center justify-center text-sm shrink-0 mt-0.5">
+                 <i class="fa-solid fa-award"></i>
+               </div>
+               <div>
+                 <p class="text-[11px] font-extrabold text-amber-800">تغذية راجعة — مديرة المدرسة أ. هناء مشحن المعاوي:</p>
+                 <p class="text-xs sm:text-sm font-bold text-emeraldDark mt-0.5 leading-relaxed">«${escapeHTML(p.principalFeedback)}»</p>
+               </div>
+             </div>`
+          : '';
+
+        let roleActionButtons = '';
+        if (appState.isLoggedIn && appState.role === 'coordinator') {
+          roleActionButtons = `
+            <button onclick="openCoordinatorModal(${p.id})"
+              class="px-3.5 py-2 rounded-xl bg-emeraldDark hover:bg-emeraldBrand text-white text-xs font-bold flex items-center gap-1.5 shadow-sm transition no-print">
+              <i class="fa-solid fa-pen-to-square text-goldBright"></i>
+              <span>تحديث وإضافة شاهد</span>
+            </button>
+          `;
+        } else if (appState.isLoggedIn && appState.role === 'principal') {
+          roleActionButtons = `
+            <button onclick="openPrincipalModal(${p.id})"
+              class="px-3.5 py-2 rounded-xl bg-goldWarm hover:bg-amber-600 text-white text-xs font-bold flex items-center gap-1.5 shadow-sm transition no-print">
+              <i class="fa-solid fa-stamp"></i>
+              <span>تغذية راجعة واعتماد</span>
+            </button>
+          `;
+        }
+
+        html += `
+          <article class="luxury-card rounded-2xl p-4 sm:p-5 shadow-luxury ${cardBorderLeft}">
+            <div class="flex flex-col lg:flex-row lg:items-start justify-between gap-3">
+              <div class="space-y-2 flex-1">
+                <div class="flex flex-wrap items-center gap-2">
+                  <span class="px-2.5 py-1 rounded-lg bg-emeraldDark text-white text-xs font-extrabold">${p.week}</span>
+                  <span class="px-2.5 py-1 rounded-lg bg-goldSoft text-amber-900 border border-goldWarm/30 text-xs font-bold">
+                    <i class="fa-regular fa-calendar ml-1 text-goldWarm"></i>${p.hijriDate}
+                  </span>
+                  <span class="text-xs text-slate-500 font-semibold">(${p.gregDate})</span>
+                  <span class="px-2.5 py-0.5 rounded-md bg-slate-100 text-slate-600 text-[11px] font-bold">${p.domain}</span>
+                </div>
+
+                <h3 class="text-base sm:text-lg font-extrabold text-emeraldDark leading-snug">
+                  <span class="text-goldWarm ml-1">#${p.id}</span> ${escapeHTML(p.title)}
+                </h3>
+
+                <div class="flex flex-wrap items-center gap-x-5 gap-y-1 text-xs text-slate-600">
+                  <span><i class="fa-solid fa-users text-emeraldBrand ml-1"></i><strong>الفئة المنفذة:</strong> ${escapeHTML(p.executors)}</span>
+                  ${p.actualDate ? `<span><i class="fa-solid fa-calendar-check text-goldWarm ml-1"></i><strong>تاريخ التنفيذ الفعلي:</strong> ${escapeHTML(p.actualDate)}</span>` : ''}
+                </div>
+              </div>
+
+              <div class="flex flex-wrap lg:flex-col items-center lg:items-end justify-between gap-2 shrink-0">
+                <div class="flex flex-wrap items-center gap-1.5">
+                  ${approvalStamp}
+                  ${statusBadge}
+                </div>
+                ${roleActionButtons}
+              </div>
+            </div>
+
+            ${coordNoteHTML}
+            ${evidencesHTML}
+            ${principalFeedbackHTML}
+          </article>
+        `;
+      });
+
+      container.innerHTML = html;
+      updateDashboardStats();
+    }
+
+    function openCoordinatorModal(programId) {
+      const prog = appState.programs.find(p => p.id === programId);
+      if (!prog) return;
+
+      activeEditProgramId = programId;
+      tempEvidences = JSON.parse(JSON.stringify(prog.evidences || []));
+
+      document.getElementById('coord-modal-program-title').textContent = prog.title;
+      document.getElementById('coord-modal-program-date').textContent = `${prog.week} | ${prog.hijriDate} (${prog.gregDate})`;
+      document.getElementById('coord-status-select').value = prog.status;
+      document.getElementById('coord-actual-date').value = prog.actualDate || '';
+      document.getElementById('coord-notes-input').value = prog.coordinatorNotes || '';
+      document.getElementById('coord-required-evidence-hint').textContent = `المقترح: ${prog.requiredEvidence}`;
+      document.getElementById('new-evidence-title').value = '';
+      document.getElementById('new-evidence-url').value = '';
+
+      renderModalEvidencesList();
+
+      const modal = document.getElementById('coordinator-modal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeCoordinatorModal() {
+      const modal = document.getElementById('coordinator-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+      activeEditProgramId = null;
+    }
+
+    function renderModalEvidencesList() {
+      const listEl = document.getElementById('coord-evidences-list');
+      if (tempEvidences.length === 0) {
+        listEl.innerHTML = `<p class="text-xs text-slate-400 text-center py-2">لا توجد روابط مضافة حالياً لهذا البرنامج.</p>`;
+        return;
+      }
+
+      listEl.innerHTML = tempEvidences.map((ev, idx) => `
+        <div class="flex items-center justify-between gap-2 bg-slate-50 px-3 py-2 rounded-xl border border-slate-200 text-xs">
+          <div class="truncate">
+            <p class="font-bold text-emeraldDark truncate">${escapeHTML(ev.title)}</p>
+            <a href="${escapeHTML(ev.url)}" target="_blank" class="text-emeraldBrand underline truncate block" dir="ltr">${escapeHTML(ev.url)}</a>
+          </div>
+          <button type="button" onclick="removeEvidenceItem(${idx})" class="w-7 h-7 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 flex items-center justify-center shrink-0" title="حذف الشاهد">
+            <i class="fa-solid fa-trash-can"></i>
+          </button>
+        </div>
+      `).join('');
+    }
+
+    function addEvidenceItem() {
+      const titleInput = document.getElementById('new-evidence-title');
+      const urlInput = document.getElementById('new-evidence-url');
+      const title = titleInput.value.trim();
+      let url = urlInput.value.trim();
+
+      if (!title || !url) {
+        showToast('يرجى إدخال عنوان الشاهد والرابط الخاص به', 'error');
+        return;
+      }
+
+      if (!/^https?:\/\//i.test(url)) {
+        url = 'https://' + url;
+      }
+
+      tempEvidences.push({ title, url });
+      titleInput.value = '';
+      urlInput.value = '';
+      renderModalEvidencesList();
+      showToast('تمت إضافة الرابط للقائمة — اضغطي حفظ لاعتماد التغييرات', 'info');
+    }
+
+    function removeEvidenceItem(index) {
+      tempEvidences.splice(index, 1);
+      renderModalEvidencesList();
+    }
+
+    function saveCoordinatorChanges() {
+      const prog = appState.programs.find(p => p.id === activeEditProgramId);
+      if (!prog) return;
+
+      prog.status = document.getElementById('coord-status-select').value;
+      prog.actualDate = document.getElementById('coord-actual-date').value.trim();
+      prog.coordinatorNotes = document.getElementById('coord-notes-input').value.trim();
+      prog.evidences = tempEvidences;
+
+      saveState();
+	saveToCloud();
+      renderTimeline();
+      closeCoordinatorModal();
+      showToast('تم حفظ حالة التنفيذ وروابط الشواهد بنجاح ✓', 'success');
+    }
+
+    function openPrincipalModal(programId) {
+      const prog = appState.programs.find(p => p.id === programId);
+      if (!prog) return;
+
+      activeEditProgramId = programId;
+      document.getElementById('prin-modal-program-title').textContent = prog.title;
+      document.getElementById('prin-preset-select').value = '';
+      document.getElementById('prin-feedback-text').value = prog.principalFeedback || '';
+      document.getElementById('prin-approve-checkbox').checked = prog.approved || prog.status === 'completed';
+
+      const previewEl = document.getElementById('prin-evidences-preview');
+      if (prog.evidences && prog.evidences.length > 0) {
+        previewEl.innerHTML = prog.evidences.map(ev => `
+          <a href="${escapeHTML(ev.url)}" target="_blank" class="flex items-center justify-between p-2 rounded-xl bg-white border border-slate-200 hover:border-emeraldBrand text-emeraldDark font-bold">
+            <span><i class="fa-solid fa-file-lines text-goldWarm ml-1.5"></i>${escapeHTML(ev.title)}</span>
+            <span class="text-emeraldBrand text-[11px]">فتح الشاهد <i class="fa-solid fa-arrow-up-right-from-square"></i></span>
+          </a>
+        `).join('');
+      } else {
+        previewEl.innerHTML = `<p class="text-slate-400">لم تقم المنسقة بإرفاق روابط شواهد لهذا البرنامج بعد.</p>`;
+      }
+
+      const modal = document.getElementById('principal-modal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closePrincipalModal() {
+      const modal = document.getElementById('principal-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+      activeEditProgramId = null;
+    }
+
+    function applyPresetFeedback() {
+      const preset = document.getElementById('prin-preset-select').value;
+      if (preset) {
+        document.getElementById('prin-feedback-text').value = preset;
+      }
+    }
+
+    function savePrincipalFeedback() {
+      const prog = appState.programs.find(p => p.id === activeEditProgramId);
+      if (!prog) return;
+
+      prog.principalFeedback = document.getElementById('prin-feedback-text').value.trim();
+      prog.approved = document.getElementById('prin-approve-checkbox').checked;
+
+      saveState();
+	saveToCloud();
+      renderTimeline();
+      closePrincipalModal();
+      showToast('تم اعتماد التغذية الراجعة وإرسالها بنجاح 🏅', 'success');
+    }
+
+    function renderKPIs() {
+      const tbody = document.getElementById('kpi-table-body');
+      if (!tbody) return;
+      const isCoord = appState.isLoggedIn && appState.role === 'coordinator';
+      const hintEl = document.getElementById('kpi-subtitle-hint');
+
+      if (hintEl) {
+        hintEl.textContent = isCoord
+          ? 'بصفتكِ منسقة الخطة (أ. هند القرني)، يمكنكِ تحريك شريط الإنجاز أو تعديل النسبة المحققة فعلياً لكل مؤشر.'
+          : 'استعراض نسب الإنجاز المحققة فعلياً مقارنة بخط الأساس والمستهدف السنوي المعتمد.';
+      }
+
+      tbody.innerHTML = appState.kpis.map(kpi => {
+        const progressColor = kpi.actual >= kpi.target ? 'bg-emeraldBrand' : 'bg-goldWarm';
+        const actualControl = isCoord
+          ? `<div class="space-y-1.5">
+               <div class="flex items-center justify-center gap-1.5">
+                 <input type="range" min="0" max="100" value="${kpi.actual}"
+                   oninput="this.nextElementSibling.textContent = this.value + '%'"
+                   onchange="updateKPIValue(${kpi.id}, this.value)"
+                   class="w-24 accent-emeraldBrand cursor-pointer" />
+                 <span class="w-11 text-center font-extrabold text-emeraldDark text-xs bg-goldSoft px-1.5 py-0.5 rounded border border-goldWarm/40">${kpi.actual}%</span>
+               </div>
+             </div>`
+          : `<div class="space-y-1">
+               <span class="font-extrabold text-emeraldDark">${kpi.actual}%</span>
+               <div class="w-24 mx-auto h-2 bg-slate-100 rounded-full overflow-hidden">
+                 <div class="h-full ${progressColor} rounded-full" style="width: ${Math.min(100, kpi.actual)}%"></div>
+               </div>
+             </div>`;
+
+        return `
+          <tr class="hover:bg-slate-50/80 transition">
+            <td class="p-3.5 font-bold text-goldWarm">${kpi.id}</td>
+            <td class="p-3.5 font-bold text-emeraldDark">${escapeHTML(kpi.name)}</td>
+            <td class="p-3.5 text-center font-semibold text-slate-500">${kpi.baseline}%</td>
+            <td class="p-3.5 text-center font-extrabold text-emeraldBrand">${kpi.target}%</td>
+            <td class="p-3.5 text-center">${actualControl}</td>
+            <td class="p-3.5 text-slate-600">${escapeHTML(kpi.impact)}</td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function updateKPIValue(kpiId, newVal) {
+      const kpi = appState.kpis.find(k => k.id === kpiId);
+      if (!kpi) return;
+      const num = Math.max(0, Math.min(100, parseInt(newVal, 10) || 0));
+      kpi.actual = num;
+      saveState();
+      showToast('تم تحديث نسبة مؤشر الأداء بنجاح', 'success');
+    }
+
+    function renderRecords() {
+      const container = document.getElementById('records-checklist');
+      if (!container) return;
+      const canEdit = appState.isLoggedIn && appState.role === 'coordinator';
+
+      container.innerHTML = appState.records.map(rec => `
+        <label class="flex items-center justify-between p-3 rounded-2xl border transition ${rec.checked ? 'bg-emeraldLight/50 border-emeraldBrand/25' : 'bg-slate-50 border-slate-200'} ${canEdit ? 'cursor-pointer' : ''}">
+          <div class="flex items-center gap-3">
+            <input type="checkbox" ${rec.checked ? 'checked' : ''} ${canEdit ? '' : 'disabled'}
+              onchange="toggleRecordCheck(${rec.id})"
+              class="w-4 h-4 accent-emeraldBrand rounded" />
+            <span class="text-xs sm:text-sm font-bold ${rec.checked ? 'text-emeraldDark' : 'text-slate-500'}">${escapeHTML(rec.title)}</span>
+          </div>
+          <span class="text-[11px] font-bold ${rec.checked ? 'text-emeraldBrand' : 'text-slate-400'}">
+            ${rec.checked ? 'مكتمل ومرفق ✓' : 'قيد الاستكمال'}
+          </span>
+        </label>
+      `).join('');
+    }
+
+    function toggleRecordCheck(recId) {
+      const rec = appState.records.find(r => r.id === recId);
+      if (!rec) return;
+      rec.checked = !rec.checked;
+      saveState();
+      renderRecords();
+      showToast('تم تحديث حالة السجل التوثيقي', 'info');
+    }
+
+    function escapeHTML(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function showToast(message, type = 'info') {
+      const container = document.getElementById('toast-container');
+      if (!container) return;
+      const toast = document.createElement('div');
+      let colors = 'bg-emeraldDark text-white border-goldWarm';
+      let icon = 'fa-circle-info text-goldBright';
+
+      if (type === 'success') {
+        colors = 'bg-emeraldBrand text-white border-emerald-300';
+        icon = 'fa-circle-check text-goldBright';
+      } else if (type === 'error') {
+        colors = 'bg-rose-700 text-white border-rose-300';
+        icon = 'fa-triangle-exclamation text-amber-200';
+      }
+
+      toast.className = `toast-enter px-4 py-3 rounded-2xl shadow-xl border text-xs sm:text-sm font-bold flex items-center gap-2.5 ${colors}`;
+      toast.innerHTML = `<i class="fa-solid ${icon}"></i><span>${escapeHTML(message)}</span>`;
+      container.appendChild(toast);
+
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transition = 'opacity 0.3s ease';
+        setTimeout(() => toast.remove(), 300);
+      }, 3200);
+    }
+
+    window.addEventListener('DOMContentLoaded', async () => {
+      await initAppData();
+      updateDashboardStats();
+      updateRoleUI();
+      renderRecords();
+    });
+  </script>
+</body>
+</html>
