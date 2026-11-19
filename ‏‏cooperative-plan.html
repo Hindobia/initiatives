@@ -16,8 +16,9 @@
   <!-- Font Awesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
 
-<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
 
   <script>
     tailwind.config = {
@@ -43,76 +44,20 @@
           }
         }
       }
-    }
-const firebaseConfig = {
-  apiKey: "AIzaSyCiAHWHlkPDx3l2yVpqxH3jTVU-d6n1zfo",
-  authDomain: "hind-initiatives.firebaseapp.com",
-  databaseURL: "https://hind-initiatives-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "hind-initiatives",
-  storageBucket: "hind-initiatives.firebasestorage.app",
-  messagingSenderId: "480807246183",
-  appId: "1:480807246183:web:2c3c108863c37f064af7c2"
-};
+    };
 
-firebase.initializeApp(firebaseConfig);
-const planRef = firebase.database().ref('cooperative_plan_1448');
-// جلب البيانات عند فتح الصفحة والتزامن الفوري
-planRef.on('value', (snapshot) => {
-    const cloudData = snapshot.val();
-    if (cloudData) {
-        if (cloudData.programs) appState.programs = cloudData.programs;
-        if (cloudData.kpis) appState.kpis = cloudData.kpis;
-        
-        // جلب كلمات المرور المحدثة من السحابة إن وجدت
-        if (cloudData.passwords) {
-            AuthConfig.coordinatorPass = cloudData.passwords.coordinator || "1448";
-            AuthConfig.principalPass = cloudData.passwords.principal || "2030";
-        }
-        
-        if (typeof renderAll === 'function') renderAll(); 
-    } else {
-        // رفع النسخة الأولية مع كلمات المرور الافتراضية إذا كانت القاعدة فارغة لأول مرة
-        planRef.set({
-            programs: appState.programs,
-            kpis: appState.kpis,
-            passwords: { coordinator: "1448", principal: "2030" }
-        });
-    }
-});
+    const firebaseConfig = {
+      apiKey: "AIzaSyCiAHWHlkPDx3l2yVpqxH3jTVU-d6n1zfo",
+      authDomain: "hind-initiatives.firebaseapp.com",
+      databaseURL: "https://hind-initiatives-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "hind-initiatives",
+      storageBucket: "hind-initiatives.firebasestorage.app",
+      messagingSenderId: "480807246183",
+      appId: "1:480807246183:web:2c3c108863c37f064af7c2"
+    };
 
-// دالة الحفظ السحابي عند أي تغيير
-function saveToCloud() {
-    planRef.update({
-        programs: appState.programs,
-        kpis: appState.kpis
-    });
-}
-
-// دالة لتحديث كلمة المرور في سحابة Firebase للمنسقة أو المديرة
-function updatePasswordInCloud(role, newPassword) {
-    if (!newPassword || newPassword.trim() === "") {
-        showToast('يرجى إدخال كلمة مرور صالحة', 'error');
-        return;
-    }
-
-    const passRef = firebase.database().ref('cooperative_plan_1448/passwords');
-    
-    if (role === 'coordinator') {
-        passRef.update({ coordinator: newPassword.trim() }, (error) => {
-            if (!error) {
-                AuthConfig.coordinatorPass = newPassword.trim();
-                showToast('تم تحديث كلمة مرور المنسقة بنجاح سحابياً 🔐', 'success');
-            }
-        });
-    } else if (role === 'principal') {
-        passRef.update({ principal: newPassword.trim() }, (error) => {
-            if (!error) {
-                AuthConfig.principalPass = newPassword.trim();
-                showToast('تم تحديث كلمة مرور المديرة بنجاح سحابياً 🔐', 'success');
-            }
-        });
-    }
-}
+    firebase.initializeApp(firebaseConfig);
+    const planRef = firebase.database().ref('cooperative_plan_1448');
   </script>
 
   <style>
@@ -132,7 +77,6 @@ function updatePasswordInCloud(role, newPassword) {
       font-family: 'Cinzel Decorative', serif;
     }
 
-    /* Glowing Pulsing Animation for Hindobia Header Icon */
     @keyframes hindobiaGlow {
       0%, 100% {
         opacity: 1;
@@ -147,7 +91,6 @@ function updatePasswordInCloud(role, newPassword) {
       animation: hindobiaGlow 2s ease-in-out infinite;
     }
 
-    /* Glassmorphism & Luxury Card Utilities */
     .glass-header {
       background: linear-gradient(135deg, #092B2C 0%, #0F3D3E 55%, #006C35 100%);
       position: relative;
@@ -180,7 +123,6 @@ function updatePasswordInCloud(role, newPassword) {
       transform: translateY(-2px);
     }
 
-    /* Smooth Custom Scrollbar */
     ::-webkit-scrollbar {
       width: 8px;
       height: 8px;
@@ -196,7 +138,6 @@ function updatePasswordInCloud(role, newPassword) {
       background: #C5A059;
     }
 
-    /* Toast Animation */
     @keyframes slideUpFade {
       from { opacity: 0; transform: translateY(16px); }
       to { opacity: 1; transform: translateY(0); }
@@ -205,7 +146,6 @@ function updatePasswordInCloud(role, newPassword) {
       animation: slideUpFade 0.3s ease forwards;
     }
 
-    /* Print Styles */
     @media print {
       body {
         background: #ffffff !important;
@@ -214,9 +154,6 @@ function updatePasswordInCloud(role, newPassword) {
       }
       .no-print {
         display: none !important;
-      }
-      .print-only {
-        display: block !important;
       }
       .glass-header {
         background: #0F3D3E !important;
@@ -239,37 +176,37 @@ function updatePasswordInCloud(role, newPassword) {
 </head>
 <body class="min-h-screen flex flex-col antialiased selection:bg-goldWarm selection:text-white">
 
-  <!-- Top Role & Utility Bar (Sticky) with Responsive Burger Menu for Small Screens -->
+  <!-- Top Role & Utility Bar (Sticky) -->
   <div class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-goldWarm/30 shadow-sm no-print">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5 flex items-center justify-between gap-3">
       
-      <!-- Desktop Role Switcher Pills (Hidden on Small Screens) -->
+      <!-- Desktop Role Switcher Pills -->
       <div class="hidden md:flex flex-wrap items-center gap-2">
         <span class="text-xs font-bold text-emeraldDark/70 inline-flex items-center gap-1.5 ml-1">
           <i class="fa-solid fa-user-shield text-goldWarm"></i>
           وضع الدخول:
         </span>
         
-        <button onclick="switchRole('visitor')" id="btn-role-visitor"
+        <button onclick="handleHeaderRoleClick('visitor')" id="btn-role-visitor"
           class="px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-bold transition-all flex items-center gap-1.5 border">
           <i class="fa-solid fa-eye"></i>
           <span>الزائر (للاطلاع)</span>
         </button>
 
-        <button onclick="openAuthModal('coordinator')" id="btn-role-coordinator"
+        <button onclick="handleHeaderRoleClick('coordinator')" id="btn-role-coordinator"
           class="px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-bold transition-all flex items-center gap-1.5 border">
           <i class="fa-solid fa-pen-to-square"></i>
           <span>المنسقة: أ. هند القرني</span>
         </button>
 
-        <button onclick="openAuthModal('principal')" id="btn-role-principal"
+        <button onclick="handleHeaderRoleClick('principal')" id="btn-role-principal"
           class="px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-bold transition-all flex items-center gap-1.5 border">
           <i class="fa-solid fa-stamp"></i>
           <span>المديرة: أ. هناء المعاوي</span>
         </button>
       </div>
 
-      <!-- Mobile Burger Menu Button (Visible ONLY on small screens) -->
+      <!-- Mobile Burger Menu Button -->
       <div class="flex md:hidden items-center gap-2">
         <button onclick="toggleMobileMenu()" aria-label="القائمة"
           class="p-2 rounded-xl bg-emeraldLight text-emeraldDark border border-emeraldBrand/20 hover:bg-emeraldBrand hover:text-white transition">
@@ -293,23 +230,23 @@ function updatePasswordInCloud(role, newPassword) {
       </div>
     </div>
 
-    <!-- Mobile Burger Dropdown Menu (Hidden by default, shown when toggled) -->
+    <!-- Mobile Burger Dropdown Menu -->
     <div id="mobile-burger-menu" class="hidden md:hidden bg-white border-t border-goldWarm/30 px-4 py-3 space-y-2.5 shadow-lg">
       <p class="text-[11px] font-bold text-slate-400 mb-1">اختر صفة الدخول أو الإجراء:</p>
       
-      <button onclick="switchRole('visitor'); toggleMobileMenu();"
+      <button onclick="handleHeaderRoleClick('visitor'); toggleMobileMenu();"
         class="w-full text-right px-4 py-2.5 rounded-xl text-xs font-bold bg-slate-50 hover:bg-emeraldLight text-emeraldDark flex items-center gap-2.5 border border-slate-200">
         <i class="fa-solid fa-eye text-goldWarm"></i>
         <span>الزائر (للاطلاع)</span>
       </button>
 
-      <button onclick="openAuthModal('coordinator'); toggleMobileMenu();"
+      <button onclick="handleHeaderRoleClick('coordinator'); toggleMobileMenu();"
         class="w-full text-right px-4 py-2.5 rounded-xl text-xs font-bold bg-slate-50 hover:bg-emeraldLight text-emeraldDark flex items-center gap-2.5 border border-slate-200">
         <i class="fa-solid fa-pen-to-square text-emeraldBrand"></i>
         <span>المنسقة: أ. هند القرني</span>
       </button>
 
-      <button onclick="openAuthModal('principal'); toggleMobileMenu();"
+      <button onclick="handleHeaderRoleClick('principal'); toggleMobileMenu();"
         class="w-full text-right px-4 py-2.5 rounded-xl text-xs font-bold bg-slate-50 hover:bg-emeraldLight text-emeraldDark flex items-center gap-2.5 border border-slate-200">
         <i class="fa-solid fa-stamp text-amber-600"></i>
         <span>المديرة: أ. هناء المعاوي</span>
@@ -330,7 +267,6 @@ function updatePasswordInCloud(role, newPassword) {
         
         <!-- Right: Ministry & School Identity -->
         <div class="flex flex-col sm:flex-row items-center text-center sm:text-right gap-4">
-          <!-- Custom Luxury Emblem Icon (No Text) -->
           <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-white/10 backdrop-blur-md border border-goldWarm/50 flex items-center justify-center shadow-inner shrink-0">
             <i class="fa-solid fa-hands-holding-child text-3xl sm:text-4xl text-amber-300"></i>
           </div>
@@ -352,7 +288,7 @@ function updatePasswordInCloud(role, newPassword) {
           </div>
         </div>
 
-        <!-- Left: Leadership & Coordinator Badges with Glowing Hindobia Icon Link -->
+        <!-- Left: Leadership & Coordinator Badges -->
         <div class="flex flex-col sm:flex-row lg:flex-col gap-2.5 w-full sm:w-auto">
           <div class="bg-white/10 backdrop-blur-md border border-goldWarm/40 rounded-2xl px-4 py-2.5 flex items-center gap-3">
             <div class="w-9 h-9 rounded-xl bg-goldWarm/20 border border-goldBright/50 flex items-center justify-center text-goldBright shrink-0">
@@ -391,7 +327,6 @@ function updatePasswordInCloud(role, newPassword) {
 
     <!-- Quick Executive Dashboard KPIs -->
     <section aria-label="ملخص مؤشرات التنفيذ" class="grid grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4">
-      <!-- Total Programs -->
       <div class="luxury-card rounded-2xl p-4 shadow-luxury flex items-center gap-3.5">
         <div class="w-12 h-12 rounded-2xl bg-emeraldDark text-goldBright flex items-center justify-center text-xl shrink-0">
           <i class="fa-solid fa-layer-group"></i>
@@ -402,7 +337,6 @@ function updatePasswordInCloud(role, newPassword) {
         </div>
       </div>
 
-      <!-- Completed -->
       <div class="luxury-card rounded-2xl p-4 shadow-luxury flex items-center gap-3.5">
         <div class="w-12 h-12 rounded-2xl bg-emeraldLight text-emeraldBrand flex items-center justify-center text-xl shrink-0">
           <i class="fa-solid fa-circle-check"></i>
@@ -416,7 +350,6 @@ function updatePasswordInCloud(role, newPassword) {
         </div>
       </div>
 
-      <!-- Attached Evidences -->
       <div class="luxury-card rounded-2xl p-4 shadow-luxury flex items-center gap-3.5">
         <div class="w-12 h-12 rounded-2xl bg-goldSoft text-goldWarm border border-goldWarm/30 flex items-center justify-center text-xl shrink-0">
           <i class="fa-solid fa-link"></i>
@@ -427,7 +360,6 @@ function updatePasswordInCloud(role, newPassword) {
         </div>
       </div>
 
-      <!-- Principal Approvals -->
       <div class="luxury-card rounded-2xl p-4 shadow-luxury flex items-center gap-3.5">
         <div class="w-12 h-12 rounded-2xl bg-teal-50 text-teal-800 border border-teal-200 flex items-center justify-center text-xl shrink-0">
           <i class="fa-solid fa-stamp"></i>
@@ -438,7 +370,6 @@ function updatePasswordInCloud(role, newPassword) {
         </div>
       </div>
 
-      <!-- Overall Completion Progress Bar -->
       <div class="col-span-2 lg:col-span-1 luxury-card rounded-2xl p-4 shadow-luxury flex flex-col justify-center">
         <div class="flex items-center justify-between mb-1.5">
           <span class="text-xs font-bold text-emeraldDark">نسبة الإنجاز الكلية</span>
@@ -451,8 +382,8 @@ function updatePasswordInCloud(role, newPassword) {
       </div>
     </section>
 
-    <!-- Role Guidance Banner (Contextual) -->
-    <div id="role-banner" class="rounded-2xl p-4 border transition-all no-print flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-white border-goldWarm/40 shadow-sm">
+    <!-- Role Guidance Banner (Contextual + Password Change Button + Logout) -->
+    <div id="role-banner" class="rounded-2xl p-4 border transition-all no-print flex flex-col lg:flex-row items-start lg:items-center justify-between gap-3 bg-white border-goldWarm/40 shadow-sm">
       <div class="flex items-center gap-3">
         <div id="role-banner-icon" class="w-10 h-10 rounded-xl bg-emeraldLight text-emeraldDark flex items-center justify-center text-lg shrink-0">
           <i class="fa-solid fa-landmark"></i>
@@ -462,9 +393,44 @@ function updatePasswordInCloud(role, newPassword) {
           <p id="role-banner-desc" class="text-xs text-slate-600 mt-0.5">تستعرض هذه الصفحة المرجعيات والتكليفات والرؤية والمجالات الأربعة. للدخول إلى <b>المتابعة الزمنية ومؤشرات الأداء</b>، يرجى اختيار صفة المستخدم من <b>بوابة الدخول والمتابعة</b> في أسفل الصفحة أو من الشريط العلوي.</p>
         </div>
       </div>
-      <button id="role-logout-btn" onclick="returnToLanding()" class="hidden px-3.5 py-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-bold shrink-0 transition">
-        <i class="fa-solid fa-right-from-bracket ml-1"></i> خروج للواجهة الرئيسية
-      </button>
+
+      <!-- Workspace Action Buttons (Change Password + Logout) -->
+      <div class="flex flex-wrap items-center gap-2 shrink-0 self-end lg:self-center">
+        <button id="role-change-pass-btn" onclick="openChangePasswordModal()"
+          class="hidden px-3.5 py-1.5 rounded-xl bg-white hover:bg-emeraldDark text-emeraldDark hover:text-white border border-emeraldDark/25 text-xs font-bold transition flex items-center gap-1.5 shadow-sm">
+          <i class="fa-solid fa-key text-goldWarm"></i>
+          <span>تحديث الرقم السري</span>
+        </button>
+
+        <button id="role-logout-btn" onclick="returnToLanding()"
+          class="hidden px-3.5 py-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-bold transition flex items-center gap-1.5">
+          <i class="fa-solid fa-right-from-bracket"></i>
+          <span>خروج للواجهة الرئيسية</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Real-Time Cross-User Notifications Box (Visible for Principal & Coordinator when alerts exist) -->
+    <div id="cross-notifications-box" class="hidden rounded-2xl p-4 border-2 border-amber-400/70 bg-gradient-to-l from-amber-50 via-goldSoft to-white shadow-luxury no-print space-y-3">
+      <div class="flex items-center justify-between gap-2">
+        <div class="flex items-center gap-2.5">
+          <span class="w-9 h-9 rounded-xl bg-amber-500 text-white flex items-center justify-center text-base shadow-sm animate-bounce">
+            <i class="fa-solid fa-bell"></i>
+          </span>
+          <div>
+            <h4 id="notif-box-heading" class="text-sm font-extrabold text-emeraldDark">تنبيهات وتحديثات فورية</h4>
+            <p class="text-[11px] text-slate-500">إشعارات متبادلة بين منسقة الخطة ومديرة المدرسة</p>
+          </div>
+        </div>
+        <button onclick="dismissAllNotificationsForCurrentRole()"
+          class="px-3 py-1.5 rounded-xl bg-white hover:bg-emeraldDark text-emeraldDark hover:text-white border border-slate-200 text-xs font-bold transition flex items-center gap-1.5">
+          <i class="fa-solid fa-check-double text-emeraldBrand"></i>
+          <span>تم الاطلاع على الكل</span>
+        </button>
+      </div>
+      <div id="cross-notifications-list" class="space-y-2">
+        <!-- Populated dynamically from Firebase -->
+      </div>
     </div>
 
     <!-- Navigation Tabs (Hidden on Landing View, Visible after Login) -->
@@ -489,14 +455,13 @@ function updatePasswordInCloud(role, newPassword) {
     </nav>
 
     <!-- ===================================================================== -->
-    <!-- TAB 1: TIMELINE & EXECUTION TRACKING (HIDDEN ON INITIAL LANDING)      -->
+    <!-- TAB 1: TIMELINE & EXECUTION TRACKING                                  -->
     <!-- ===================================================================== -->
     <section id="tab-timeline" class="hidden space-y-5">
       
       <!-- Smart Filters Bar -->
       <div class="luxury-card rounded-2xl p-4 shadow-luxury no-print space-y-3">
         <div class="grid grid-cols-1 md:grid-cols-12 gap-3">
-          <!-- Search Input -->
           <div class="md:col-span-4 relative">
             <i class="fa-solid fa-magnifying-glass absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
             <input type="text" id="filter-search" oninput="renderTimeline()"
@@ -504,7 +469,6 @@ function updatePasswordInCloud(role, newPassword) {
               class="w-full pr-10 pl-3 py-2.5 rounded-xl border border-slate-200 focus:border-goldWarm focus:ring-2 focus:ring-goldWarm/20 outline-none text-sm bg-slate-50/70" />
           </div>
 
-          <!-- Phase Filter -->
           <div class="md:col-span-3">
             <select id="filter-phase" onchange="renderTimeline()"
               class="w-full px-3 py-2.5 rounded-xl border border-slate-200 focus:border-goldWarm focus:ring-2 focus:ring-goldWarm/20 outline-none text-sm font-semibold text-emeraldDark bg-slate-50/70">
@@ -515,7 +479,6 @@ function updatePasswordInCloud(role, newPassword) {
             </select>
           </div>
 
-          <!-- Status Filter -->
           <div class="md:col-span-3">
             <select id="filter-status" onchange="renderTimeline()"
               class="w-full px-3 py-2.5 rounded-xl border border-slate-200 focus:border-goldWarm focus:ring-2 focus:ring-goldWarm/20 outline-none text-sm font-semibold text-emeraldDark bg-slate-50/70">
@@ -528,7 +491,6 @@ function updatePasswordInCloud(role, newPassword) {
             </select>
           </div>
 
-          <!-- Domain Filter -->
           <div class="md:col-span-2">
             <select id="filter-domain" onchange="renderTimeline()"
               class="w-full px-3 py-2.5 rounded-xl border border-slate-200 focus:border-goldWarm focus:ring-2 focus:ring-goldWarm/20 outline-none text-sm font-semibold text-emeraldDark bg-slate-50/70">
@@ -541,7 +503,6 @@ function updatePasswordInCloud(role, newPassword) {
           </div>
         </div>
 
-        <!-- Results Counter & Quick Filter Reset -->
         <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-100 text-xs text-slate-500">
           <div>
             يتم عرض <span id="visible-count" class="font-bold text-emeraldDark">37</span> برنامجاً ومهمة تنفيذية مرتبة زمنياً
@@ -554,9 +515,7 @@ function updatePasswordInCloud(role, newPassword) {
       </div>
 
       <!-- Timeline Cards Container -->
-      <div id="timeline-container" class="space-y-4">
-        <!-- Populated dynamically via JS -->
-      </div>
+      <div id="timeline-container" class="space-y-4"></div>
     </section>
 
     <!-- ===================================================================== -->
@@ -852,21 +811,17 @@ function updatePasswordInCloud(role, newPassword) {
         </div>
       </div>
 
-      <!-- 6. السجلات التوثيقية وجدول الاعتماد الرسمي الموقّع (ضمن الإطار التنظيمي) -->
+      <!-- 6. السجلات التوثيقية وجدول الاعتماد الرسمي -->
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <!-- 7 Documentary Records Checklist -->
         <div class="luxury-card rounded-3xl p-6 shadow-luxury">
           <h3 class="text-lg font-extrabold text-emeraldDark mb-1 flex items-center gap-2">
             <i class="fa-solid fa-folder-open text-goldWarm"></i>
             <span>قائمة التحقق من السجلات التوثيقية</span>
           </h3>
           <p class="text-xs text-slate-500 mb-4">السجلات السبعة المعتمدة في ملف الخطة</p>
-          <div id="records-checklist" class="space-y-2.5">
-            <!-- Populated via JS -->
-          </div>
+          <div id="records-checklist" class="space-y-2.5"></div>
         </div>
 
-        <!-- Official Sign-off Table -->
         <div class="luxury-card rounded-3xl p-6 shadow-luxury">
           <h3 class="text-lg font-extrabold text-emeraldDark mb-1 flex items-center gap-2">
             <i class="fa-solid fa-signature text-emeraldBrand"></i>
@@ -926,7 +881,7 @@ function updatePasswordInCloud(role, newPassword) {
         </div>
       </div>
 
-      <!-- 7. بوابة الدخول والمتابعة (بوكس المستخدمين الثلاثة في نهاية الصفحة الافتتاحية) -->
+      <!-- 7. بوابة الدخول والمتابعة -->
       <div id="landing-login-portal" class="luxury-card rounded-3xl p-6 sm:p-9 shadow-luxury border-2 border-goldWarm/40 bg-gradient-to-b from-white via-goldSoft/25 to-emeraldLight/30 no-print">
         <div class="text-center max-w-2xl mx-auto mb-7">
           <span class="inline-flex items-center gap-1.5 px-4 py-1 rounded-full bg-emeraldDark text-goldBright text-xs font-extrabold mb-2.5 shadow-sm">
@@ -1005,11 +960,10 @@ function updatePasswordInCloud(role, newPassword) {
     </section>
 
     <!-- ===================================================================== -->
-    <!-- TAB 3: KPIs (HIDDEN ON INITIAL LANDING, SHOWN AFTER LOGIN)            -->
+    <!-- TAB 3: KPIs                                                           -->
     <!-- ===================================================================== -->
     <section id="tab-kpis" class="hidden space-y-6">
       
-      <!-- KPIs Table -->
       <div class="luxury-card rounded-3xl p-6 sm:p-8 shadow-luxury">
         <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
           <div>
@@ -1033,9 +987,7 @@ function updatePasswordInCloud(role, newPassword) {
                 <th class="p-3.5 rounded-tl-xl">الأثر المتوقع</th>
               </tr>
             </thead>
-            <tbody id="kpi-table-body" class="divide-y divide-slate-100 text-xs sm:text-sm">
-              <!-- Populated via JS -->
-            </tbody>
+            <tbody id="kpi-table-body" class="divide-y divide-slate-100 text-xs sm:text-sm"></tbody>
           </table>
         </div>
 
@@ -1067,7 +1019,7 @@ function updatePasswordInCloud(role, newPassword) {
 
   </main>
 
-  <!-- Floating WhatsApp Button (Fixed on Bottom-Left) -->
+  <!-- Floating WhatsApp Button -->
   <a href="https://wa.me/966565588869" target="_blank" rel="noopener noreferrer" aria-label="تواصل معنا"
     class="fixed bottom-6 left-6 z-50 w-14 h-14 rounded-full bg-[#25D366] hover:bg-[#20ba5a] text-white shadow-2xl flex items-center justify-center text-2xl transition-all hover:scale-110 active:scale-95 no-print group">
     <i class="fa-brands fa-whatsapp"></i>
@@ -1076,7 +1028,7 @@ function updatePasswordInCloud(role, newPassword) {
     </span>
   </a>
 
-  <!-- Footer (Centered & Stacked vertically as requested) -->
+  <!-- Footer -->
   <footer class="bg-emeraldDark text-white/90 border-t border-goldWarm/30 py-6 mt-10">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-2 text-xs sm:text-sm">
       <p class="font-bold text-goldBright tracking-wide">
@@ -1128,28 +1080,59 @@ function updatePasswordInCloud(role, newPassword) {
     </div>
   </div>
 
-<!-- واجهة تغيير وتحديث كلمة المرور سحابياً -->
-<div class="my-6 p-5 bg-white/90 backdrop-blur-md rounded-3xl border border-goldWarm/40 shadow-luxury max-w-xl mx-auto no-print">
-    <h4 class="text-sm font-extrabold text-emeraldDark mb-3 flex items-center gap-2">
-        <i class="fa-solid fa-key text-goldWarm"></i> إعدادات الأمان وتغيير كلمات المرور سحابياً
-    </h4>
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200">
-            <label class="block text-xs text-slate-600 mb-1 font-bold">كلمة مرور المنسقة الجديدة</label>
-            <div class="flex gap-2">
-                <input type="text" id="coord-new-pass" placeholder="مثال: 1448" class="flex-1 p-2 border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-emerald-600 bg-white">
-                <button onclick="updatePasswordInCloud('coordinator', document.getElementById('coord-new-pass').value)" class="bg-emeraldDark text-white px-3 py-2 rounded-xl text-xs font-bold hover:bg-emeraldBrand transition">تحديث</button>
-            </div>
+  <!-- ===================================================================== -->
+  <!-- MODAL 1.5: CHANGE PASSWORD MODAL (INSIDE LOGGED-IN WORKSPACE ONLY)    -->
+  <!-- ===================================================================== -->
+  <div id="change-pass-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 no-print">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 sm:p-7 shadow-2xl border border-goldWarm/40 relative animate-[slideUpFade_0.25s_ease]">
+      <button onclick="closeChangePasswordModal()" class="absolute left-4 top-4 w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <div class="text-center mb-5">
+        <div class="w-14 h-14 rounded-2xl bg-goldSoft text-goldWarm border border-goldWarm/40 flex items-center justify-center text-2xl mx-auto mb-3 shadow-sm">
+          <i class="fa-solid fa-shield-halved"></i>
         </div>
-        <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200">
-            <label class="block text-xs text-slate-600 mb-1 font-bold">كلمة مرور المديرة الجديدة</label>
-            <div class="flex gap-2">
-                <input type="text" id="prin-new-pass" placeholder="مثال: 2030" class="flex-1 p-2 border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-emerald-600 bg-white">
-                <button onclick="updatePasswordInCloud('principal', document.getElementById('prin-new-pass').value)" class="bg-goldWarm text-white px-3 py-2 rounded-xl text-xs font-bold hover:bg-amber-600 transition">تحديث</button>
-            </div>
+        <h3 id="change-pass-modal-title" class="text-xl font-extrabold text-emeraldDark">تحديث الرقم السري</h3>
+        <p id="change-pass-modal-subtitle" class="text-xs text-slate-500 mt-1">سيتم حفظ الرقم السري الجديد سحابياً فوراً</p>
+      </div>
+
+      <form onsubmit="handleChangePasswordSubmit(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-bold text-emeraldDark mb-1.5">الرقم السري الحالي</label>
+          <input type="password" id="current-pass-input"
+            class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-goldWarm outline-none text-center text-base font-bold tracking-widest"
+            placeholder="••••" required />
         </div>
+
+        <div>
+          <label class="block text-xs font-bold text-emeraldDark mb-1.5">الرقم السري الجديد</label>
+          <input type="password" id="new-pass-input"
+            class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-goldWarm outline-none text-center text-base font-bold tracking-widest"
+            placeholder="••••" required />
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-emeraldDark mb-1.5">تأكيد الرقم السري الجديد</label>
+          <input type="password" id="confirm-pass-input"
+            class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-goldWarm outline-none text-center text-base font-bold tracking-widest"
+            placeholder="••••" required />
+        </div>
+
+        <p id="change-pass-error-msg" class="hidden text-xs text-rose-600 font-bold text-center"></p>
+
+        <div class="flex gap-2.5 pt-1">
+          <button type="submit" class="flex-1 py-3 rounded-xl bg-emeraldDark hover:bg-emeraldBrand text-white font-bold text-sm shadow-md transition flex items-center justify-center gap-2">
+            <i class="fa-solid fa-floppy-disk text-goldBright"></i>
+            <span>حفظ الرقم السري الجديد</span>
+          </button>
+          <button type="button" onclick="closeChangePasswordModal()" class="px-4 py-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-sm transition">
+            إلغاء
+          </button>
+        </div>
+      </form>
     </div>
-</div>
+  </div>
 
   <!-- ===================================================================== -->
   <!-- MODAL 2: COORDINATOR EVIDENCE & EXECUTION MODAL                       -->
@@ -1167,7 +1150,6 @@ function updatePasswordInCloud(role, newPassword) {
       </div>
 
       <div class="space-y-4">
-        <!-- Execution Status & Actual Date -->
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-slate-50 p-4 rounded-2xl border border-slate-200/70">
           <div>
             <label class="block text-xs font-bold text-emeraldDark mb-1.5">حالة التنفيذ</label>
@@ -1184,14 +1166,12 @@ function updatePasswordInCloud(role, newPassword) {
           </div>
         </div>
 
-        <!-- Coordinator Notes -->
         <div>
           <label class="block text-xs font-bold text-emeraldDark mb-1.5">ملاحظات التنفيذ (اختياري)</label>
           <input type="text" id="coord-notes-input" placeholder="أضيفي أي ملاحظة توضيحية حول سير التنفيذ..."
             class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm outline-none focus:border-goldWarm" />
         </div>
 
-        <!-- Evidence Links Management -->
         <div class="border-t border-slate-100 pt-4">
           <div class="flex items-center justify-between mb-2">
             <label class="text-xs font-extrabold text-emeraldDark flex items-center gap-1.5">
@@ -1201,12 +1181,8 @@ function updatePasswordInCloud(role, newPassword) {
             <span id="coord-required-evidence-hint" class="text-[11px] text-slate-500"></span>
           </div>
 
-          <!-- Existing Evidences List -->
-          <div id="coord-evidences-list" class="space-y-2 mb-3 max-h-40 overflow-y-auto">
-            <!-- Dynamic -->
-          </div>
+          <div id="coord-evidences-list" class="space-y-2 mb-3 max-h-40 overflow-y-auto"></div>
 
-          <!-- Add New Evidence Form -->
           <div class="bg-goldSoft/60 p-3.5 rounded-2xl border border-goldWarm/30 space-y-2.5">
             <p class="text-xs font-bold text-emeraldDark">إضافة رابط شاهد جديد:</p>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -1223,11 +1199,10 @@ function updatePasswordInCloud(role, newPassword) {
           </div>
         </div>
 
-        <!-- Save Button -->
         <div class="flex gap-2.5 pt-2">
           <button type="button" onclick="saveCoordinatorChanges()"
             class="flex-1 py-3 rounded-xl bg-emeraldDark hover:bg-emeraldBrand text-white font-bold text-sm shadow-md transition">
-            <i class="fa-solid fa-floppy-disk ml-1"></i> حفظ التحديثات والشواهد
+            <i class="fa-solid fa-floppy-disk ml-1"></i> حفظ التحديثات وإشعار المديرة
           </button>
           <button type="button" onclick="closeCoordinatorModal()"
             class="px-5 py-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-sm transition">
@@ -1254,15 +1229,11 @@ function updatePasswordInCloud(role, newPassword) {
         <h3 id="prin-modal-program-title" class="text-lg font-extrabold text-emeraldDark mt-2 leading-snug">اسم البرنامج</h3>
       </div>
 
-      <!-- Review Attached Evidences -->
       <div class="mb-4 bg-slate-50 p-3.5 rounded-2xl border border-slate-200/80">
         <p class="text-xs font-bold text-emeraldDark mb-2">الشواهد المرفوعة من المنسقة:</p>
-        <div id="prin-evidences-preview" class="space-y-1.5 text-xs">
-          <!-- Dynamic -->
-        </div>
+        <div id="prin-evidences-preview" class="space-y-1.5 text-xs"></div>
       </div>
 
-      <!-- Ready-made Feedback Dropdown -->
       <div class="space-y-3">
         <div>
           <label class="block text-xs font-bold text-emeraldDark mb-1.5">اختيار عبارة تغذية راجعة جاهزة الصياغة:</label>
@@ -1281,7 +1252,6 @@ function updatePasswordInCloud(role, newPassword) {
           </select>
         </div>
 
-        <!-- Editable Textarea -->
         <div>
           <label class="block text-xs font-bold text-emeraldDark mb-1.5">نص التغذية الراجعة (قابل للتعديل والإضافة):</label>
           <textarea id="prin-feedback-text" rows="3"
@@ -1289,13 +1259,11 @@ function updatePasswordInCloud(role, newPassword) {
             class="w-full p-3.5 rounded-2xl border border-slate-300 focus:border-goldWarm focus:ring-2 focus:ring-goldWarm/20 outline-none text-sm leading-relaxed"></textarea>
         </div>
 
-        <!-- Approval Toggle -->
         <label class="flex items-center gap-2.5 p-3 rounded-xl bg-emeraldLight/60 border border-emeraldBrand/20 cursor-pointer">
           <input type="checkbox" id="prin-approve-checkbox" checked class="w-4 h-4 accent-emeraldBrand rounded" />
           <span class="text-xs sm:text-sm font-bold text-emeraldDark">منح ختم الاعتماد الرسمي للبرنامج وشواهده</span>
         </label>
 
-        <!-- Actions -->
         <div class="flex gap-2.5 pt-2">
           <button type="button" onclick="savePrincipalFeedback()"
             class="flex-1 py-3 rounded-xl bg-emeraldBrand hover:bg-emeraldDark text-white font-bold text-sm shadow-md transition">
@@ -1311,15 +1279,13 @@ function updatePasswordInCloud(role, newPassword) {
   </div>
 
   <!-- Toast Notification Container -->
-  <div id="toast-container" class="fixed bottom-5 left-5 z-50 space-y-2 no-print"></div>
+  <div id="toast-container" class="fixed bottom-5 right-5 z-50 space-y-2 no-print max-w-sm"></div>
 
   <!-- ===================================================================== -->
   <!-- JAVASCRIPT APPLICATION LOGIC                                          -->
   <!-- ===================================================================== -->
   <script>
-    // 1. INITIAL DATA: 37 Exact Programs & Tasks from PDF
     const INITIAL_PROGRAMS = [
-      // مرحلة الإعداد والبناء (3 مهام)
       {
         id: 1,
         phase: 'prep',
@@ -1374,8 +1340,6 @@ function updatePasswordInCloud(role, newPassword) {
         principalFeedback: 'خطة شاملة ومبنية بدقة وفق التقويم الدراسي، تُعتمد للتنفيذ.',
         approved: true
       },
-
-      // الفصل الدراسي الأول: الأسابيع 3 - 18 (16 برنامجاً)
       {
         id: 4,
         phase: 'sem1',
@@ -1664,8 +1628,6 @@ function updatePasswordInCloud(role, newPassword) {
         principalFeedback: '',
         approved: false
       },
-
-      // الفصل الدراسي الثاني: الأسابيع 1 - 18 (18 برنامجاً)
       {
         id: 20,
         phase: 'sem2',
@@ -2012,17 +1974,18 @@ function updatePasswordInCloud(role, newPassword) {
       { id: 7, title: 'سجل التحفيز والتكريم والشواهد المصورة للفعاليات', checked: true }
     ];
 
+    // Unified Password Manager synced with Firebase
     const AuthConfig = {
       passwords: {
         coordinator: '1448',
         principal: '2030'
       },
       async verifyPassword(role, inputPassword) {
-        return String(this.passwords[role]) === String(inputPassword);
+        return String(this.passwords[role]) === String(inputPassword).trim();
       }
     };
 
-    const STORAGE_KEY = 'alhaisha_coop_plan_1448_v2';
+    const STORAGE_KEY = 'alhaisha_coop_plan_1448_v3';
     const AppStorage = {
       async load() {
         try {
@@ -2048,7 +2011,7 @@ function updatePasswordInCloud(role, newPassword) {
         try {
           localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
         } catch (e) {
-          showToast('تعذر حفظ البيانات محلياً', 'error');
+          console.error('Local storage save error:', e);
         }
       }
     };
@@ -2058,23 +2021,220 @@ function updatePasswordInCloud(role, newPassword) {
       role: 'visitor',
       programs: [],
       kpis: [],
-      records: []
+      records: [],
+      notifications: []
     };
 
     let pendingAuthRole = null;
     let activeEditProgramId = null;
     let tempEvidences = [];
+    let lastSeenNotifIds = new Set();
 
+    // =========================================================================
+    // FIREBASE CLOUD SYNC & CROSS-USER NOTIFICATIONS
+    // =========================================================================
+    planRef.on('value', (snapshot) => {
+      const cloudData = snapshot.val();
+      if (cloudData) {
+        if (cloudData.programs) appState.programs = cloudData.programs;
+        if (cloudData.kpis) appState.kpis = cloudData.kpis;
+        if (cloudData.records) appState.records = cloudData.records;
+
+        if (cloudData.passwords) {
+          if (cloudData.passwords.coordinator) AuthConfig.passwords.coordinator = String(cloudData.passwords.coordinator);
+          if (cloudData.passwords.principal) AuthConfig.passwords.principal = String(cloudData.passwords.principal);
+        }
+
+        // Process Notifications
+        const rawNotifs = cloudData.notifications ? Object.entries(cloudData.notifications).map(([key, val]) => ({ key, ...val })) : [];
+        appState.notifications = rawNotifs.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+
+        saveState();
+        updateDashboardStats();
+        renderNotificationsBanner();
+
+        if (appState.isLoggedIn) {
+          renderTimeline();
+          renderKPIs();
+          renderRecords();
+        } else {
+          renderRecords();
+        }
+      } else {
+        planRef.set({
+          programs: appState.programs.length ? appState.programs : INITIAL_PROGRAMS,
+          kpis: appState.kpis.length ? appState.kpis : INITIAL_KPIS,
+          records: appState.records.length ? appState.records : INITIAL_RECORDS,
+          passwords: { coordinator: '1448', principal: '2030' }
+        });
+      }
+    });
+
+    function saveToCloud() {
+      planRef.update({
+        programs: appState.programs,
+        kpis: appState.kpis,
+        records: appState.records
+      });
+    }
+
+    function sendCrossNotification(targetRole, title, message, programId) {
+      const notifRef = firebase.database().ref('cooperative_plan_1448/notifications').push();
+      notifRef.set({
+        targetRole: targetRole, // 'principal' or 'coordinator'
+        title: title,
+        message: message,
+        programId: programId || null,
+        read: false,
+        timestamp: Date.now(),
+        timeLabel: new Date().toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' })
+      });
+    }
+
+    function dismissSingleNotification(notifKey) {
+      firebase.database().ref(`cooperative_plan_1448/notifications/${notifKey}`).update({ read: true });
+    }
+
+    function dismissAllNotificationsForCurrentRole() {
+      if (!appState.isLoggedIn) return;
+      const myUnread = appState.notifications.filter(n => n.targetRole === appState.role && !n.read);
+      myUnread.forEach(n => {
+        firebase.database().ref(`cooperative_plan_1448/notifications/${n.key}`).update({ read: true });
+      });
+      showToast('تم تأكيد الاطلاع على جميع التنبيهات ✓', 'success');
+    }
+
+    function renderNotificationsBanner() {
+      const box = document.getElementById('cross-notifications-box');
+      const listEl = document.getElementById('cross-notifications-list');
+      const headingEl = document.getElementById('notif-box-heading');
+
+      if (!box || !listEl) return;
+
+      if (!appState.isLoggedIn || (appState.role !== 'principal' && appState.role !== 'coordinator')) {
+        box.classList.add('hidden');
+        return;
+      }
+
+      const myUnread = appState.notifications.filter(n => n.targetRole === appState.role && !n.read);
+
+      if (myUnread.length === 0) {
+        box.classList.add('hidden');
+        return;
+      }
+
+      // Trigger instant popup toast if a brand-new notification arrives while user is online
+      myUnread.forEach(n => {
+        if (!lastSeenNotifIds.has(n.key)) {
+          lastSeenNotifIds.add(n.key);
+          showToast(`🔔 ${n.title}: ${n.message}`, 'info');
+        }
+      });
+
+      headingEl.textContent = appState.role === 'principal'
+        ? `تنبيهات واردة للاطلاع والاعتماد (${myUnread.length})`
+        : `تحديثات واعتمادات واردة من مديرة المدرسة (${myUnread.length})`;
+
+      listEl.innerHTML = myUnread.map(n => `
+        <div class="bg-white rounded-xl p-3 border border-amber-300/80 flex flex-col sm:flex-row sm:items-center justify-between gap-2 shadow-sm">
+          <div class="space-y-0.5">
+            <div class="flex items-center gap-2">
+              <span class="px-2 py-0.5 rounded-md bg-amber-100 text-amber-900 text-[11px] font-extrabold">${escapeHTML(n.title)}</span>
+              <span class="text-[11px] text-slate-400">${escapeHTML(n.timeLabel || '')}</span>
+            </div>
+            <p class="text-xs sm:text-sm font-bold text-emeraldDark">${escapeHTML(n.message)}</p>
+          </div>
+          <button onclick="dismissSingleNotification('${n.key}')"
+            class="px-3 py-1.5 rounded-lg bg-emeraldLight hover:bg-emeraldBrand text-emeraldDark hover:text-white text-xs font-bold shrink-0 transition self-end sm:self-center">
+            <i class="fa-solid fa-check ml-1"></i> تم الاطلاع
+          </button>
+        </div>
+      `).join('');
+
+      box.classList.remove('hidden');
+    }
+
+    // =========================================================================
+    // PASSWORD UPDATE LOGIC (INSIDE LOGGED-IN WORKSPACE)
+    // =========================================================================
+    function openChangePasswordModal() {
+      if (!appState.isLoggedIn || (appState.role !== 'coordinator' && appState.role !== 'principal')) return;
+
+      const modal = document.getElementById('change-pass-modal');
+      const title = document.getElementById('change-pass-modal-title');
+      const err = document.getElementById('change-pass-error-msg');
+
+      err.classList.add('hidden');
+      document.getElementById('current-pass-input').value = '';
+      document.getElementById('new-pass-input').value = '';
+      document.getElementById('confirm-pass-input').value = '';
+
+      title.textContent = appState.role === 'principal'
+        ? 'تحديث الرقم السري — مديرة المدرسة (أ. هناء المعاوي)'
+        : 'تحديث الرقم السري — منسقة الخطة (أ. هند القرني)';
+
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      setTimeout(() => document.getElementById('current-pass-input').focus(), 100);
+    }
+
+    function closeChangePasswordModal() {
+      const modal = document.getElementById('change-pass-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    async function handleChangePasswordSubmit(e) {
+      e.preventDefault();
+      const currentPass = document.getElementById('current-pass-input').value.trim();
+      const newPass = document.getElementById('new-pass-input').value.trim();
+      const confirmPass = document.getElementById('confirm-pass-input').value.trim();
+      const err = document.getElementById('change-pass-error-msg');
+
+      const isCurrentValid = await AuthConfig.verifyPassword(appState.role, currentPass);
+      if (!isCurrentValid) {
+        err.textContent = 'الرقم السري الحالي غير صحيح.';
+        err.classList.remove('hidden');
+        return;
+      }
+
+      if (newPass.length < 4) {
+        err.textContent = 'يجب أن يتكون الرقم السري الجديد من ٤ خانات على الأقل.';
+        err.classList.remove('hidden');
+        return;
+      }
+
+      if (newPass !== confirmPass) {
+        err.textContent = 'الرقم السري الجديد وتأكيده غير متطابقين.';
+        err.classList.remove('hidden');
+        return;
+      }
+
+      const passRef = firebase.database().ref('cooperative_plan_1448/passwords');
+      const updateObj = appState.role === 'principal'
+        ? { principal: newPass }
+        : { coordinator: newPass };
+
+      passRef.update(updateObj, (error) => {
+        if (!error) {
+          AuthConfig.passwords[appState.role] = newPass;
+          closeChangePasswordModal();
+          showToast('تم تحديث الرقم السري وحفظه سحابياً بنجاح 🔐', 'success');
+        } else {
+          err.textContent = 'حدث خطأ أثناء الاتصال بالسحابة، حاولي مرة أخرى.';
+          err.classList.remove('hidden');
+        }
+      });
+    }
+
+    // =========================================================================
+    // INIT & NAVIGATION
+    // =========================================================================
     async function initAppData() {
       const loaded = await AppStorage.load();
       appState.programs = loaded.programs;
       appState.kpis = loaded.kpis;
       appState.records = loaded.records;
-      await AppStorage.save({
-        programs: appState.programs,
-        kpis: appState.kpis,
-        records: appState.records
-      });
     }
 
     async function saveState() {
@@ -2159,6 +2319,7 @@ function updatePasswordInCloud(role, newPassword) {
       nav.classList.add('flex');
 
       updateRoleUI();
+      renderNotificationsBanner();
       switchTab('timeline');
       renderTimeline();
       renderKPIs();
@@ -2183,6 +2344,7 @@ function updatePasswordInCloud(role, newPassword) {
       nav.classList.add('hidden');
       nav.classList.remove('flex');
 
+      document.getElementById('cross-notifications-box').classList.add('hidden');
       document.getElementById('tab-timeline').classList.add('hidden');
       document.getElementById('tab-kpis').classList.add('hidden');
       document.getElementById('tab-framework').classList.remove('hidden');
@@ -2221,10 +2383,11 @@ function updatePasswordInCloud(role, newPassword) {
       const bannerDesc = document.getElementById('role-banner-desc');
       const bannerIcon = document.getElementById('role-banner-icon');
       const logoutBtn = document.getElementById('role-logout-btn');
+      const changePassBtn = document.getElementById('role-change-pass-btn');
 
       if (!appState.isLoggedIn) {
         if (badgeText) badgeText.textContent = 'الواجهة الافتتاحية (الإطار التنظيمي)';
-        if (banner) banner.className = "rounded-2xl p-4 border transition-all no-print flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-white border-goldWarm/40 shadow-sm";
+        if (banner) banner.className = "rounded-2xl p-4 border transition-all no-print flex flex-col lg:flex-row items-start lg:items-center justify-between gap-3 bg-white border-goldWarm/40 shadow-sm";
         if (bannerIcon) {
           bannerIcon.className = "w-10 h-10 rounded-xl bg-emeraldLight text-emeraldDark flex items-center justify-center text-lg shrink-0";
           bannerIcon.innerHTML = '<i class="fa-solid fa-landmark"></i>';
@@ -2232,12 +2395,13 @@ function updatePasswordInCloud(role, newPassword) {
         if (bannerTitle) bannerTitle.textContent = 'الإطار التنظيمي والمجالات — خطة تعزيز العمل التعاوني ١٤٤٨هـ';
         if (bannerDesc) bannerDesc.innerHTML = 'تستعرض هذه الصفحة المرجعيات والتكليفات والرؤية والمجالات الأربعة. للدخول إلى <b>المتابعة الزمنية ومؤشرات الأداء</b>، يرجى اختيار صفة المستخدم من <a href="#landing-login-portal" class="text-emeraldBrand font-extrabold underline">بوابة الدخول والمتابعة</a> في أسفل الصفحة.';
         if (logoutBtn) logoutBtn.classList.add('hidden');
+        if (changePassBtn) changePassBtn.classList.add('hidden');
         return;
       }
 
       if (appState.role === 'coordinator') {
         if (badgeText) badgeText.textContent = 'مساحة المنسقة: أ. هند القرني';
-        if (banner) banner.className = "rounded-2xl p-4 border transition-all no-print flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-emeraldLight/70 border-emeraldBrand/30 shadow-sm";
+        if (banner) banner.className = "rounded-2xl p-4 border transition-all no-print flex flex-col lg:flex-row items-start lg:items-center justify-between gap-3 bg-emeraldLight/70 border-emeraldBrand/30 shadow-sm";
         if (bannerIcon) {
           bannerIcon.className = "w-10 h-10 rounded-xl bg-emeraldBrand text-white flex items-center justify-center text-lg shrink-0";
           bannerIcon.innerHTML = '<i class="fa-solid fa-pen-to-square"></i>';
@@ -2245,9 +2409,10 @@ function updatePasswordInCloud(role, newPassword) {
         if (bannerTitle) bannerTitle.textContent = 'مساحة عمل منسقة الخطة: أ. هند القرني';
         if (bannerDesc) bannerDesc.textContent = 'مهامكِ المفعّلة: تحديث حالة تنفيذ البرامج، تسجيل تواريخ التنفيذ الفعلية، إرفاق روابط الشواهد التوثيقية، وتحديث نسب مؤشرات الأداء.';
         if (logoutBtn) logoutBtn.classList.remove('hidden');
+        if (changePassBtn) changePassBtn.classList.remove('hidden');
       } else if (appState.role === 'principal') {
         if (badgeText) badgeText.textContent = 'مساحة المديرة: أ. هناء المعاوي';
-        if (banner) banner.className = "rounded-2xl p-4 border transition-all no-print flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-goldSoft border-goldWarm/50 shadow-sm";
+        if (banner) banner.className = "rounded-2xl p-4 border transition-all no-print flex flex-col lg:flex-row items-start lg:items-center justify-between gap-3 bg-goldSoft border-goldWarm/50 shadow-sm";
         if (bannerIcon) {
           bannerIcon.className = "w-10 h-10 rounded-xl bg-goldWarm text-white flex items-center justify-center text-lg shrink-0";
           bannerIcon.innerHTML = '<i class="fa-solid fa-stamp"></i>';
@@ -2255,9 +2420,10 @@ function updatePasswordInCloud(role, newPassword) {
         if (bannerTitle) bannerTitle.textContent = 'مساحة عمل مديرة المدرسة: أ. هناء مشحن المعاوي';
         if (bannerDesc) bannerDesc.textContent = 'مهامكِ المفعّلة: مراجعة الشواهد المرفوعة، اختيار التغذية الراجعة التربوية الجاهزة أو تعديلها، ومنح ختم الاعتماد الرسمي للبرامج.';
         if (logoutBtn) logoutBtn.classList.remove('hidden');
+        if (changePassBtn) changePassBtn.classList.remove('hidden');
       } else {
         if (badgeText) badgeText.textContent = 'وضع الاطلاع العام (الزائر)';
-        if (banner) banner.className = "rounded-2xl p-4 border transition-all no-print flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-slate-50 border-slate-200 shadow-sm";
+        if (banner) banner.className = "rounded-2xl p-4 border transition-all no-print flex flex-col lg:flex-row items-start lg:items-center justify-between gap-3 bg-slate-50 border-slate-200 shadow-sm";
         if (bannerIcon) {
           bannerIcon.className = "w-10 h-10 rounded-xl bg-emeraldDark text-goldBright flex items-center justify-center text-lg shrink-0";
           bannerIcon.innerHTML = '<i class="fa-solid fa-eye"></i>';
@@ -2265,6 +2431,7 @@ function updatePasswordInCloud(role, newPassword) {
         if (bannerTitle) bannerTitle.textContent = 'وضع الاطلاع العام — متابعة الخطة ومؤشرات الأداء';
         if (bannerDesc) bannerDesc.textContent = 'أنتِ الآن تستعرضين سير تنفيذ برامج الخطة والشواهد المعتمدة ومؤشرات الأداء (للقراءة فقط).';
         if (logoutBtn) logoutBtn.classList.remove('hidden');
+        if (changePassBtn) changePassBtn.classList.add('hidden');
       }
     }
 
@@ -2592,11 +2759,23 @@ function updatePasswordInCloud(role, newPassword) {
       prog.coordinatorNotes = document.getElementById('coord-notes-input').value.trim();
       prog.evidences = tempEvidences;
 
+      const statusText = prog.status === 'completed' ? 'مكتمل ومنفذ' : (prog.status === 'in_progress' ? 'قيد التنفيذ' : 'لم يبدأ');
+      const evidenceNote = prog.evidences.length > 0 ? `مع إرفاق (${prog.evidences.length}) رابط شاهد` : 'بدون شاهد مرفق';
+
       saveState();
-	saveToCloud();
+      saveToCloud();
+
+      // Send notification to Principal
+      sendCrossNotification(
+        'principal',
+        'للاطلاع والاعتماد',
+        `قامت المنسقة أ. هند القرني بتحديث البرنامج رقم (#${prog.id}: ${prog.title}) — الحالة: (${statusText}) ${evidenceNote}.`,
+        prog.id
+      );
+
       renderTimeline();
       closeCoordinatorModal();
-      showToast('تم حفظ حالة التنفيذ وروابط الشواهد بنجاح ✓', 'success');
+      showToast('تم حفظ التحديثات وإرسال تنبيه للمديرة للاطلاع والاعتماد ✓', 'success');
     }
 
     function openPrincipalModal(programId) {
@@ -2647,11 +2826,24 @@ function updatePasswordInCloud(role, newPassword) {
       prog.principalFeedback = document.getElementById('prin-feedback-text').value.trim();
       prog.approved = document.getElementById('prin-approve-checkbox').checked;
 
+      const actionSummary = prog.approved
+        ? 'منح ختم الاعتماد الرسمي'
+        : 'إضافة ملاحظة / تغذية راجعة';
+
       saveState();
-	saveToCloud();
+      saveToCloud();
+
+      // Send notification to Coordinator
+      sendCrossNotification(
+        'coordinator',
+        'تحديث من مديرة المدرسة',
+        `قامت مديرة المدرسة أ. هناء المعاوي بـ (${actionSummary}) للبرنامج (#${prog.id}: ${prog.title})${prog.principalFeedback ? ` — التغذية الراجعة: «${prog.principalFeedback}»` : ''}.`,
+        prog.id
+      );
+
       renderTimeline();
       closePrincipalModal();
-      showToast('تم اعتماد التغذية الراجعة وإرسالها بنجاح 🏅', 'success');
+      showToast('تم اعتماد التغذية الراجعة وإرسال تنبيه للمنسقة 🏅', 'success');
     }
 
     function renderKPIs() {
@@ -2704,7 +2896,16 @@ function updatePasswordInCloud(role, newPassword) {
       const num = Math.max(0, Math.min(100, parseInt(newVal, 10) || 0));
       kpi.actual = num;
       saveState();
-      showToast('تم تحديث نسبة مؤشر الأداء بنجاح', 'success');
+      saveToCloud();
+
+      sendCrossNotification(
+        'principal',
+        'تحديث مؤشرات الأداء',
+        `قامت المنسقة أ. هند القرني بتحديث مؤشر (${kpi.name}) ليصبح المحقق الفعلي (${num}%).`,
+        null
+      );
+
+      showToast('تم تحديث نسبة مؤشر الأداء وإشعار المديرة بنجاح', 'success');
     }
 
     function renderRecords() {
@@ -2732,6 +2933,7 @@ function updatePasswordInCloud(role, newPassword) {
       if (!rec) return;
       rec.checked = !rec.checked;
       saveState();
+      saveToCloud();
       renderRecords();
       showToast('تم تحديث حالة السجل التوثيقي', 'info');
     }
@@ -2762,14 +2964,14 @@ function updatePasswordInCloud(role, newPassword) {
       }
 
       toast.className = `toast-enter px-4 py-3 rounded-2xl shadow-xl border text-xs sm:text-sm font-bold flex items-center gap-2.5 ${colors}`;
-      toast.innerHTML = `<i class="fa-solid ${icon}"></i><span>${escapeHTML(message)}</span>`;
+      toast.innerHTML = `<i class="fa-solid ${icon} shrink-0"></i><span>${escapeHTML(message)}</span>`;
       container.appendChild(toast);
 
       setTimeout(() => {
         toast.style.opacity = '0';
         toast.style.transition = 'opacity 0.3s ease';
         setTimeout(() => toast.remove(), 300);
-      }, 3200);
+      }, 4000);
     }
 
     window.addEventListener('DOMContentLoaded', async () => {
